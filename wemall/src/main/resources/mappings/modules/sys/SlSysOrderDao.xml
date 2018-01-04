@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fulltl.wemall.modules.sys.dao.SlSysOrderDao">
+    
+	<sql id="slSysOrderColumns">
+		a.orderno AS "orderNo",
+		a.userid AS "user.id",
+		a.subject AS "subject",
+		a.ordertype AS "orderType",
+		a.orderprice AS "orderPrice",
+		a.actualpayment AS "actualPayment",
+		a.paymethod AS "payMethod",
+		a.freightfee AS "freightFee",
+		a.usedpoints AS "usedPoints",
+		a.status AS "status",
+		a.paystate AS "payState",
+		a.orderdate AS "orderDate",
+		a.mobile AS "mobile",
+		a.description AS "description",
+		a.redevpuseamount AS "redEvpUseAmount",
+		a.coupuseamount AS "coupUseAmount",
+		a.office_id AS "office.id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		u2.name AS "user.name",
+		o17.name AS "office.name",
+		reg.regID AS "regId"
+	</sql>
+	
+	<sql id="slSysOrderJoins">
+		LEFT JOIN sys_user u2 ON u2.id = a.userid
+		LEFT JOIN sys_office o17 ON o17.id = a.office_id
+		LEFT JOIN sl_his_regbooking reg ON reg.orderNo = a.orderno
+	</sql>
+    
+	<select id="get" resultType="SlSysOrder">
+		SELECT 
+			<include refid="slSysOrderColumns"/>
+		FROM sl_sys_order a
+		<include refid="slSysOrderJoins"/>
+		WHERE a.orderno = #{orderNo}
+	</select>
+	
+	<select id="findList" resultType="SlSysOrder">
+		SELECT 
+			<include refid="slSysOrderColumns"/>
+		FROM sl_sys_order a
+		<include refid="slSysOrderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="orderNo != null and orderNo != ''">
+				AND a.orderno LIKE 
+					<if test="dbName == 'oracle'">'%'||#{orderNo}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{orderNo}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{orderNo},'%')</if>
+			</if>
+			<if test="user != null and user.id != null and user.id != ''">
+				AND a.userid = #{user.id}
+			</if>
+			<if test="subject != null and subject != ''">
+				AND a.subject LIKE 
+					<if test="dbName == 'oracle'">'%'||#{subject}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{subject}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{subject},'%')</if>
+			</if>
+			<if test="orderType != null and orderType != ''">
+				AND a.ordertype = #{orderType}
+			</if>
+			<if test="payMethod != null and payMethod != ''">
+				AND a.paymethod = #{payMethod}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="payState != null and payState != ''">
+				AND a.paystate = #{payState}
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND a.mobile LIKE 
+					<if test="dbName == 'oracle'">'%'||#{mobile}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{mobile}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{mobile},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SlSysOrder">
+		SELECT 
+			<include refid="slSysOrderColumns"/>
+		FROM sl_sys_order a
+		<include refid="slSysOrderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sl_sys_order(
+			orderno,
+			userid,
+			subject,
+			ordertype,
+			orderprice,
+			actualpayment,
+			paymethod,
+			freightfee,
+			usedpoints,
+			status,
+			paystate,
+			orderdate,
+			mobile,
+			description,
+			redevpuseamount,
+			coupuseamount,
+			office_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{orderNo},
+			#{user.id},
+			#{subject},
+			#{orderType},
+			#{orderPrice},
+			#{actualPayment},
+			#{payMethod},
+			#{freightFee},
+			#{usedPoints},
+			#{status},
+			#{payState},
+			#{orderDate},
+			#{mobile},
+			#{description},
+			#{redEvpUseAmount},
+			#{coupUseAmount},
+			#{office.id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sl_sys_order SET 	
+			userid = #{user.id},
+			subject = #{subject},
+			ordertype = #{orderType},
+			orderprice = #{orderPrice},
+			actualpayment = #{actualPayment},
+			paymethod = #{payMethod},
+			freightfee = #{freightFee},
+			usedpoints = #{usedPoints},
+			status = #{status},
+			paystate = #{payState},
+			orderdate = #{orderDate},
+			mobile = #{mobile},
+			description = #{description},
+			redevpuseamount = #{redEvpUseAmount},
+			coupuseamount = #{coupUseAmount},
+			office_id = #{office.id},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE orderno = #{orderNo}
+	</update>
+	
+	<update id="delete">
+		UPDATE sl_sys_order SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE orderno = #{orderNo}
+	</update>
+	
+</mapper>

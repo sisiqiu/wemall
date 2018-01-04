@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fulltl.wemall.modules.wx.dao.ConUserActivityDao">
+    
+	<sql id="conUserActivityColumns">
+		a.id AS "id",
+		a.user_id AS "user.id",
+		a.user_name AS "userName",
+		a.activityid AS "activityid",
+		a.mobile AS "mobile",
+		a.information AS "information",
+		a.note AS "note",
+		a.status AS "status",
+		a.price AS "price",
+		a.registration_time AS "registrationTime",
+		a.attendance_time AS "attendanceTime",
+		a.lottery_time AS "lotteryTime",
+		u2.name AS "user.name"
+	</sql>
+	
+	<sql id="conUserActivityJoins">
+		LEFT JOIN sys_user u2 ON u2.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="ConUserActivity">
+		SELECT 
+			<include refid="conUserActivityColumns"/>
+		FROM con_user_activity a
+		<include refid="conUserActivityJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	
+	<!-- 用户活动表单条查询 -->
+	<select id="getByActUserId" resultType="ConUserActivity">
+		SELECT 
+			<include refid="conUserActivityColumns"/>
+		FROM con_user_activity a
+		<include refid="conUserActivityJoins"/>
+		where a.activityid = #{activityId} 
+			and a.user_id = #{userId}
+	</select>
+	<!-- 根据手机查询用户活动表信息 -->
+	<select id="getByActUserPhone" resultType="ConUserActivity">
+		SELECT 
+			<include refid="conUserActivityColumns"/>
+		FROM con_user_activity a
+		<include refid="conUserActivityJoins"/>
+		where a.mobile = #{mobile} 
+	</select>
+	<!-- 根据活动Id 与 statu 查询用户活动表 -->
+	<select id="getByActidStatu" resultType="ConUserActivity">
+		SELECT 
+			<include refid="conUserActivityColumns"/>
+		FROM con_user_activity a
+		<include refid="conUserActivityJoins"/>
+		where a.activityid = #{activityId} and a.status = #{status}
+	</select>
+	
+	
+	
+	<select id="findList" resultType="ConUserActivity">
+		SELECT 
+			<include refid="conUserActivityColumns"/>
+		FROM con_user_activity a
+		<include refid="conUserActivityJoins"/>
+		<where>
+			
+			<if test="user != null and user.id != null and user.id != ''">
+				AND a.user_id = #{user.id}
+			</if>
+			<if test="activityid != null and activityid != ''">
+				AND a.activityid = #{activityid}
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND a.mobile LIKE 
+					<if test="dbName == 'oracle'">'%'||#{mobile}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{mobile}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{mobile},'%')</if>
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="price != null and price != ''">
+				AND a.price LIKE 
+					<if test="dbName == 'oracle'">'%'||#{price}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{price}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{price},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ConUserActivity">
+		SELECT 
+			<include refid="conUserActivityColumns"/>
+		FROM con_user_activity a
+		<include refid="conUserActivityJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO con_user_activity(
+			user_id,
+			user_name,
+			activityid,
+			mobile,
+			information,
+			note,
+			status,
+			price,
+			registration_time,
+			attendance_time,
+			lottery_time
+		) VALUES (
+			#{user.id},
+			#{userName},
+			#{activityid},
+			#{mobile},
+			#{information},
+			#{note},
+			#{status},
+			#{price},
+			#{registrationTime},
+			#{attendanceTime},
+			#{lotteryTime}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE con_user_activity SET 	
+			user_id = #{user.id},
+			user_name = #{userName},
+			activityid = #{activityid},
+			mobile = #{mobile},
+			information = #{information},
+			note = #{note},
+			status = #{status},
+			price = #{price},
+			registration_time = #{registrationTime},
+			attendance_time = #{attendanceTime},
+			lottery_time = #{lotteryTime}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM con_user_activity
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fulltl.wemall.modules.cms.dao.CmsUserRegidDao">
+    
+	<sql id="cmsUserRegidColumns">
+		a.id AS "id",
+		a.registrationid AS "registrationId",
+		a.userid AS "userId",
+		a.status AS "status",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="cmsUserRegidJoins">
+	</sql>
+    
+	<select id="get" resultType="CmsUserRegid">
+		SELECT 
+			<include refid="cmsUserRegidColumns"/>
+		FROM cms_user_regid a
+		<include refid="cmsUserRegidJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="CmsUserRegid">
+		SELECT 
+			<include refid="cmsUserRegidColumns"/>
+		FROM cms_user_regid a
+		<include refid="cmsUserRegidJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="registrationId != null and registrationId != ''">
+				AND a.registrationid = #{registrationId}
+			</if>
+			<!-- <if test="userId != null and userId != ''">
+				AND a.userid = #{userId}
+			</if> -->
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="userIdList != null">
+				AND a.userid IN  
+			    <foreach collection="userIdList" index="index" item="item" open="(" separator="," close=")">  
+			        #{item}  
+			    </foreach>  
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CmsUserRegid">
+		SELECT 
+			<include refid="cmsUserRegidColumns"/>
+		FROM cms_user_regid a
+		<include refid="cmsUserRegidJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cms_user_regid(
+			id,
+			registrationid,
+			userid,
+			status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{registrationId},
+			#{userId},
+			#{status},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE cms_user_regid SET 	
+			registrationid = #{registrationId},
+			userid = #{userId},
+			status = #{status},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE cms_user_regid SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

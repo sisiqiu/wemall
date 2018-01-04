@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fulltl.wemall.modules.cms.dao.CmsFileresourceDao">
+    
+	<sql id="cmsFileresourceColumns">
+		a.id AS "id",
+		a.module AS "module",
+		a.category AS "category",
+		a.name AS "name",
+		a.size AS "size",
+		a.suffix AS "suffix",
+		a.filepath AS "filePath",
+		a.downloadnum AS "downloadNum",
+		a.status AS "status",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		u10.name AS "createBy.name",
+		u12.name AS "updateBy.name"
+	</sql>
+	
+	<sql id="cmsFileresourceJoins">
+		LEFT JOIN sys_user u10 ON u10.id = a.create_by
+		LEFT JOIN sys_user u12 ON u12.id = a.update_by
+	</sql>
+    
+	<select id="get" resultType="CmsFileresource">
+		SELECT 
+			<include refid="cmsFileresourceColumns"/>
+		FROM cms_fileresource a
+		<include refid="cmsFileresourceJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findByFilePath" resultType="CmsFileresource">
+		SELECT 
+			<include refid="cmsFileresourceColumns"/>
+		FROM cms_fileresource a
+		<include refid="cmsFileresourceJoins"/>
+		WHERE a.filepath = #{filePath}
+	</select>
+	
+	<select id="findList" resultType="CmsFileresource">
+		SELECT 
+			<include refid="cmsFileresourceColumns"/>
+		FROM cms_fileresource a
+		<include refid="cmsFileresourceJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="module != null and module != ''">
+				AND a.module LIKE 
+					<if test="dbName == 'oracle'">'%'||#{module}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{module}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{module},'%')</if>
+			</if>
+			<if test="category != null and category != ''">
+				AND a.category LIKE 
+					<if test="dbName == 'oracle'">'%'||#{category}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{category}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{category},'%')</if>
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="beginSize != null and endSize != null and beginSize != '' and endSize != ''">
+				AND a.size BETWEEN #{beginSize} AND #{endSize}
+			</if>
+			<if test="suffix != null and suffix != ''">
+				AND a.suffix = #{suffix}
+			</if>
+			<if test="beginDownloadNum != null and endDownloadNum != null and beginDownloadNum != '' and endDownloadNum != ''">
+				AND a.downloadnum BETWEEN #{beginDownloadNum} AND #{endDownloadNum}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CmsFileresource">
+		SELECT 
+			<include refid="cmsFileresourceColumns"/>
+		FROM cms_fileresource a
+		<include refid="cmsFileresourceJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cms_fileresource(
+			id,
+			module,
+			category,
+			name,
+			size,
+			suffix,
+			filepath,
+			downloadnum,
+			status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{module},
+			#{category},
+			#{name},
+			#{size},
+			#{suffix},
+			#{filePath},
+			#{downloadNum},
+			#{status},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="updateDownloadNum">
+		UPDATE cms_fileresource SET 	
+			downloadnum = downloadnum + 1
+		WHERE filePath = #{filePath}
+	</update>
+	
+	<update id="update">
+		UPDATE cms_fileresource SET 	
+			module = #{module},
+			category = #{category},
+			name = #{name},
+			size = #{size},
+			suffix = #{suffix},
+			filepath = #{filePath},
+			downloadnum = #{downloadNum},
+			status = #{status},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE cms_fileresource SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

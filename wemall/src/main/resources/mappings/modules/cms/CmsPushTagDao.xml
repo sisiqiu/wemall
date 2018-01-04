@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fulltl.wemall.modules.cms.dao.CmsPushTagDao">
+    
+	<sql id="cmsPushTagColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.userIds AS "userIds",
+		a.userNames AS "userNames",
+		a.status AS "status",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		u4.name AS "createBy.name",
+		u6.name AS "updateBy.name"
+	</sql>
+	
+	<sql id="cmsPushTagJoins">
+		LEFT JOIN sys_user u4 ON u4.id = a.create_by
+		LEFT JOIN sys_user u6 ON u6.id = a.update_by
+	</sql>
+    
+	<select id="get" resultType="CmsPushTag">
+		SELECT 
+			<include refid="cmsPushTagColumns"/>
+		FROM cms_pushtag a
+		<include refid="cmsPushTagJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="CmsPushTag">
+		SELECT 
+			<include refid="cmsPushTagColumns"/>
+		FROM cms_pushtag a
+		<include refid="cmsPushTagJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="userIds != null and userIds != ''">
+				AND a.userIds LIKE 
+					<if test="dbName == 'oracle'">'%'||#{userIds}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{userIds}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{userIds},'%')</if>
+			</if>
+			<if test="userNames != null and userNames != ''">
+				AND a.userNames LIKE 
+					<if test="dbName == 'oracle'">'%'||#{userNames}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{userNames}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{userNames},'%')</if>
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="idList != null">
+				AND a.id IN  
+			    <foreach collection="idList" index="index" item="item" open="(" separator="," close=")">  
+			        #{item}  
+			    </foreach>  
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CmsPushTag">
+		SELECT 
+			<include refid="cmsPushTagColumns"/>
+		FROM cms_pushtag a
+		<include refid="cmsPushTagJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cms_pushtag(
+			id,
+			name,
+			userIds,
+			userNames,
+			status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{name},
+			#{userIds},
+			#{userNames},
+			#{status},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE cms_pushtag SET 	
+			name = #{name},
+			userIds = #{userIds},
+			userNames = #{userNames},
+			status = #{status},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE cms_pushtag SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fulltl.wemall.modules.wx.dao.WxMessagearticlesDao">
+    
+	<sql id="wxMessagearticlesColumns">
+		a.articleid AS "articleID",
+		a.title AS "title",
+		a.description AS "description",
+		a.picurl AS "picurl",
+		a.url AS "url",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		u6.name AS "createBy.name",
+		u8.name AS "updateBy.name"
+	</sql>
+	
+	<sql id="wxMessagearticlesJoins">
+		LEFT JOIN sys_user u6 ON u6.id = a.create_by
+		LEFT JOIN sys_user u8 ON u8.id = a.update_by
+	</sql>
+    
+	<select id="get" resultType="WxMessagearticles">
+		SELECT 
+			<include refid="wxMessagearticlesColumns"/>
+		FROM wx_messagearticles a
+		<include refid="wxMessagearticlesJoins"/>
+		WHERE a.articleid = #{articleID}
+	</select>
+	
+	<select id="findList" resultType="WxMessagearticles">
+		SELECT 
+			<include refid="wxMessagearticlesColumns"/>
+		FROM wx_messagearticles a
+		<include refid="wxMessagearticlesJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="title != null and title != ''">
+				AND a.title LIKE 
+					<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{title}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{title},'%')</if>
+			</if>
+			<if test="createBy != null and createBy.id != null and createBy.id != ''">
+				AND a.create_by LIKE 
+					<if test="dbName == 'oracle'">'%'||#{createBy.id}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{createBy.id}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{createBy.id},'%')</if>
+			</if>
+			<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+				AND a.create_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+			</if>
+			<if test="updateBy != null and updateBy.id != null and updateBy.id != ''">
+				AND a.update_by LIKE 
+					<if test="dbName == 'oracle'">'%'||#{updateBy.id}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{updateBy.id}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{updateBy.id},'%')</if>
+			</if>
+			<if test="beginUpdateDate != null and endUpdateDate != null and beginUpdateDate != '' and endUpdateDate != ''">
+				AND a.update_date BETWEEN #{beginUpdateDate} AND #{endUpdateDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WxMessagearticles">
+		SELECT 
+			<include refid="wxMessagearticlesColumns"/>
+		FROM wx_messagearticles a
+		<include refid="wxMessagearticlesJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wx_messagearticles(
+			title,
+			description,
+			picurl,
+			url,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{title},
+			#{description},
+			#{picurl},
+			#{url},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wx_messagearticles SET 	
+			title = #{title},
+			description = #{description},
+			picurl = #{picurl},
+			url = #{url},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE articleid = #{articleID}
+	</update>
+	
+	<update id="delete">
+		UPDATE wx_messagearticles SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE articleid = #{articleID}
+	</update>
+	
+</mapper>

@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fulltl.wemall.modules.cms.dao.CmsJpushRecordDao">
+    
+	<sql id="cmsJpushRecordColumns">
+		a.id AS "id",
+		a.type AS "type",
+		a.scheduletime AS "scheduleTime",
+		a.targettype AS "targetType",
+		a.roleids AS "roleIds",
+		a.rolenames AS "roleNames",
+		a.tagids AS "tagIds",
+		a.tagnames AS "tagNames",
+		a.userids AS "userIds",
+		a.usernames AS "userNames",
+		a.title AS "title",
+		a.content AS "content",
+		a.href AS "href",
+		a.extra AS "extra",
+		a.status AS "status",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		u16.name AS "createBy.name",
+		u18.name AS "updateBy.name"
+	</sql>
+	
+	<sql id="cmsJpushRecordJoins">
+		LEFT JOIN sys_user u16 ON u16.id = a.create_by
+		LEFT JOIN sys_user u18 ON u18.id = a.update_by
+	</sql>
+    
+	<select id="get" resultType="CmsJpushRecord">
+		SELECT 
+			<include refid="cmsJpushRecordColumns"/>
+		FROM cms_jpush_record a
+		<include refid="cmsJpushRecordJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="CmsJpushRecord">
+		SELECT 
+			<include refid="cmsJpushRecordColumns"/>
+		FROM cms_jpush_record a
+		<include refid="cmsJpushRecordJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="beginScheduleTime != null and endScheduleTime != null and beginScheduleTime != '' and endScheduleTime != ''">
+				AND a.scheduletime BETWEEN #{beginScheduleTime} AND #{endScheduleTime}
+			</if>
+			<if test="targetType != null and targetType != ''">
+				AND a.targettype = #{targetType}
+			</if>
+			<if test="roleNames != null and roleNames != ''">
+				AND a.rolenames LIKE 
+					<if test="dbName == 'oracle'">'%'||#{roleNames}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{roleNames}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{roleNames},'%')</if>
+			</if>
+			<if test="tagNames != null and tagNames != ''">
+				AND a.tagnames LIKE 
+					<if test="dbName == 'oracle'">'%'||#{tagNames}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{tagNames}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{tagNames},'%')</if>
+			</if>
+			<if test="userNames != null and userNames != ''">
+				AND a.usernames LIKE 
+					<if test="dbName == 'oracle'">'%'||#{userNames}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{userNames}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{userNames},'%')</if>
+			</if>
+			<if test="title != null and title != ''">
+				AND a.title LIKE 
+					<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{title}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{title},'%')</if>
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+				AND a.create_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CmsJpushRecord">
+		SELECT 
+			<include refid="cmsJpushRecordColumns"/>
+		FROM cms_jpush_record a
+		<include refid="cmsJpushRecordJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cms_jpush_record(
+			id,
+			type,
+			scheduletime,
+			targettype,
+			roleids,
+			rolenames,
+			tagids,
+			tagnames,
+			userids,
+			usernames,
+			title,
+			content,
+			href,
+			extra,
+			status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{type},
+			#{scheduleTime},
+			#{targetType},
+			#{roleIds},
+			#{roleNames},
+			#{tagIds},
+			#{tagNames},
+			#{userIds},
+			#{userNames},
+			#{title},
+			#{content},
+			#{href},
+			#{extra},
+			#{status},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE cms_jpush_record SET 	
+			type = #{type},
+			scheduletime = #{scheduleTime},
+			targettype = #{targetType},
+			roleids = #{roleIds},
+			rolenames = #{roleNames},
+			tagids = #{tagIds},
+			tagnames = #{tagNames},
+			userids = #{userIds},
+			usernames = #{userNames},
+			title = #{title},
+			content = #{content},
+			href = #{href},
+			extra = #{extra},
+			status = #{status},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE cms_jpush_record SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

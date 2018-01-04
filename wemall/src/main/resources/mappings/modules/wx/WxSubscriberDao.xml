@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fulltl.wemall.modules.wx.dao.WxSubscriberDao">
+    
+	<sql id="wxSubscriberColumns">
+		a.subscriberid AS "subscriberId",
+		a.isserviceperson AS "isServicePerson",
+		a.serviceid AS "serviceId",
+		a.openid AS "openId",
+		a.username AS "username",
+		a.nickname AS "nickname",
+		a.sex AS "sex",
+		a.country AS "country",
+		a.province AS "province",
+		a.city AS "city",
+		a.language AS "language",
+		a.headimgurl AS "headImgUrl",
+		a.subscribe AS "subscribe",
+		a.subscribe_time AS "subscribeTime",
+		a.unsubscribe_time AS "unsubscribeTime",
+		a.wx_userid AS "wxUserId",
+		a.sl_userid AS "slUserId",
+		a.status AS "status",
+		a.description AS "description",
+		a.sa_id AS "saId",
+		a.sellercode AS "sellerCode",
+		a.loginname AS "loginName",
+		a.mobile AS "mobile",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="wxSubscriberJoins">
+	</sql>
+    
+	<select id="get" resultType="WxSubscriber">
+		SELECT 
+			<include refid="wxSubscriberColumns"/>
+		FROM wx_subscriber a
+		<include refid="wxSubscriberJoins"/>
+		WHERE a.subscriberid = #{subscriberId}
+	</select>
+	
+	<select id="findByOpenId" resultType="WxSubscriber">
+		SELECT 
+			<include refid="wxSubscriberColumns"/>
+		FROM wx_subscriber a
+		<include refid="wxSubscriberJoins"/>
+		WHERE a.del_flag = 0 
+			and a.openid = #{openId}
+	</select>
+	
+	<select id="findList" resultType="WxSubscriber">
+		SELECT 
+			<include refid="wxSubscriberColumns"/>
+		FROM wx_subscriber a
+		<include refid="wxSubscriberJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="isServicePerson != null and isServicePerson != ''">
+				AND a.isserviceperson = #{isServicePerson}
+			</if>
+			<if test="sex != null and sex != ''">
+				AND a.sex = #{sex}
+			</if>
+			<if test="subscribe != null and subscribe != ''">
+				AND a.subscribe = #{subscribe}
+			</if>
+			<if test="loginName != null and loginName != ''">
+				AND a.loginname LIKE 
+					<if test="dbName == 'oracle'">'%'||#{loginName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{loginName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{loginName},'%')</if>
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND a.mobile LIKE 
+					<if test="dbName == 'oracle'">'%'||#{mobile}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{mobile}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{mobile},'%')</if>
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WxSubscriber">
+		SELECT 
+			<include refid="wxSubscriberColumns"/>
+		FROM wx_subscriber a
+		<include refid="wxSubscriberJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="subscriberId"> 
+	        SELECT LAST_INSERT_ID() AS ID   
+	    </selectKey>
+		INSERT INTO wx_subscriber(
+			isserviceperson,
+			serviceid,
+			openid,
+			username,
+			nickname,
+			sex,
+			country,
+			province,
+			city,
+			language,
+			headimgurl,
+			subscribe,
+			subscribe_time,
+			unsubscribe_time,
+			wx_userid,
+			sl_userid,
+			status,
+			description,
+			sa_id,
+			sellercode,
+			loginname,
+			mobile,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{isServicePerson},
+			#{serviceId},
+			#{openId},
+			#{username},
+			#{nickname},
+			#{sex},
+			#{country},
+			#{province},
+			#{city},
+			#{language},
+			#{headImgUrl},
+			#{subscribe},
+			#{subscribeTime},
+			#{unsubscribeTime},
+			#{wxUserId},
+			#{slUserId},
+			#{status},
+			#{description},
+			#{saId},
+			#{sellerCode},
+			#{loginName},
+			#{mobile},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wx_subscriber SET 	
+			isserviceperson = #{isServicePerson},
+			serviceid = #{serviceId},
+			openid = #{openId},
+			username = #{username},
+			nickname = #{nickname},
+			sex = #{sex},
+			country = #{country},
+			province = #{province},
+			city = #{city},
+			language = #{language},
+			headimgurl = #{headImgUrl},
+			subscribe = #{subscribe},
+			subscribe_time = #{subscribeTime},
+			unsubscribe_time = #{unsubscribeTime},
+			wx_userid = #{wxUserId},
+			sl_userid = #{slUserId},
+			status = #{status},
+			description = #{description},
+			sa_id = #{saId},
+			sellercode = #{sellerCode},
+			loginname = #{loginName},
+			mobile = #{mobile},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE subscriberid = #{subscriberId}
+	</update>
+	
+	<update id="delete">
+		UPDATE wx_subscriber SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE subscriberid = #{subscriberId}
+	</update>
+	
+</mapper>

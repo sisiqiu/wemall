@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fulltl.wemall.modules.cms.dao.CmsFeedbackDao">
+    
+	<sql id="cmsFeedbackColumns">
+		a.id AS "id",
+		a.opinion_text AS "opinionText",
+		a.telephone AS "telephone",
+		a.username AS "username",
+		a.user_id AS "user.id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		u5.name AS "user.name",
+		u6.name AS "createBy.name",
+		u8.name AS "updateBy.name"
+	</sql>
+	
+	<sql id="cmsFeedbackJoins">
+		LEFT JOIN sys_user u5 ON u5.id = a.user_id
+		LEFT JOIN sys_user u6 ON u6.id = a.create_by
+		LEFT JOIN sys_user u8 ON u8.id = a.update_by
+	</sql>
+    
+	<select id="get" resultType="CmsFeedback">
+		SELECT 
+			<include refid="cmsFeedbackColumns"/>
+		FROM cms_feedback a
+		<include refid="cmsFeedbackJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="CmsFeedback">
+		SELECT 
+			<include refid="cmsFeedbackColumns"/>
+		FROM cms_feedback a
+		<include refid="cmsFeedbackJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CmsFeedback">
+		SELECT 
+			<include refid="cmsFeedbackColumns"/>
+		FROM cms_feedback a
+		<include refid="cmsFeedbackJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cms_feedback(
+			opinion_text,
+			telephone,
+			username,
+			user_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{opinionText},
+			#{telephone},
+			#{username},
+			#{user.id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE cms_feedback SET 	
+			opinion_text = #{opinionText},
+			telephone = #{telephone},
+			username = #{username},
+			user_id = #{user.id},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE cms_feedback SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fulltl.wemall.modules.wx.dao.ConGroupsmsDao">
+    
+	<sql id="conGroupsmsColumns">
+		a.id AS "id",
+		a.templeteid AS "templeteId",
+		a.contentarr AS "contentArr",
+		a.mobilearr AS "mobileArr",
+		a.sendtime AS "sendTime",
+		a.sendtype AS "sendType",
+		a.status AS "status",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		u8.name AS "createBy.name",
+		u10.name AS "updateBy.name"
+	</sql>
+	
+	<sql id="conGroupsmsJoins">
+		LEFT JOIN sys_user u8 ON u8.id = a.create_by
+		LEFT JOIN sys_user u10 ON u10.id = a.update_by
+	</sql>
+    
+	<select id="get" resultType="ConGroupsms">
+		SELECT 
+			<include refid="conGroupsmsColumns"/>
+		FROM con_groupsms a
+		<include refid="conGroupsmsJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ConGroupsms">
+		SELECT 
+			<include refid="conGroupsmsColumns"/>
+		FROM con_groupsms a
+		<include refid="conGroupsmsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="templeteId != null and templeteId != ''">
+				AND a.templeteid = #{templeteId}
+			</if>
+			<if test="beginSendTime != null and endSendTime != null and beginSendTime != '' and endSendTime != ''">
+				AND a.sendtime BETWEEN #{beginSendTime} AND #{endSendTime}
+			</if>
+			<if test="sendType != null and sendType != ''">
+				AND a.sendtype = #{sendType}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="createBy != null and createBy.id != null and createBy.id != ''">
+				AND a.create_by = #{createBy.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ConGroupsms">
+		SELECT 
+			<include refid="conGroupsmsColumns"/>
+		FROM con_groupsms a
+		<include refid="conGroupsmsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+	    <selectKey resultType="java.lang.String" order="AFTER" keyProperty="id"> 
+	        SELECT LAST_INSERT_ID() AS ID   
+	    </selectKey>
+		INSERT INTO con_groupsms(
+			templeteid,
+			contentarr,
+			mobilearr,
+			sendtime,
+			sendtype,
+			status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{templeteId},
+			#{contentArr},
+			#{mobileArr},
+			#{sendTime},
+			#{sendType},
+			#{status},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE con_groupsms SET 	
+			templeteid = #{templeteId},
+			contentarr = #{contentArr},
+			mobilearr = #{mobileArr},
+			sendtime = #{sendTime},
+			sendtype = #{sendType},
+			status = #{status},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE con_groupsms SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

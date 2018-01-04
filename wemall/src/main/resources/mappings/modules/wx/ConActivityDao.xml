@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fulltl.wemall.modules.wx.dao.ConActivityDao">
+    
+	<sql id="conActivityColumns">
+		a.id AS "id",
+		a.title AS "title",
+		a.picurl AS "picurl",
+		a.organizer AS "organizer",
+		a.location AS "location",
+		a.lng AS "lng",
+		a.lat AS "lat",
+		a.content AS "content",
+		a.registration_starttime AS "registrationStarttime",
+		a.registration_endtime AS "registrationEndtime",
+		a.attendance_starttime AS "attendanceStarttime",
+		a.attendance_endtime AS "attendanceEndtime",
+		a.lottery_starttime AS "lotteryStarttime",
+		a.lottery_endtime AS "lotteryEndtime",
+		a.fromdate AS "fromdate",
+		a.enddate AS "enddate",
+		a.resourcepath AS "resourcepath",
+		a.maxpeoplenum AS "maxpeoplenum",
+		a.currentpeoplenum AS "currentpeoplenum",
+		a.status AS "status",
+		a.prize AS "prize",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="conActivityJoins">
+	</sql>
+    
+	<select id="get" resultType="ConActivity">
+		SELECT 
+			<include refid="conActivityColumns"/>
+		FROM con_activity a
+		<include refid="conActivityJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findCurActivityByDate" resultType="ConActivity">
+		SELECT 
+			<include refid="conActivityColumns"/>
+		FROM con_activity a
+		<include refid="conActivityJoins"/>
+		WHERE a.del_flag = 0 
+			and a.fromdate &lt;= #{date} 
+			and a.enddate &gt;= #{date}
+	</select>
+	
+	<select id="findLastActivityByFromdate" resultType="ConActivity">
+		SELECT 
+			<include refid="conActivityColumns"/>
+		FROM con_activity a
+		WHERE a.del_flag = 0 
+		<include refid="conActivityJoins"/>
+		order by a.fromdate desc limit 1
+	</select>
+	
+	<select id="findList" resultType="ConActivity">
+		SELECT 
+			<include refid="conActivityColumns"/>
+		FROM con_activity a
+		<include refid="conActivityJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="title != null and title != ''">
+				AND a.title LIKE 
+					<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{title}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{title},'%')</if>
+			</if>
+			<if test="organizer != null and organizer != ''">
+				AND a.organizer LIKE 
+					<if test="dbName == 'oracle'">'%'||#{organizer}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{organizer}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{organizer},'%')</if>
+			</if>
+			<if test="beginFromdate != null and endFromdate != null and beginFromdate != '' and endFromdate != ''">
+				AND a.fromdate BETWEEN #{beginFromdate} AND #{endFromdate}
+			</if>
+			<if test="beginEnddate != null and endEnddate != null and beginEnddate != '' and endEnddate != ''">
+				AND a.enddate BETWEEN #{beginEnddate} AND #{endEnddate}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ConActivity">
+		SELECT 
+			<include refid="conActivityColumns"/>
+		FROM con_activity a
+		<include refid="conActivityJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO con_activity(
+			title,
+			picurl,
+			organizer,
+			location,
+			lng,
+			lat,
+			content,
+			registration_starttime,
+			registration_endtime,
+			attendance_starttime,
+			attendance_endtime,
+			lottery_starttime,
+			lottery_endtime,
+			fromdate,
+			enddate,
+			resourcepath,
+			maxpeoplenum,
+			currentpeoplenum,
+			status,
+			prize,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{title},
+			#{picurl},
+			#{organizer},
+			#{location},
+			#{lng},
+			#{lat},
+			#{content},
+			#{registrationStarttime},
+			#{registrationEndtime},
+			#{attendanceStarttime},
+			#{attendanceEndtime},
+			#{lotteryStarttime},
+			#{lotteryEndtime},
+			#{fromdate},
+			#{enddate},
+			#{resourcepath},
+			#{maxpeoplenum},
+			#{currentpeoplenum},
+			#{status},
+			#{prize},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE con_activity SET 	
+			title = #{title},
+			picurl = #{picurl},
+			organizer = #{organizer},
+			location = #{location},
+			lng = #{lng},
+			lat = #{lat},
+			content = #{content},
+			registration_starttime = #{registrationStarttime},
+			registration_endtime = #{registrationEndtime},
+			attendance_starttime = #{attendanceStarttime},
+			attendance_endtime = #{attendanceEndtime},
+			lottery_starttime = #{lotteryStarttime},
+			lottery_endtime = #{lotteryEndtime},
+			fromdate = #{fromdate},
+			enddate = #{enddate},
+			resourcepath = #{resourcepath},
+			maxpeoplenum = #{maxpeoplenum},
+			currentpeoplenum = #{currentpeoplenum},
+			status = #{status},
+			prize = #{prize},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE con_activity SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

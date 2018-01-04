@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fulltl.wemall.modules.sys.dao.SlSysAdvertiseDao">
+    
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache" >  
+		<property name="timeToLiveSeconds" value="3600"/>
+		<!-- 同ehcache参数maxElementsInMemory -->
+		<property name="maxEntriesLocalHeap" value="1000"/>
+		<!-- 同ehcache参数maxElementsOnDisk -->
+		<property name="maxEntriesLocalDisk" value="10000000"/>
+		<property name="memoryStoreEvictionPolicy" value="LRU"/>
+	</cache>
+	
+	<sql id="slSysAdvertiseColumns">
+		a.adid AS "id",
+		a.adbody AS "adBody",
+		a.addesc AS "adDesc",
+		a.isdisplay AS "isDisplay",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		u5.name AS "createBy.name",
+		u7.name AS "updateBy.name"
+	</sql>
+	
+	<sql id="slSysAdvertiseJoins">
+		LEFT JOIN sys_user u5 ON u5.id = a.create_by
+		LEFT JOIN sys_user u7 ON u7.id = a.update_by
+	</sql>
+    
+	<select id="get" resultType="SlSysAdvertise">
+		SELECT 
+			<include refid="slSysAdvertiseColumns"/>
+		FROM sl_sys_advertise a
+		<include refid="slSysAdvertiseJoins"/>
+		WHERE a.adid = #{id}
+	</select>
+	
+	<select id="findList" resultType="SlSysAdvertise">
+		SELECT 
+			<include refid="slSysAdvertiseColumns"/>
+		FROM sl_sys_advertise a
+		<include refid="slSysAdvertiseJoins"/>
+		<where>
+			a.del_flag = #{delFlag}
+			<if test="isDisplay != null and isDisplay != ''">
+				AND a.isdisplay = #{isDisplay}
+			</if>
+			<if test="createBy != null and createBy.id != null and createBy.id != ''">
+				AND a.create_by = #{createBy.id}
+			</if>
+			<if test="updateBy != null and updateBy.id != null and updateBy.id != ''">
+				AND a.update_by = #{updateBy.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SlSysAdvertise">
+		SELECT 
+			<include refid="slSysAdvertiseColumns"/>
+		FROM sl_sys_advertise a
+		<include refid="slSysAdvertiseJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sl_sys_advertise(
+			adid,
+			adbody,
+			addesc,
+			isdisplay,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{adBody},
+			#{adDesc},
+			#{isDisplay},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sl_sys_advertise SET 	
+			adbody = #{adBody},
+			addesc = #{adDesc},
+			isdisplay = #{isDisplay},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			del_flag = #{delFlag}
+		WHERE adid = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE sl_sys_advertise SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE adid = #{id}
+	</update>
+	
+	<update id="audit">
+		UPDATE sl_sys_advertise SET 
+			del_flag = #{DEL_FLAG_NORMAL}
+		WHERE adid = #{id}
+	</update>
+	
+</mapper>

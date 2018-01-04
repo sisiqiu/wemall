@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fulltl.wemall.modules.sys.dao.SlAppsessionDao">
+    
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache" >  
+		<property name="timeToLiveSeconds" value="3600"/>
+		<!-- 同ehcache参数maxElementsInMemory -->
+		<property name="maxEntriesLocalHeap" value="1000"/>
+		<!-- 同ehcache参数maxElementsOnDisk -->
+		<property name="maxEntriesLocalDisk" value="10000000"/>
+		<property name="memoryStoreEvictionPolicy" value="LRU"/>
+	</cache>
+	
+	<sql id="slAppsessionColumns">
+		a.sid AS "sid",
+		a.userid AS "user.id",
+		a.loginname AS "loginName",
+		a.imei AS "imei",
+		a.useragent AS "useragent",
+		a.location AS "location",
+		a.access_token AS "accessToken",
+		a.access_token_expiry AS "accessTokenExpiry",
+		a.pid AS "pid",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		u2.name AS "user.name"
+	</sql>
+	
+	<sql id="slAppsessionJoins">
+		LEFT JOIN sys_user u2 ON u2.id = a.userid
+	</sql>
+    
+	<select id="get" resultType="SlAppsession">
+		SELECT 
+			<include refid="slAppsessionColumns"/>
+		FROM sl_appsession a
+		<include refid="slAppsessionJoins"/>
+		WHERE a.sid = #{sid}
+	</select>
+	
+	<select id="findList" resultType="SlAppsession">
+		SELECT 
+			<include refid="slAppsessionColumns"/>
+		FROM sl_appsession a
+		<include refid="slAppsessionJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="sid != null and sid != ''">
+				AND a.sid = #{sid}
+			</if>
+			<if test="user != null and user.id != null and user.id != ''">
+				AND a.userid = #{user.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SlAppsession">
+		SELECT 
+			<include refid="slAppsessionColumns"/>
+		FROM sl_appsession a
+		<include refid="slAppsessionJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sl_appsession(
+			sid,
+			userid,
+			loginname,
+			imei,
+			useragent,
+			location,
+			access_token,
+			access_token_expiry,
+			pid,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{sid},
+			#{user.id},
+			#{loginName},
+			#{imei},
+			#{useragent},
+			#{location},
+			#{accessToken},
+			#{accessTokenExpiry},
+			#{pid},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="updateByUserId">
+		UPDATE sl_appsession SET 	
+			sid = #{sid},
+			userid = #{user.id},
+			loginname = #{loginName},
+			imei = #{imei},
+			useragent = #{useragent},
+			location = #{location},
+			access_token = #{accessToken},
+			access_token_expiry = #{accessTokenExpiry},
+			pid = #{pid},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE userid = #{user.id}
+	</update>
+	
+	<update id="updateByOldSid">
+		UPDATE sl_appsession SET 	
+			sid = #{sid},
+			userid = #{user.id},
+			loginname = #{loginName},
+			imei = #{imei},
+			useragent = #{useragent},
+			location = #{location},
+			access_token = #{accessToken},
+			access_token_expiry = #{accessTokenExpiry},
+			pid = #{pid},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE sid = #{oldSid}
+	</update>
+	
+	<update id="update">
+		UPDATE sl_appsession SET 	
+			sid = #{sid},
+			userid = #{user.id},
+			loginname = #{loginName},
+			imei = #{imei},
+			useragent = #{useragent},
+			location = #{location},
+			access_token = #{accessToken},
+			access_token_expiry = #{accessTokenExpiry},
+			pid = #{pid},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE sid = #{sid}
+	</update>
+	
+	<update id="delete">
+		UPDATE sl_appsession SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE sid = #{sid}
+	</update>
+	
+	<delete id="deleteByUserId">
+		DELETE from sl_appsession
+		WHERE userid = #{userId}
+	</delete>
+</mapper>
