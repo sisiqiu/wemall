@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fulltl.wemall.modules.wemall.dao.WemallRefundDao">
+    
+	<sql id="wemallRefundColumns">
+		a.refund_id AS "refundId",
+		a.order_no AS "orderNo",
+		a.user_id AS "user.id",
+		a.order_price AS "orderPrice",
+		a.payment AS "payment",
+		a.refund_fee AS "refundFee",
+		a.refund_desc AS "refundDesc",
+		a.refund_status AS "refundStatus",
+		a.refund_date AS "refundDate",
+		a.create_date AS "createDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		u3.name AS "user.name"
+	</sql>
+	
+	<sql id="wemallRefundJoins">
+		LEFT JOIN sys_user u3 ON u3.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="WemallRefund">
+		SELECT 
+			<include refid="wemallRefundColumns"/>
+		FROM wemall_refund a
+		<include refid="wemallRefundJoins"/>
+		WHERE a.refund_id = #{refundId}
+	</select>
+	
+	<select id="findList" resultType="WemallRefund">
+		SELECT 
+			<include refid="wemallRefundColumns"/>
+		FROM wemall_refund a
+		<include refid="wemallRefundJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="refundId != null and refundId != ''">
+				AND a.refund_id = #{refundId}
+			</if>
+			<if test="orderNo != null and orderNo != ''">
+				AND a.order_no = #{orderNo}
+			</if>
+			<if test="user != null and user.id != null and user.id != ''">
+				AND a.user_id = #{user.id}
+			</if>
+			<if test="beginOrderPrice != null and endOrderPrice != null and beginOrderPrice != '' and endOrderPrice != ''">
+				AND a.order_price BETWEEN #{beginOrderPrice} AND #{endOrderPrice}
+			</if>
+			<if test="beginPayment != null and endPayment != null and beginPayment != '' and endPayment != ''">
+				AND a.payment BETWEEN #{beginPayment} AND #{endPayment}
+			</if>
+			<if test="beginRefundFee != null and endRefundFee != null and beginRefundFee != '' and endRefundFee != ''">
+				AND a.refund_fee BETWEEN #{beginRefundFee} AND #{endRefundFee}
+			</if>
+			<if test="refundStatus != null and refundStatus != ''">
+				AND a.refund_status = #{refundStatus}
+			</if>
+			<if test="beginRefundDate != null and endRefundDate != null and beginRefundDate != '' and endRefundDate != ''">
+				AND a.refund_date BETWEEN #{beginRefundDate} AND #{endRefundDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WemallRefund">
+		SELECT 
+			<include refid="wemallRefundColumns"/>
+		FROM wemall_refund a
+		<include refid="wemallRefundJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wemall_refund(
+			refund_id,
+			order_no,
+			user_id,
+			order_price,
+			payment,
+			refund_fee,
+			refund_desc,
+			refund_status,
+			refund_date,
+			create_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{refundId},
+			#{orderNo},
+			#{user.id},
+			#{orderPrice},
+			#{payment},
+			#{refundFee},
+			#{refundDesc},
+			#{refundStatus},
+			#{refundDate},
+			#{createDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wemall_refund SET 	
+			user_id = #{user.id},
+			order_price = #{orderPrice},
+			payment = #{payment},
+			refund_fee = #{refundFee},
+			refund_desc = #{refundDesc},
+			refund_status = #{refundStatus},
+			refund_date = #{refundDate},
+			remarks = #{remarks}
+		WHERE refund_id = #{refundId}
+	</update>
+	
+	<update id="delete">
+		UPDATE wemall_refund SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE refund_id = #{refundId}
+	</update>
+	
+</mapper>

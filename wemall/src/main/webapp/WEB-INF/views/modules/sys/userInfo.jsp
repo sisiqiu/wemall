@@ -95,7 +95,7 @@
 				<form:radiobuttons path="sex" items="${fns:getDictList('sex')}" itemLabel="label" itemValue="value" htmlEscape="false" class=""/>
 			</div>
 		</div>
-		<div class="control-group">
+		<%-- <div class="control-group">
 			<label class="control-label">省份:</label>
 			<div class="controls">
 				<form:input path="province" htmlEscape="false" maxlength="50"/>
@@ -126,7 +126,7 @@
 			<div class="controls">
 				<form:input path="profession" htmlEscape="false" maxlength="50"/>
 			</div>
-		</div>
+		</div> --%>
 		<div class="control-group">
 			<label class="control-label">真实姓名:</label>
 			<div class="controls">

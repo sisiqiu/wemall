@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fulltl.wemall.modules.wemall.dao.WemallOrderDao">
+    
+	<sql id="wemallOrderColumns">
+		a.order_no AS "orderNo",
+		a.user_id AS "user.id",
+		a.platform_order_no AS "platformOrderNo",
+		a.order_price AS "orderPrice",
+		a.payment AS "payment",
+		a.payment_type AS "paymentType",
+		a.total_refund_fee AS "totalRefundFee",
+		a.title AS "title",
+		a.body AS "body",
+		a.status AS "status",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.payment_date AS "paymentDate",
+		a.consign_date AS "consignDate",
+		a.end_date AS "endDate",
+		a.close_date AS "closeDate",
+		a.type AS "type",
+		a.score_usage_num AS "scoreUsageNum",
+		a.bounty_usage_num AS "bountyUsageNum",
+		a.coupon_usage_num AS "couponUsageNum",
+		a.vip_card_id AS "vipCardId",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		u2.name AS "user.name"
+	</sql>
+	
+	<sql id="wemallOrderJoins">
+		LEFT JOIN sys_user u2 ON u2.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="WemallOrder">
+		SELECT 
+			<include refid="wemallOrderColumns"/>
+		FROM wemall_order a
+		<include refid="wemallOrderJoins"/>
+		WHERE a.order_no = #{orderNo}
+	</select>
+	
+	<select id="findList" resultType="WemallOrder">
+		SELECT 
+			<include refid="wemallOrderColumns"/>
+		FROM wemall_order a
+		<include refid="wemallOrderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="orderNo != null and orderNo != ''">
+				AND a.order_no = #{orderNo}
+			</if>
+			<if test="platformOrderNo != null and platformOrderNo != ''">
+				AND a.platform_order_no = #{platformOrderNo}
+			</if>
+			<if test="beginOrderPrice != null and endOrderPrice != null and beginOrderPrice != '' and endOrderPrice != ''">
+				AND a.order_price BETWEEN #{beginOrderPrice} AND #{endOrderPrice}
+			</if>
+			<if test="beginPayment != null and endPayment != null and beginPayment != '' and endPayment != ''">
+				AND a.payment BETWEEN #{beginPayment} AND #{endPayment}
+			</if>
+			<if test="paymentType != null and paymentType != ''">
+				AND a.payment_type = #{paymentType}
+			</if>
+			<if test="beginTotalRefundFee != null and endTotalRefundFee != null and beginTotalRefundFee != '' and endTotalRefundFee != ''">
+				AND a.total_refund_fee BETWEEN #{beginTotalRefundFee} AND #{endTotalRefundFee}
+			</if>
+			<if test="title != null and title != ''">
+				AND a.title LIKE 
+					<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{title}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{title},'%')</if>
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="beginPaymentDate != null and endPaymentDate != null and beginPaymentDate != '' and endPaymentDate != ''">
+				AND a.payment_date BETWEEN #{beginPaymentDate} AND #{endPaymentDate}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="vipCardId != null and vipCardId != ''">
+				AND a.vip_card_id = #{vipCardId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WemallOrder">
+		SELECT 
+			<include refid="wemallOrderColumns"/>
+		FROM wemall_order a
+		<include refid="wemallOrderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wemall_order(
+			order_no,
+			user_id,
+			platform_order_no,
+			order_price,
+			payment,
+			payment_type,
+			total_refund_fee,
+			title,
+			body,
+			status,
+			create_date,
+			update_date,
+			payment_date,
+			consign_date,
+			end_date,
+			close_date,
+			type,
+			score_usage_num,
+			bounty_usage_num,
+			coupon_usage_num,
+			vip_card_id,
+			remarks,
+			del_flag
+		) VALUES (
+			#{orderNo},
+			#{user.id},
+			#{platformOrderNo},
+			#{orderPrice},
+			#{payment},
+			#{paymentType},
+			#{totalRefundFee},
+			#{title},
+			#{body},
+			#{status},
+			#{createDate},
+			#{updateDate},
+			#{paymentDate},
+			#{consignDate},
+			#{endDate},
+			#{closeDate},
+			#{type},
+			#{scoreUsageNum},
+			#{bountyUsageNum},
+			#{couponUsageNum},
+			#{vipCardId},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wemall_order SET 	
+			user_id = #{user.id},
+			platform_order_no = #{platformOrderNo},
+			order_price = #{orderPrice},
+			payment = #{payment},
+			payment_type = #{paymentType},
+			total_refund_fee = #{totalRefundFee},
+			title = #{title},
+			body = #{body},
+			status = #{status},
+			update_date = #{updateDate},
+			payment_date = #{paymentDate},
+			consign_date = #{consignDate},
+			end_date = #{endDate},
+			close_date = #{closeDate},
+			type = #{type},
+			score_usage_num = #{scoreUsageNum},
+			bounty_usage_num = #{bountyUsageNum},
+			coupon_usage_num = #{couponUsageNum},
+			vip_card_id = #{vipCardId},
+			remarks = #{remarks}
+		WHERE order_no = #{orderNo}
+	</update>
+	
+	<update id="delete">
+		UPDATE wemall_order SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE order_no = #{orderNo}
+	</update>
+	
+</mapper>

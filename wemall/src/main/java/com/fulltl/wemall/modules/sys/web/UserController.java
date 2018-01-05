@@ -326,11 +326,11 @@ public class UserController extends BaseController {
 			currentUser.setRemarks(user.getRemarks());
 			currentUser.setPhoto(user.getPhoto());
 			currentUser.setSex(user.getSex());
-			currentUser.setProvince(user.getProvince());
+			/*currentUser.setProvince(user.getProvince());
 			currentUser.setCity(user.getCity());
 			currentUser.setBirthday(user.getBirthday());
 			currentUser.setIndustry(user.getIndustry());
-			currentUser.setProfession(user.getProfession());
+			currentUser.setProfession(user.getProfession());*/
 			currentUser.setRealName(user.getRealName());
 			//判断改email是否有其他用户已经使用了。
 			User emailUser = systemService.findByEmail(currentUser.getEmail());
