@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fulltl.wemall.modules.wemall.dao.WemallOrderAddressDao">
+    
+	<sql id="wemallOrderAddressColumns">
+		a.order_no AS "orderNo",
+		a.receiver_country AS "receiverCountry",
+		a.receiver_province AS "receiverProvince",
+		a.receiver_city AS "receiverCity",
+		a.receiver_district AS "receiverDistrict",
+		a.receiver_address AS "receiverAddress",
+		a.receiver_zip AS "receiverZip",
+		a.receiver_name AS "receiverName",
+		a.receiver_mobile AS "receiverMobile",
+		a.receiver_phone AS "receiverPhone",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="wemallOrderAddressJoins">
+	</sql>
+    
+	<select id="get" resultType="WemallOrderAddress">
+		SELECT 
+			<include refid="wemallOrderAddressColumns"/>
+		FROM wemall_order_address a
+		<include refid="wemallOrderAddressJoins"/>
+		WHERE a.order_no = #{orderNo}
+	</select>
+	
+	<select id="findList" resultType="WemallOrderAddress">
+		SELECT 
+			<include refid="wemallOrderAddressColumns"/>
+		FROM wemall_order_address a
+		<include refid="wemallOrderAddressJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="orderNo != null and orderNo != ''">
+				AND a.order_no = #{orderNo}
+			</if>
+			<if test="receiverCountry != null and receiverCountry != ''">
+				AND a.receiver_country = #{receiverCountry}
+			</if>
+			<if test="receiverProvince != null and receiverProvince != ''">
+				AND a.receiver_province = #{receiverProvince}
+			</if>
+			<if test="receiverCity != null and receiverCity != ''">
+				AND a.receiver_city = #{receiverCity}
+			</if>
+			<if test="receiverDistrict != null and receiverDistrict != ''">
+				AND a.receiver_district = #{receiverDistrict}
+			</if>
+			<if test="receiverZip != null and receiverZip != ''">
+				AND a.receiver_zip = #{receiverZip}
+			</if>
+			<if test="receiverName != null and receiverName != ''">
+				AND a.receiver_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{receiverName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{receiverName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{receiverName},'%')</if>
+			</if>
+			<if test="receiverMobile != null and receiverMobile != ''">
+				AND a.receiver_mobile LIKE 
+					<if test="dbName == 'oracle'">'%'||#{receiverMobile}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{receiverMobile}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{receiverMobile},'%')</if>
+			</if>
+			<if test="receiverPhone != null and receiverPhone != ''">
+				AND a.receiver_phone LIKE 
+					<if test="dbName == 'oracle'">'%'||#{receiverPhone}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{receiverPhone}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{receiverPhone},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WemallOrderAddress">
+		SELECT 
+			<include refid="wemallOrderAddressColumns"/>
+		FROM wemall_order_address a
+		<include refid="wemallOrderAddressJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wemall_order_address(
+			order_no,
+			receiver_country,
+			receiver_province,
+			receiver_city,
+			receiver_district,
+			receiver_address,
+			receiver_zip,
+			receiver_name,
+			receiver_mobile,
+			receiver_phone,
+			create_date,
+			update_date,
+			del_flag
+		) VALUES (
+			#{orderNo},
+			#{receiverCountry},
+			#{receiverProvince},
+			#{receiverCity},
+			#{receiverDistrict},
+			#{receiverAddress},
+			#{receiverZip},
+			#{receiverName},
+			#{receiverMobile},
+			#{receiverPhone},
+			#{createDate},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wemall_order_address SET 	
+			receiver_country = #{receiverCountry},
+			receiver_province = #{receiverProvince},
+			receiver_city = #{receiverCity},
+			receiver_district = #{receiverDistrict},
+			receiver_address = #{receiverAddress},
+			receiver_zip = #{receiverZip},
+			receiver_name = #{receiverName},
+			receiver_mobile = #{receiverMobile},
+			receiver_phone = #{receiverPhone},
+			update_date = #{updateDate}
+		WHERE order_no = #{orderNo}
+	</update>
+	
+	<update id="delete">
+		UPDATE wemall_order_address SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE order_no = #{orderNo}
+	</update>
+	
+</mapper>

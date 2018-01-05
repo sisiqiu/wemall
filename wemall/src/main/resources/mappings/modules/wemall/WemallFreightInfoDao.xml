@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fulltl.wemall.modules.wemall.dao.WemallFreightInfoDao">
+    
+	<sql id="wemallFreightInfoColumns">
+		a.id AS "id",
+		a.freight_no AS "freightNo",
+		a.name AS "name",
+		a.cur_place AS "curPlace",
+		a.send_people AS "sendPeople",
+		a.create_date AS "createDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="wemallFreightInfoJoins">
+	</sql>
+    
+	<select id="get" resultType="WemallFreightInfo">
+		SELECT 
+			<include refid="wemallFreightInfoColumns"/>
+		FROM wemall_freight_info a
+		<include refid="wemallFreightInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="WemallFreightInfo">
+		SELECT 
+			<include refid="wemallFreightInfoColumns"/>
+		FROM wemall_freight_info a
+		<include refid="wemallFreightInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="freightNo != null and freightNo != ''">
+				AND a.freight_no = #{freightNo}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="curPlace != null and curPlace != ''">
+				AND a.cur_place LIKE 
+					<if test="dbName == 'oracle'">'%'||#{curPlace}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{curPlace}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{curPlace},'%')</if>
+			</if>
+			<if test="sendPeople != null and sendPeople != ''">
+				AND a.send_people LIKE 
+					<if test="dbName == 'oracle'">'%'||#{sendPeople}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{sendPeople}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{sendPeople},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WemallFreightInfo">
+		SELECT 
+			<include refid="wemallFreightInfoColumns"/>
+		FROM wemall_freight_info a
+		<include refid="wemallFreightInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wemall_freight_info(
+			freight_no,
+			name,
+			cur_place,
+			send_people,
+			create_date,
+			del_flag
+		) VALUES (
+			#{freightNo},
+			#{name},
+			#{curPlace},
+			#{sendPeople},
+			#{createDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wemall_freight_info SET 	
+			freight_no = #{freightNo},
+			name = #{name},
+			cur_place = #{curPlace},
+			send_people = #{sendPeople}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE wemall_freight_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

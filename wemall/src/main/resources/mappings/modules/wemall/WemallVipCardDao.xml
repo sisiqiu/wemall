@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fulltl.wemall.modules.wemall.dao.WemallVipCardDao">
+    
+	<sql id="wemallVipCardColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.photo AS "photo",
+		a.type AS "type",
+		a.sort AS "sort",
+		a.discount AS "discount",
+		a.freight_free AS "freightFree",
+		a.usage_known AS "usageKnown",
+		a.obtain_setting AS "obtainSetting",
+		a.seller_tip AS "sellerTip",
+		a.order_num AS "orderNum",
+		a.consume_num AS "consumeNum",
+		a.score_num AS "scoreNum",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="wemallVipCardJoins">
+	</sql>
+    
+	<select id="get" resultType="WemallVipCard">
+		SELECT 
+			<include refid="wemallVipCardColumns"/>
+		FROM wemall_vip_card a
+		<include refid="wemallVipCardJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="WemallVipCard">
+		SELECT 
+			<include refid="wemallVipCardColumns"/>
+		FROM wemall_vip_card a
+		<include refid="wemallVipCardJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WemallVipCard">
+		SELECT 
+			<include refid="wemallVipCardColumns"/>
+		FROM wemall_vip_card a
+		<include refid="wemallVipCardJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wemall_vip_card(
+			name,
+			photo,
+			type,
+			sort,
+			discount,
+			freight_free,
+			usage_known,
+			obtain_setting,
+			seller_tip,
+			order_num,
+			consume_num,
+			score_num,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{name},
+			#{photo},
+			#{type},
+			#{sort},
+			#{discount},
+			#{freightFree},
+			#{usageKnown},
+			#{obtainSetting},
+			#{sellerTip},
+			#{orderNum},
+			#{consumeNum},
+			#{scoreNum},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wemall_vip_card SET 	
+			name = #{name},
+			photo = #{photo},
+			type = #{type},
+			sort = #{sort},
+			discount = #{discount},
+			freight_free = #{freightFree},
+			usage_known = #{usageKnown},
+			obtain_setting = #{obtainSetting},
+			seller_tip = #{sellerTip},
+			order_num = #{orderNum},
+			consume_num = #{consumeNum},
+			score_num = #{scoreNum},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE wemall_vip_card SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

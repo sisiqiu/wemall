@@ -174,8 +174,8 @@ public class QQOAuthUserInfo implements CanFormatToSysUser {
 			throw new Exception("QQ用户的openid不能为空！");
 		}
 		u.setPlatformUserId(openid);
-		u.setProvince(province);
-		u.setCity(city);
+		/*u.setProvince(province);
+		u.setCity(city);*/
 		if("男".equals(gender)) {
 			u.setSex("1");
 		} else if("女".equals(gender)) {

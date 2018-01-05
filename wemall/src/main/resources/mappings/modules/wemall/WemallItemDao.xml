@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fulltl.wemall.modules.wemall.dao.WemallItemDao">
+    
+	<sql id="wemallItemColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.sort_id AS "sortId",
+		a.original_price AS "originalPrice",
+		a.current_price AS "currentPrice",
+		a.storage AS "storage",
+		a.photo AS "photo",
+		a.sort AS "sort",
+		a.is_top AS "isTop",
+		a.is_new AS "isNew",
+		a.is_on_shelf AS "isOnShelf",
+		a.sales_num AS "salesNum",
+		a.product_place AS "productPlace",
+		a.can_use_bounty AS "canUseBounty",
+		a.can_use_coupon AS "canUseCoupon",
+		a.can_use_score_deduct AS "canUseScoreDeduct",
+		a.score_deduct_price AS "scoreDeductPrice",
+		a.can_use_score_exchange AS "canUseScoreExchange",
+		a.sub_stock AS "subStock",
+		a.freight_free AS "freightFree",
+		a.freight_price AS "freightPrice",
+		a.activity_sort AS "activitySort",
+		a.activity_id AS "activityId",
+		a.desc AS "desc",
+		a.photo_urls AS "photoUrls",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="wemallItemJoins">
+	</sql>
+    
+	<select id="get" resultType="WemallItem">
+		SELECT 
+			<include refid="wemallItemColumns"/>
+		FROM wemall_item a
+		<include refid="wemallItemJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="WemallItem">
+		SELECT 
+			<include refid="wemallItemColumns"/>
+		FROM wemall_item a
+		<include refid="wemallItemJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="sortId != null and sortId != ''">
+				AND a.sort_id = #{sortId}
+			</if>
+			<if test="beginOriginalPrice != null and endOriginalPrice != null and beginOriginalPrice != '' and endOriginalPrice != ''">
+				AND a.original_price BETWEEN #{beginOriginalPrice} AND #{endOriginalPrice}
+			</if>
+			<if test="beginCurrentPrice != null and endCurrentPrice != null and beginCurrentPrice != '' and endCurrentPrice != ''">
+				AND a.current_price BETWEEN #{beginCurrentPrice} AND #{endCurrentPrice}
+			</if>
+			<if test="beginStorage != null and endStorage != null and beginStorage != '' and endStorage != ''">
+				AND a.storage BETWEEN #{beginStorage} AND #{endStorage}
+			</if>
+			<if test="isTop != null and isTop != ''">
+				AND a.is_top = #{isTop}
+			</if>
+			<if test="isNew != null and isNew != ''">
+				AND a.is_new = #{isNew}
+			</if>
+			<if test="isOnShelf != null and isOnShelf != ''">
+				AND a.is_on_shelf = #{isOnShelf}
+			</if>
+			<if test="beginSalesNum != null and endSalesNum != null and beginSalesNum != '' and endSalesNum != ''">
+				AND a.sales_num BETWEEN #{beginSalesNum} AND #{endSalesNum}
+			</if>
+			<if test="canUseBounty != null and canUseBounty != ''">
+				AND a.can_use_bounty = #{canUseBounty}
+			</if>
+			<if test="canUseCoupon != null and canUseCoupon != ''">
+				AND a.can_use_coupon = #{canUseCoupon}
+			</if>
+			<if test="canUseScoreDeduct != null and canUseScoreDeduct != ''">
+				AND a.can_use_score_deduct = #{canUseScoreDeduct}
+			</if>
+			<if test="canUseScoreExchange != null and canUseScoreExchange != ''">
+				AND a.can_use_score_exchange = #{canUseScoreExchange}
+			</if>
+			<if test="subStock != null and subStock != ''">
+				AND a.sub_stock = #{subStock}
+			</if>
+			<if test="freightFree != null and freightFree != ''">
+				AND a.freight_free = #{freightFree}
+			</if>
+			<if test="beginFreightPrice != null and endFreightPrice != null and beginFreightPrice != '' and endFreightPrice != ''">
+				AND a.freight_price BETWEEN #{beginFreightPrice} AND #{endFreightPrice}
+			</if>
+			<if test="activitySort != null and activitySort != ''">
+				AND a.activity_sort = #{activitySort}
+			</if>
+			<if test="activityId != null and activityId != ''">
+				AND a.activity_id = #{activityId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WemallItem">
+		SELECT 
+			<include refid="wemallItemColumns"/>
+		FROM wemall_item a
+		<include refid="wemallItemJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wemall_item(
+			name,
+			sort_id,
+			original_price,
+			current_price,
+			storage,
+			photo,
+			sort,
+			is_top,
+			is_new,
+			is_on_shelf,
+			sales_num,
+			product_place,
+			can_use_bounty,
+			can_use_coupon,
+			can_use_score_deduct,
+			score_deduct_price,
+			can_use_score_exchange,
+			sub_stock,
+			freight_free,
+			freight_price,
+			activity_sort,
+			activity_id,
+			desc,
+			photo_urls,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{name},
+			#{sortId},
+			#{originalPrice},
+			#{currentPrice},
+			#{storage},
+			#{photo},
+			#{sort},
+			#{isTop},
+			#{isNew},
+			#{isOnShelf},
+			#{salesNum},
+			#{productPlace},
+			#{canUseBounty},
+			#{canUseCoupon},
+			#{canUseScoreDeduct},
+			#{scoreDeductPrice},
+			#{canUseScoreExchange},
+			#{subStock},
+			#{freightFree},
+			#{freightPrice},
+			#{activitySort},
+			#{activityId},
+			#{desc},
+			#{photoUrls},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wemall_item SET 	
+			name = #{name},
+			sort_id = #{sortId},
+			original_price = #{originalPrice},
+			current_price = #{currentPrice},
+			storage = #{storage},
+			photo = #{photo},
+			sort = #{sort},
+			is_top = #{isTop},
+			is_new = #{isNew},
+			is_on_shelf = #{isOnShelf},
+			sales_num = #{salesNum},
+			product_place = #{productPlace},
+			can_use_bounty = #{canUseBounty},
+			can_use_coupon = #{canUseCoupon},
+			can_use_score_deduct = #{canUseScoreDeduct},
+			score_deduct_price = #{scoreDeductPrice},
+			can_use_score_exchange = #{canUseScoreExchange},
+			sub_stock = #{subStock},
+			freight_free = #{freightFree},
+			freight_price = #{freightPrice},
+			activity_sort = #{activitySort},
+			activity_id = #{activityId},
+			desc = #{desc},
+			photo_urls = #{photoUrls},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE wemall_item SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

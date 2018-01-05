@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fulltl.wemall.modules.wemall.dao.WemallCashbackDiscountDao">
+    
+	<sql id="wemallCashbackDiscountColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.sort AS "sort",
+		a.start_date AS "startDate",
+		a.end_date AS "endDate",
+		a.label AS "label",
+		a.type AS "type",
+		a.cashback AS "cashback",
+		a.limit AS "limit",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="wemallCashbackDiscountJoins">
+	</sql>
+    
+	<select id="get" resultType="WemallCashbackDiscount">
+		SELECT 
+			<include refid="wemallCashbackDiscountColumns"/>
+		FROM wemall_cashback_discount a
+		<include refid="wemallCashbackDiscountJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="WemallCashbackDiscount">
+		SELECT 
+			<include refid="wemallCashbackDiscountColumns"/>
+		FROM wemall_cashback_discount a
+		<include refid="wemallCashbackDiscountJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="beginStartDate != null and endStartDate != null and beginStartDate != '' and endStartDate != ''">
+				AND a.start_date BETWEEN #{beginStartDate} AND #{endStartDate}
+			</if>
+			<if test="beginEndDate != null and endEndDate != null and beginEndDate != '' and endEndDate != ''">
+				AND a.end_date BETWEEN #{beginEndDate} AND #{endEndDate}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="cashback != null and cashback != ''">
+				AND a.cashback = #{cashback}
+			</if>
+			<if test="beginLimit != null and endLimit != null and beginLimit != '' and endLimit != ''">
+				AND a.limit BETWEEN #{beginLimit} AND #{endLimit}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WemallCashbackDiscount">
+		SELECT 
+			<include refid="wemallCashbackDiscountColumns"/>
+		FROM wemall_cashback_discount a
+		<include refid="wemallCashbackDiscountJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wemall_cashback_discount(
+			name,
+			sort,
+			start_date,
+			end_date,
+			label,
+			type,
+			cashback,
+			limit,
+			create_date,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{name},
+			#{sort},
+			#{startDate},
+			#{endDate},
+			#{label},
+			#{type},
+			#{cashback},
+			#{limit},
+			#{createDate},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wemall_cashback_discount SET 	
+			name = #{name},
+			sort = #{sort},
+			start_date = #{startDate},
+			end_date = #{endDate},
+			label = #{label},
+			type = #{type},
+			cashback = #{cashback},
+			limit = #{limit},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE wemall_cashback_discount SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

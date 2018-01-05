@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fulltl.wemall.modules.wemall.dao.WemallBountyInfoDao">
+    
+	<sql id="wemallBountyInfoColumns">
+		a.id AS "id",
+		a.user_id AS "user.id",
+		a.from_type AS "fromType",
+		a.order_no AS "orderNo",
+		a.type AS "type",
+		a.price AS "price",
+		a.create_date AS "createDate",
+		a.del_flag AS "delFlag",
+		u2.name AS "user.name"
+	</sql>
+	
+	<sql id="wemallBountyInfoJoins">
+		LEFT JOIN sys_user u2 ON u2.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="WemallBountyInfo">
+		SELECT 
+			<include refid="wemallBountyInfoColumns"/>
+		FROM wemall_bounty_info a
+		<include refid="wemallBountyInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="WemallBountyInfo">
+		SELECT 
+			<include refid="wemallBountyInfoColumns"/>
+		FROM wemall_bounty_info a
+		<include refid="wemallBountyInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="user != null and user.id != null and user.id != ''">
+				AND a.user_id = #{user.id}
+			</if>
+			<if test="fromType != null and fromType != ''">
+				AND a.from_type = #{fromType}
+			</if>
+			<if test="orderNo != null and orderNo != ''">
+				AND a.order_no = #{orderNo}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="beginPrice != null and endPrice != null and beginPrice != '' and endPrice != ''">
+				AND a.price BETWEEN #{beginPrice} AND #{endPrice}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WemallBountyInfo">
+		SELECT 
+			<include refid="wemallBountyInfoColumns"/>
+		FROM wemall_bounty_info a
+		<include refid="wemallBountyInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wemall_bounty_info(
+			user_id,
+			from_type,
+			order_no,
+			type,
+			price,
+			create_date,
+			del_flag
+		) VALUES (
+			#{user.id},
+			#{fromType},
+			#{orderNo},
+			#{type},
+			#{price},
+			#{createDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wemall_bounty_info SET 	
+			user_id = #{user.id},
+			from_type = #{fromType},
+			order_no = #{orderNo},
+			type = #{type},
+			price = #{price}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE wemall_bounty_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
