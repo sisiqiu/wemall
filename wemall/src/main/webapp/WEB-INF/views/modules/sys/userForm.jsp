@@ -185,6 +185,18 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">累计订单数:</label>
+			<div class="controls">
+				<form:input path="totalOrderNum" htmlEscape="false" maxlength="11"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">累计消费金额:</label>
+			<div class="controls">
+				<form:input path="totalConsumeNum" htmlEscape="false" maxlength="11"/>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">真实姓名:</label>
 			<div class="controls">
 				<form:input path="realName" htmlEscape="false" maxlength="50"/>

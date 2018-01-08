@@ -72,6 +72,8 @@ public class User extends DataEntity<User> {
 	private String curScoreNum; //用户当前积分
 	private String totalScoreNum; //用户累计积分（累加）
 	private String vipCardIds; //会员卡id列表
+	private String totalOrderNum; //用户累计订单数
+	private String totalConsumeNum; //用户累计消费额
 
 	private String sid;//存储用户对应的sid
 	
@@ -452,6 +454,22 @@ public class User extends DataEntity<User> {
 
 	public void setVipCardIds(String vipCardIds) {
 		this.vipCardIds = vipCardIds;
+	}
+
+	public String getTotalOrderNum() {
+		return totalOrderNum;
+	}
+
+	public void setTotalOrderNum(String totalOrderNum) {
+		this.totalOrderNum = totalOrderNum;
+	}
+
+	public String getTotalConsumeNum() {
+		return totalConsumeNum;
+	}
+
+	public void setTotalConsumeNum(String totalConsumeNum) {
+		this.totalConsumeNum = totalConsumeNum;
 	}
 
 	/**
