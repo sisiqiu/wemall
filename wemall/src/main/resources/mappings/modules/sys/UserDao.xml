@@ -96,6 +96,8 @@
 		a.cur_score_num,
 		a.total_score_num,
 		a.vip_card_ids,
+		a.total_order_num,
+		a.total_consume_num,
     	c.name AS "company.name",
     	c.parent_id AS "company.parent.id",
     	c.parent_ids AS "company.parentIds",
@@ -344,6 +346,8 @@
 			cur_score_num,
 			total_score_num,
 			vip_card_ids,
+			total_order_num,
+			total_consume_num,
 			realName,
 			status,
 			emailValidateCode
@@ -417,6 +421,8 @@
 			cur_score_num = #{curScoreNum},
 			total_score_num = #{totalScoreNum},
 			vip_card_ids = #{vipCardIs},
+			total_order_num = #{totalOrderNum},
+			total_consume_num = #{totalConsumeNum},
 			realName = #{realName},
 			status = #{status},
 			emailValidateCode = #{emailValidateCode}
