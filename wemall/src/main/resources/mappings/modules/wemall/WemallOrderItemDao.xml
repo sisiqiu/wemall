@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fulltl.wemall.modules.wemall.dao.WemallOrderItemDao">
+    
+	<sql id="wemallOrderItemColumns">
+		a.order_no AS "orderNo",
+		a.item_id AS "itemId",
+		a.item_num AS "itemNum",
+		a.title AS "title",
+		a.photo AS "photo",
+		a.total_fee AS "totalFee",
+		a.items_data AS "itemsData",
+		a.freight_name AS "freightName",
+		a.freight_no AS "freightNo",
+		a.buyer_message AS "buyerMessage",
+		a.buyer_nick AS "buyerNick",
+		a.buyer_comment AS "buyerComment",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="wemallOrderItemJoins">
+	</sql>
+    
+	<select id="get" resultType="WemallOrderItem">
+		SELECT 
+			<include refid="wemallOrderItemColumns"/>
+		FROM wemall_order_item a
+		<include refid="wemallOrderItemJoins"/>
+		WHERE a.order_no = #{orderNo} AND a.item_id = #{itemId}
+	</select>
+	
+	<select id="findList" resultType="WemallOrderItem">
+		SELECT 
+			<include refid="wemallOrderItemColumns"/>
+		FROM wemall_order_item a
+		<include refid="wemallOrderItemJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="itemId != null and itemId != ''">
+				AND a.item_id = #{itemId}
+			</if>
+			<if test="itemNum != null and itemNum != ''">
+				AND a.item_num = #{itemNum}
+			</if>
+			<if test="title != null and title != ''">
+				AND a.title LIKE 
+					<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{title}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{title},'%')</if>
+			</if>
+			<if test="beginTotalFee != null and endTotalFee != null and beginTotalFee != '' and endTotalFee != ''">
+				AND a.total_fee BETWEEN #{beginTotalFee} AND #{endTotalFee}
+			</if>
+			<if test="freightName != null and freightName != ''">
+				AND a.freight_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{freightName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{freightName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{freightName},'%')</if>
+			</if>
+			<if test="freightNo != null and freightNo != ''">
+				AND a.freight_no LIKE 
+					<if test="dbName == 'oracle'">'%'||#{freightNo}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{freightNo}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{freightNo},'%')</if>
+			</if>
+			<if test="buyerComment != null and buyerComment != ''">
+				AND a.buyer_comment = #{buyerComment}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WemallOrderItem">
+		SELECT 
+			<include refid="wemallOrderItemColumns"/>
+		FROM wemall_order_item a
+		<include refid="wemallOrderItemJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wemall_order_item(
+			order_no,
+			item_id,
+			item_num,
+			title,
+			photo,
+			total_fee,
+			items_data,
+			freight_name,
+			freight_no,
+			buyer_message,
+			buyer_nick,
+			buyer_comment,
+			del_flag
+		) VALUES (
+			#{orderNo},
+			#{itemId},
+			#{itemNum},
+			#{title},
+			#{photo},
+			#{totalFee},
+			#{itemsData},
+			#{freightName},
+			#{freightNo},
+			#{buyerMessage},
+			#{buyerNick},
+			#{buyerComment},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wemall_order_item SET 	
+			item_num = #{itemNum},
+			title = #{title},
+			photo = #{photo},
+			total_fee = #{totalFee},
+			items_data = #{itemsData},
+			freight_name = #{freightName},
+			freight_no = #{freightNo},
+			buyer_message = #{buyerMessage},
+			buyer_nick = #{buyerNick},
+			buyer_comment = #{buyerComment}
+		WHERE order_no = #{orderNo} AND item_id = #{itemId}
+	</update>
+	
+	<update id="delete">
+		UPDATE wemall_order_item SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE order_no = #{orderNo} AND item_id = #{itemId}
+	</update>
+	
+</mapper>

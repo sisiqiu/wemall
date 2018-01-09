@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fulltl.wemall.modules.wemall.dao.WemallTeamDiscountDao">
+    
+	<sql id="wemallTeamDiscountColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.sort AS "sort",
+		a.start_date AS "startDate",
+		a.end_date AS "endDate",
+		a.label AS "label",
+		a.useful_time AS "usefulTime",
+		a.fail_user_num AS "failUserNum",
+		a.limit_item_num AS "limitItemNum",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="wemallTeamDiscountJoins">
+	</sql>
+    
+	<select id="get" resultType="WemallTeamDiscount">
+		SELECT 
+			<include refid="wemallTeamDiscountColumns"/>
+		FROM wemall_team_discount a
+		<include refid="wemallTeamDiscountJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="WemallTeamDiscount">
+		SELECT 
+			<include refid="wemallTeamDiscountColumns"/>
+		FROM wemall_team_discount a
+		<include refid="wemallTeamDiscountJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="beginStartDate != null and endStartDate != null and beginStartDate != '' and endStartDate != ''">
+				AND a.start_date BETWEEN #{beginStartDate} AND #{endStartDate}
+			</if>
+			<if test="beginEndDate != null and endEndDate != null and beginEndDate != '' and endEndDate != ''">
+				AND a.end_date BETWEEN #{beginEndDate} AND #{endEndDate}
+			</if>
+			<if test="beginUsefulTime != null and endUsefulTime != null and beginUsefulTime != '' and endUsefulTime != ''">
+				AND a.useful_time BETWEEN #{beginUsefulTime} AND #{endUsefulTime}
+			</if>
+			<if test="beginFailUserNum != null and endFailUserNum != null and beginFailUserNum != '' and endFailUserNum != ''">
+				AND a.fail_user_num BETWEEN #{beginFailUserNum} AND #{endFailUserNum}
+			</if>
+			<if test="beginLimitItemNum != null and endLimitItemNum != null and beginLimitItemNum != '' and endLimitItemNum != ''">
+				AND a.limit_item_num BETWEEN #{beginLimitItemNum} AND #{endLimitItemNum}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WemallTeamDiscount">
+		SELECT 
+			<include refid="wemallTeamDiscountColumns"/>
+		FROM wemall_team_discount a
+		<include refid="wemallTeamDiscountJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wemall_team_discount(
+			name,
+			sort,
+			start_date,
+			end_date,
+			label,
+			useful_time,
+			fail_user_num,
+			limit_item_num,
+			create_date,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{name},
+			#{sort},
+			#{startDate},
+			#{endDate},
+			#{label},
+			#{usefulTime},
+			#{failUserNum},
+			#{limitItemNum},
+			#{createDate},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wemall_team_discount SET 	
+			name = #{name},
+			sort = #{sort},
+			start_date = #{startDate},
+			end_date = #{endDate},
+			label = #{label},
+			useful_time = #{usefulTime},
+			fail_user_num = #{failUserNum},
+			limit_item_num = #{limitItemNum},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE wemall_team_discount SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

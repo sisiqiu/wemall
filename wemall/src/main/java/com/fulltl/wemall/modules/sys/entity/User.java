@@ -63,14 +63,17 @@ public class User extends DataEntity<User> {
 	private String sex; //性别
 	private String userCategory; //用户类别（patient--患者，doctor--医生）
 	private String platformUserId; //第三方用户id
-	private String province; //省份
-	private String city; //城市
-	private Date birthday; //生日
-	private String industry; //行业
-	private String profession; //职业
 	private String realName; //真实姓名
 	private String status; //用户状态；0--邮箱未验证，1--邮箱已验证
 	private String emailValidateCode; //邮箱验证码
+	
+	private String curBountyNum; //用户当前可用奖励金
+	private String totalBountyNum; //用户累计获得奖励金（累加）
+	private String curScoreNum; //用户当前积分
+	private String totalScoreNum; //用户累计积分（累加）
+	private String vipCardIds; //会员卡id列表
+	private String totalOrderNum; //用户累计订单数
+	private String totalConsumeNum; //用户累计消费额
 
 	private String sid;//存储用户对应的sid
 	
@@ -338,46 +341,6 @@ public class User extends DataEntity<User> {
 		this.platformUserId = platformUserId;
 	}
 
-	public String getProvince() {
-		return province;
-	}
-
-	public void setProvince(String province) {
-		this.province = province;
-	}
-
-	public String getCity() {
-		return city;
-	}
-
-	public void setCity(String city) {
-		this.city = city;
-	}
-	
-	public Date getBirthday() {
-		return birthday;
-	}
-
-	public void setBirthday(Date birthday) {
-		this.birthday = birthday;
-	}
-
-	public String getIndustry() {
-		return industry;
-	}
-
-	public void setIndustry(String industry) {
-		this.industry = industry;
-	}
-
-	public String getProfession() {
-		return profession;
-	}
-
-	public void setProfession(String profession) {
-		this.profession = profession;
-	}
-
 	public String getRealName() {
 		return realName;
 	}
@@ -453,6 +416,62 @@ public class User extends DataEntity<User> {
 		return id;
 	}
 	
+	public String getCurBountyNum() {
+		return curBountyNum;
+	}
+
+	public void setCurBountyNum(String curBountyNum) {
+		this.curBountyNum = curBountyNum;
+	}
+
+	public String getTotalBountyNum() {
+		return totalBountyNum;
+	}
+
+	public void setTotalBountyNum(String totalBountyNum) {
+		this.totalBountyNum = totalBountyNum;
+	}
+
+	public String getCurScoreNum() {
+		return curScoreNum;
+	}
+
+	public void setCurScoreNum(String curScoreNum) {
+		this.curScoreNum = curScoreNum;
+	}
+
+	public String getTotalScoreNum() {
+		return totalScoreNum;
+	}
+
+	public void setTotalScoreNum(String totalScoreNum) {
+		this.totalScoreNum = totalScoreNum;
+	}
+
+	public String getVipCardIds() {
+		return vipCardIds;
+	}
+
+	public void setVipCardIds(String vipCardIds) {
+		this.vipCardIds = vipCardIds;
+	}
+
+	public String getTotalOrderNum() {
+		return totalOrderNum;
+	}
+
+	public void setTotalOrderNum(String totalOrderNum) {
+		this.totalOrderNum = totalOrderNum;
+	}
+
+	public String getTotalConsumeNum() {
+		return totalConsumeNum;
+	}
+
+	public void setTotalConsumeNum(String totalConsumeNum) {
+		this.totalConsumeNum = totalConsumeNum;
+	}
+
 	/**
 	 * 根据手机号初始快速初始化用户对象
 	 * @param mobile 手机号

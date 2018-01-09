@@ -710,7 +710,7 @@ public class SystemService extends BaseService implements InitializingBean {
 				sysUserInDB.setSex(sysUserFromFormat.getSex());
 				needUpdate = true;
 			}
-			if(StringUtils.isBlank(sysUserInDB.getCity()) && !StringUtils.isBlank(sysUserFromFormat.getCity())) {
+			/*if(StringUtils.isBlank(sysUserInDB.getCity()) && !StringUtils.isBlank(sysUserFromFormat.getCity())) {
 				//如果DB中没有城市，且传入用户对象中有，需要更新
 				sysUserInDB.setCity(sysUserFromFormat.getCity());
 				needUpdate = true;
@@ -719,7 +719,7 @@ public class SystemService extends BaseService implements InitializingBean {
 				//如果DB中没有省，且传入用户对象中有，需要更新
 				sysUserInDB.setProvince(sysUserFromFormat.getProvince());
 				needUpdate = true;
-			}
+			}*/
 			if(sysUserInDB.getName().equals(sysUserInDB.getPlatformUserId()) &&
 					!sysUserFromFormat.getName().equals(sysUserInDB.getPlatformUserId())) {
 				//如果DB中名称和第三方平台id一样，且传入用户对象中有的名称和第三方平台id不同，需要更新

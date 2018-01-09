@@ -109,8 +109,8 @@ public class AlipayOAuthUserInfo implements CanFormatToSysUser {
 			throw new Exception("支付宝用户的user_id不能为空！");
 		}
 		u.setPlatformUserId(user_id);
-		u.setProvince(province);
-		u.setCity(city);
+		/*u.setProvince(province);
+		u.setCity(city);*/
 		//gender---M为男性，F为女性
 		if("M".equals(gender)) {
 			u.setSex("1");

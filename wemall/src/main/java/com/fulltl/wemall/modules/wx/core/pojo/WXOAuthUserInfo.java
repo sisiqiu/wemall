@@ -114,8 +114,8 @@ public class WXOAuthUserInfo implements CanFormatToSysUser {
 			throw new Exception("微信用户的openid不能为空！");
 		}
 		u.setPlatformUserId(openid);
-		u.setProvince(province);
-		u.setCity(city);
+		/*u.setProvince(province);
+		u.setCity(city);*/
 		if(sex.equals("0")) {
 			u.setSex(null);
 		} else {

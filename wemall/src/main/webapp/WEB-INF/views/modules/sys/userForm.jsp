@@ -122,7 +122,7 @@
 				<form:radiobuttons path="sex" items="${fns:getDictList('sex')}" itemLabel="label" itemValue="value" htmlEscape="false" class=""/>
 			</div>
 		</div>
-		<div class="control-group">
+		<%-- <div class="control-group">
 			<label class="control-label">省份:</label>
 			<div class="controls">
 				<form:input path="province" htmlEscape="false" maxlength="50"/>
@@ -152,6 +152,48 @@
 			<label class="control-label">职业:</label>
 			<div class="controls">
 				<form:input path="profession" htmlEscape="false" maxlength="50"/>
+			</div>
+		</div> --%>
+		<div class="control-group">
+			<label class="control-label">可用奖励金:</label>
+			<div class="controls">
+				<form:input path="curBountyNum" htmlEscape="false" maxlength="11"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">累计奖励金:</label>
+			<div class="controls">
+				<form:input path="totalBountyNum" htmlEscape="false" maxlength="11"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">可用积分:</label>
+			<div class="controls">
+				<form:input path="curScoreNum" htmlEscape="false" maxlength="11"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">累计积分:</label>
+			<div class="controls">
+				<form:input path="totalScoreNum" htmlEscape="false" maxlength="11"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">会员卡id列表:</label>
+			<div class="controls">
+				<form:input path="vipCardIds" htmlEscape="false" maxlength="200"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">累计订单数:</label>
+			<div class="controls">
+				<form:input path="totalOrderNum" htmlEscape="false" maxlength="11"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">累计消费金额:</label>
+			<div class="controls">
+				<form:input path="totalConsumeNum" htmlEscape="false" maxlength="11"/>
 			</div>
 		</div>
 		<div class="control-group">

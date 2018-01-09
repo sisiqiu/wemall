@@ -83,14 +83,21 @@
 		a.sex,
 		a.userCategory,
 		a.platformUserId,
-		a.province,
+		<!-- a.province,
 		a.city,
 		a.birthday,
 		a.industry,
-		a.profession,
+		a.profession, -->
 		a.realName,
 		a.status,
 		a.emailValidateCode,
+		a.cur_bounty_num,
+		a.total_bounty_num,
+		a.cur_score_num,
+		a.total_score_num,
+		a.vip_card_ids,
+		a.total_order_num,
+		a.total_consume_num,
     	c.name AS "company.name",
     	c.parent_id AS "company.parent.id",
     	c.parent_ids AS "company.parentIds",
@@ -329,11 +336,18 @@
 			sex,
 			userCategory,
 			platformUserId,
-			province,
+			<!-- province,
 			city,
 			birthday,
 			industry,
-			profession,
+			profession, -->
+			cur_bounty_num,
+			total_bounty_num,
+			cur_score_num,
+			total_score_num,
+			vip_card_ids,
+			total_order_num,
+			total_consume_num,
 			realName,
 			status,
 			emailValidateCode
@@ -360,11 +374,16 @@
 			#{sex},
 			#{userCategory},
 			#{platformUserId},
-			#{province},
+			<!-- #{province},
 			#{city},
 			#{birthday},
 			#{industry},
-			#{profession},
+			#{profession}, -->
+			#{curBountyNum},
+			#{totalBountyNum},
+			#{curScoreNum},
+			#{totalScoreNum},
+			#{vipCardIds},
 			#{realName},
 			#{status},
 			#{emailValidateCode}
@@ -392,11 +411,18 @@
 			sex = #{sex},
 			userCategory = #{userCategory},
 			platformUserId = #{platformUserId},
-			province = #{province},
+			<!-- province = #{province},
 			city = #{city},
 			birthday = #{birthday},
 			industry = #{industry},
-			profession = #{profession},
+			profession = #{profession}, -->
+			cur_bounty_num = #{curBountyNum},
+			total_bounty_num = #{totalBountyNum},
+			cur_score_num = #{curScoreNum},
+			total_score_num = #{totalScoreNum},
+			vip_card_ids = #{vipCardIs},
+			total_order_num = #{totalOrderNum},
+			total_consume_num = #{totalConsumeNum},
 			realName = #{realName},
 			status = #{status},
 			emailValidateCode = #{emailValidateCode}
@@ -443,7 +469,7 @@
 			<if test="userCategory != null">
 				userCategory = #{userCategory}, 
 		    </if>
-			<if test="province != null">
+			<!-- <if test="province != null">
 				province = #{province}, 
 		    </if>
 			<if test="city != null">
@@ -457,7 +483,7 @@
 		    </if>
 			<if test="profession != null">
 				profession = #{profession}, 
-		    </if>
+		    </if> -->
 			<if test="status != null and status != ''">
 				status = #{status},
 			</if>

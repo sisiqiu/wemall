@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fulltl.wemall.modules.wemall.dao.WemallItemSpecDao">
+    
+	<sql id="wemallItemSpecColumns">
+		a.item_id AS "itemId",
+		a.spec_id AS "specId",
+		a.spec_info_id AS "specInfoId",
+		a.price AS "price",
+		a.team_price AS "teamPrice",
+		a.storage AS "storage"
+	</sql>
+	
+	<sql id="wemallItemSpecJoins">
+	</sql>
+    
+	<select id="get" resultType="WemallItemSpec">
+		SELECT 
+			<include refid="wemallItemSpecColumns"/>
+		FROM wemall_item_spec a
+		<include refid="wemallItemSpecJoins"/>
+		WHERE a.item_id = #{itemId} AND a.spec_id = #{specId}
+	</select>
+	
+	<select id="findList" resultType="WemallItemSpec">
+		SELECT 
+			<include refid="wemallItemSpecColumns"/>
+		FROM wemall_item_spec a
+		<include refid="wemallItemSpecJoins"/>
+		<where>
+			
+			<if test="itemId != null and itemId != ''">
+				AND a.item_id = #{itemId}
+			</if>
+			<if test="specId != null and specId != ''">
+				AND a.spec_id = #{specId}
+			</if>
+			<if test="specInfoId != null and specInfoId != ''">
+				AND a.spec_info_id = #{specInfoId}
+			</if>
+			<if test="beginPrice != null and endPrice != null and beginPrice != '' and endPrice != ''">
+				AND a.price BETWEEN #{beginPrice} AND #{endPrice}
+			</if>
+			<if test="beginTeamPrice != null and endTeamPrice != null and beginTeamPrice != '' and endTeamPrice != ''">
+				AND a.team_price BETWEEN #{beginTeamPrice} AND #{endTeamPrice}
+			</if>
+			<if test="beginStorage != null and endStorage != null and beginStorage != '' and endStorage != ''">
+				AND a.storage BETWEEN #{beginStorage} AND #{endStorage}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WemallItemSpec">
+		SELECT 
+			<include refid="wemallItemSpecColumns"/>
+		FROM wemall_item_spec a
+		<include refid="wemallItemSpecJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wemall_item_spec(
+			item_id,
+			spec_id,
+			spec_info_id,
+			price,
+			team_price,
+			storage
+		) VALUES (
+			#{itemId},
+			#{specId},
+			#{specInfoId},
+			#{price},
+			#{teamPrice},
+			#{storage}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wemall_item_spec SET 	
+			price = #{price},
+			team_price = #{teamPrice},
+			storage = #{storage}
+		WHERE item_id = #{itemId} AND spec_id = #{specId}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM wemall_item_spec
+		WHERE item_id = #{itemId} AND spec_id = #{specId}
+	</update>
+	
+</mapper>
