@@ -53,6 +53,45 @@
 				<form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="255" class="input-xxlarge "/>
 			</div>
 		</div>
+		
+		<table id="contentTable" class="table table-striped table-bordered table-condensed">
+			<thead>
+				<tr>
+					<th>属性值id</th>
+					<th>属性类别id</th>
+					<th>属性名称</th>
+					<th>排序</th>
+					<th>更新时间</th>
+					<shiro:hasPermission name="wemall:wemallSpecInfo:edit"><th>操作</th></shiro:hasPermission>
+				</tr>
+			</thead>
+			<tbody>
+			<c:forEach items="${specInfoList}" var="wemallSpecInfo">
+				<tr>
+					<td><a href="${ctx}/wemall/wemallSpecInfo/form?id=${wemallSpecInfo.id}">
+						${wemallSpecInfo.id}
+					</a></td>
+					<td>
+						${wemallSpecInfo.specName}
+					</td>
+					<td>
+						${wemallSpecInfo.name}
+					</td>
+					<td>
+						${wemallSpecInfo.sort}
+					</td>
+					<td>
+						<fmt:formatDate value="${wemallSpecInfo.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+					</td>
+					<shiro:hasPermission name="wemall:wemallSpecInfo:edit"><td>
+	    				<a href="${ctx}/wemall/wemallSpecInfo/form?id=${wemallSpecInfo.id}">修改</a>
+						<a href="${ctx}/wemall/wemallSpecInfo/delete?id=${wemallSpecInfo.id}" onclick="return confirmx('确认要删除该属性值信息吗？', this.href)">删除</a>
+					</td></shiro:hasPermission>
+				</tr>
+			</c:forEach>
+			</tbody>
+		</table>
+		
 		<div class="form-actions">
 			<shiro:hasPermission name="wemall:wemallSpec:edit"><input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>

@@ -6,7 +6,7 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			//$("#name").focus();
+			$("#name").focus();
 			$("#inputForm").validate({
 				submitHandler: function(form){
 					loading('正在提交，请稍等...');
@@ -15,7 +15,7 @@
 				errorContainer: "#messageBox",
 				errorPlacement: function(error, element) {
 					$("#messageBox").text("输入有误，请先更正。");
-					if (element.is(":checkbox")||element.is(":radio")||element.parent().is(".input-append")){
+					if (element.is(":checkbox") || element.is(":radio") || element.parent().is(".input-append")){
 						error.appendTo(element.parent().parent());
 					} else {
 						error.insertAfter(element);
@@ -28,7 +28,7 @@
 <body>
 	<ul class="nav nav-tabs">
 		<li><a href="${ctx}/wemall/wemallItemSort/">商品分类列表</a></li>
-		<li class="active"><a href="${ctx}/wemall/wemallItemSort/form?id=${wemallItemSort.id}">商品分类<shiro:hasPermission name="wemall:wemallItemSort:edit">${not empty wemallItemSort.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="wemall:wemallItemSort:edit">查看</shiro:lacksPermission></a></li>
+		<li class="active"><a href="${ctx}/wemall/wemallItemSort/form?id=${wemallItemSort.id}&parent.id=${wemallItemSortparent.id}">商品分类<shiro:hasPermission name="wemall:wemallItemSort:edit">${not empty wemallItemSort.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="wemall:wemallItemSort:edit">查看</shiro:lacksPermission></a></li>
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="wemallItemSort" action="${ctx}/wemall/wemallItemSort/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
@@ -43,20 +43,16 @@
 		<div class="control-group">
 			<label class="control-label">缩略图：</label>
 			<div class="controls">
-				<form:input path="photo" htmlEscape="false" maxlength="200" class="input-xlarge "/>
+				<input type="hidden" id="photo" name="photo" value="${wemallItemSort.photo}" />
+				<sys:ckfinder input="photo" type="thumb" uploadPath="/wemall/item" selectMultiple="false"/>
+				<%-- <form:input path="photo" htmlEscape="false" maxlength="200" class="input-xlarge "/> --%>
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">父级编号：</label>
+			<label class="control-label">上级父级编号:</label>
 			<div class="controls">
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">所有父级编号：</label>
-			<div class="controls">
-				<form:input path="parentIds" htmlEscape="false" maxlength="1000" class="input-xlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<sys:treeselect id="parent" name="parent.id" value="${wemallItemSort.parent.id}" labelName="parent.name" labelValue="${wemallItemSort.parent.name}"
+					title="父级编号" url="/wemall/wemallItemSort/treeData" extId="${wemallItemSort.id}" cssClass="" allowClear="true"/>
 			</div>
 		</div>
 		<div class="control-group">

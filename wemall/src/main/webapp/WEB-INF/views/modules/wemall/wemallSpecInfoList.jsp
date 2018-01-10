@@ -29,7 +29,8 @@
 				<form:input path="id" htmlEscape="false" maxlength="11" class="input-medium"/>
 			</li>
 			<li><label>属性类别id：</label>
-				<form:input path="specId" htmlEscape="false" maxlength="11" class="input-medium"/>
+				<sys:treeselect id="specId" name="specId" value="${wemallSpecInfo.specId}" labelName="specName" labelValue="${wemallSpecInfo.specName}"
+						title="属性类别" url="/wemall/wemallSpec/treeData" extId="${wemallSpecInfo.specId}" cssClass="required input-medium"/>
 			</li>
 			<li><label>属性名称：</label>
 				<form:input path="name" htmlEscape="false" maxlength="40" class="input-medium"/>
@@ -57,7 +58,7 @@
 					${wemallSpecInfo.id}
 				</a></td>
 				<td>
-					${wemallSpecInfo.specId}
+					${wemallSpecInfo.specName}
 				</td>
 				<td>
 					${wemallSpecInfo.name}

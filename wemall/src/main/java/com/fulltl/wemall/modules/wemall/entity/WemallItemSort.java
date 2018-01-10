@@ -7,14 +7,14 @@ import org.hibernate.validator.constraints.Length;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.validation.constraints.NotNull;
 
-import com.fulltl.wemall.common.persistence.DataEntity;
+import com.fulltl.wemall.common.persistence.TreeEntity;
 
 /**
  * 商品分类管理Entity
  * @author ldk
- * @version 2018-01-05
+ * @version 2018-01-10
  */
-public class WemallItemSort extends DataEntity<WemallItemSort> {
+public class WemallItemSort extends TreeEntity<WemallItemSort> {
 	
 	private static final long serialVersionUID = 1L;
 	private String name;		// 商品类别名
@@ -77,4 +77,7 @@ public class WemallItemSort extends DataEntity<WemallItemSort> {
 		this.sort = sort;
 	}
 	
+	public String getParentId() {
+		return parent != null && parent.getId() != null ? parent.getId() : "0";
+	}
 }

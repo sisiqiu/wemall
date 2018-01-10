@@ -36,8 +36,10 @@
 		<div class="control-group">
 			<label class="control-label">属性类别id：</label>
 			<div class="controls">
-				<form:input path="specId" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<sys:treeselect id="specId" name="specId" value="${wemallSpecInfo.specId}" labelName="specName" labelValue="${wemallSpecInfo.specName}"
+						title="属性类别" url="/wemall/wemallSpec/treeData" extId="${wemallSpecInfo.specId}" cssClass="required"/>
+				<%-- <form:input path="specId" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
+				<span class="help-inline"><font color="red">*</font> </span> --%>
 			</div>
 		</div>
 		<div class="control-group">
