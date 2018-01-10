@@ -4,16 +4,39 @@
 <head>
 	<title>商品分类管理</title>
 	<meta name="decorator" content="default"/>
+	<%@include file="/WEB-INF/views/include/treetable.jsp" %>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			
+			var tpl = $("#treeTableTpl").html().replace(/(\/\/\<!\-\-)|(\/\/\-\->)/g,"");
+			var data = ${fns:toJson(list)}, ids = [], rootIds = [];
+			for (var i=0; i<data.length; i++){
+				ids.push(data[i].id);
+			}
+			ids = ',' + ids.join(',') + ',';
+			for (var i=0; i<data.length; i++){
+				if (ids.indexOf(','+data[i].parentId+',') == -1){
+					if ((','+rootIds.join(',')+',').indexOf(','+data[i].parentId+',') == -1){
+						rootIds.push(data[i].parentId);
+					}
+				}
+			}
+			for (var i=0; i<rootIds.length; i++){
+				addRow("#treeTableList", tpl, data, rootIds[i], true);
+			}
+			$("#treeTable").treeTable({expandLevel : 5});
 		});
-		function page(n,s){
-			$("#pageNo").val(n);
-			$("#pageSize").val(s);
-			$("#searchForm").submit();
-        	return false;
-        }
+		function addRow(list, tpl, data, pid, root){
+			for (var i=0; i<data.length; i++){
+				var row = data[i];
+				if ((${fns:jsGetVal('row.parentId')}) == pid){
+					$(list).append(Mustache.render(tpl, {
+						dict: {
+						blank123:0}, pid: (root?0:pid), row: row
+					}));
+					addRow(list, tpl, data, row.id);
+				}
+			}
+		}
 	</script>
 </head>
 <body>
@@ -22,8 +45,6 @@
 		<shiro:hasPermission name="wemall:wemallItemSort:edit"><li><a href="${ctx}/wemall/wemallItemSort/form">商品分类添加</a></li></shiro:hasPermission>
 	</ul>
 	<form:form id="searchForm" modelAttribute="wemallItemSort" action="${ctx}/wemall/wemallItemSort/" method="post" class="breadcrumb form-search">
-		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
-		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
 			<li><label>商品类别id：</label>
 				<form:input path="id" htmlEscape="false" maxlength="11" class="input-medium"/>
@@ -32,13 +53,15 @@
 				<form:input path="name" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
 			<li><label>父级编号：</label>
+				<sys:treeselect id="parent" name="parent.id" value="${wemallItemSort.parent.id}" labelName="parent.name" labelValue="${wemallItemSort.parent.name}"
+					title="父级编号" url="/wemall/wemallItemSort/treeData" extId="${wemallItemSort.id}" cssClass="input-small" allowClear="true"/>
 			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<li class="clearfix"></li>
 		</ul>
 	</form:form>
 	<sys:message content="${message}"/>
-	<table id="contentTable" class="table table-striped table-bordered table-condensed">
+	<table id="treeTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
 				<th>商品类别id</th>
@@ -49,32 +72,31 @@
 				<shiro:hasPermission name="wemall:wemallItemSort:edit"><th>操作</th></shiro:hasPermission>
 			</tr>
 		</thead>
-		<tbody>
-		<c:forEach items="${page.list}" var="wemallItemSort">
-			<tr>
-				<td><a href="${ctx}/wemall/wemallItemSort/form?id=${wemallItemSort.id}">
-					${wemallItemSort.id}
-				</a></td>
-				<td>
-					${wemallItemSort.name}
-				</td>
-				<td>
-					${wemallItemSort.sort}
-				</td>
-				<td>
-					<fmt:formatDate value="${wemallItemSort.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
-				</td>
-				<td>
-					<fmt:formatDate value="${wemallItemSort.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
-				</td>
-				<shiro:hasPermission name="wemall:wemallItemSort:edit"><td>
-    				<a href="${ctx}/wemall/wemallItemSort/form?id=${wemallItemSort.id}">修改</a>
-					<a href="${ctx}/wemall/wemallItemSort/delete?id=${wemallItemSort.id}" onclick="return confirmx('确认要删除该商品分类吗？', this.href)">删除</a>
-				</td></shiro:hasPermission>
-			</tr>
-		</c:forEach>
-		</tbody>
+		<tbody id="treeTableList"></tbody>
 	</table>
-	<div class="pagination">${page}</div>
+	<script type="text/template" id="treeTableTpl">
+		<tr id="{{row.id}}" pId="{{pid}}">
+			<td><a href="${ctx}/wemall/wemallItemSort/form?id={{row.id}}">
+				{{row.id}}
+			</a></td>
+			<td>
+				{{row.name}}
+			</td>
+			<td>
+				{{row.sort}}
+			</td>
+			<td>
+				{{row.createDate}}
+			</td>
+			<td>
+				{{row.updateDate}}
+			</td>
+			<shiro:hasPermission name="wemall:wemallItemSort:edit"><td>
+   				<a href="${ctx}/wemall/wemallItemSort/form?id={{row.id}}">修改</a>
+				<a href="${ctx}/wemall/wemallItemSort/delete?id={{row.id}}" onclick="return confirmx('确认要删除该商品分类及所有子商品分类吗？', this.href)">删除</a>
+				<a href="${ctx}/wemall/wemallItemSort/form?parent.id={{row.id}}">添加下级商品分类</a> 
+			</td></shiro:hasPermission>
+		</tr>
+	</script>
 </body>
 </html>

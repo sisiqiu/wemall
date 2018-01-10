@@ -8,30 +8,29 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fulltl.wemall.common.persistence.Page;
-import com.fulltl.wemall.common.service.CrudService;
+import com.fulltl.wemall.common.service.TreeService;
+import com.fulltl.wemall.common.utils.StringUtils;
 import com.fulltl.wemall.modules.wemall.entity.WemallItemSort;
 import com.fulltl.wemall.modules.wemall.dao.WemallItemSortDao;
 
 /**
  * 商品分类管理Service
  * @author ldk
- * @version 2018-01-05
+ * @version 2018-01-10
  */
 @Service
 @Transactional(readOnly = true)
-public class WemallItemSortService extends CrudService<WemallItemSortDao, WemallItemSort> {
+public class WemallItemSortService extends TreeService<WemallItemSortDao, WemallItemSort> {
 
 	public WemallItemSort get(String id) {
 		return super.get(id);
 	}
 	
 	public List<WemallItemSort> findList(WemallItemSort wemallItemSort) {
+		if (StringUtils.isNotBlank(wemallItemSort.getParentIds())){
+			wemallItemSort.setParentIds(","+wemallItemSort.getParentIds()+",");
+		}
 		return super.findList(wemallItemSort);
-	}
-	
-	public Page<WemallItemSort> findPage(Page<WemallItemSort> page, WemallItemSort wemallItemSort) {
-		return super.findPage(page, wemallItemSort);
 	}
 	
 	@Transactional(readOnly = false)

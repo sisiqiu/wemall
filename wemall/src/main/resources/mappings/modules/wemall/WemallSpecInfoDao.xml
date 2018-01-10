@@ -10,10 +10,12 @@
 		a.create_date AS "createDate",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		spec.name AS "specName"
 	</sql>
 	
 	<sql id="wemallSpecInfoJoins">
+	    LEFT JOIN wemall_spec spec ON a.spec_id = spec.id
 	</sql>
     
 	<select id="get" resultType="WemallSpecInfo">
