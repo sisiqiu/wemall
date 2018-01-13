@@ -15,7 +15,7 @@ import com.fulltl.wemall.common.persistence.DataEntity;
  * @version 2018-01-05
  */
 public class WemallBountyInfo extends DataEntity<WemallBountyInfo> {
-	
+	 
 	private static final long serialVersionUID = 1L;
 	private User user;		// 用户id
 	private String fromType;		// 获取途径
