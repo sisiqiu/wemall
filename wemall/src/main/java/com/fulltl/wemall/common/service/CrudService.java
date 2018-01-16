@@ -4,18 +4,12 @@
 package com.fulltl.wemall.common.service;
 
 import java.util.List;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.Lists;
 import com.fulltl.wemall.common.persistence.CrudDao;
 import com.fulltl.wemall.common.persistence.DataEntity;
 import com.fulltl.wemall.common.persistence.Page;
-import com.fulltl.wemall.modules.cms.entity.Article;
-import com.fulltl.wemall.modules.cms.entity.Category;
-import com.fulltl.wemall.modules.his.util.DataStorageUtil;
 
 /**
  * Service基类
