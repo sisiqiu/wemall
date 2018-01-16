@@ -95,6 +95,7 @@ public class FrontController extends BaseController {
      */
     @RequestMapping
     public String index(Model model) {
+    	System.err.println("aaaaaaaaaaaaaaaaaaaaaaaaa");
        /* Site site = CmsUtils.getSite(Site.defaultSiteId());
         model.addAttribute("site", site);
         model.addAttribute("isIndex", true);*/
