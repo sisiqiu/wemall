@@ -25,7 +25,6 @@ import com.fulltl.wemall.common.web.BaseController;
 import com.fulltl.wemall.modules.sys.entity.User;
 import com.fulltl.wemall.modules.wx.entity.ConUserActivity;
 import com.fulltl.wemall.modules.wx.service.ConUserActivityService;
-import com.sun.tools.javac.util.List;
 
 /**
  * gvvController

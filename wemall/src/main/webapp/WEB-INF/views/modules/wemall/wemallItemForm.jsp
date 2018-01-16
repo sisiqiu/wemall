@@ -71,7 +71,8 @@
 		<div class="control-group">
 			<label class="control-label">缩略图：</label>
 			<div class="controls">
-				<form:input path="photo" htmlEscape="false" maxlength="200" class="input-xlarge required"/>
+				<input type="hidden" id="photo" name="photo" value="${wemallItem.photo}" />
+				<sys:ckfinder input="photo" type="thumb" uploadPath="/wemall/wemallItem" selectMultiple="false"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
