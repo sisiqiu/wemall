@@ -4,6 +4,7 @@
 package com.fulltl.wemall.common.utils;
 
 import java.io.UnsupportedEncodingException;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -404,4 +405,10 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
 			.replaceAll("&#39;", "'")
 			.replaceAll("&#x2F;", "/");
 	}*/
+    
+    private static final DecimalFormat df1 = new DecimalFormat("0.00");
+    public static String getTwoBitNumStr(Object num) {
+        String str = df1.format(num);
+		return str;
+    }
 }

@@ -51,6 +51,9 @@ public class WemallItem extends DataEntity<WemallItem> {
 	private Integer beginFreightPrice;		// 开始 运费
 	private Integer endFreightPrice;		// 结束 运费
 	
+	private String specInfoStr; //规格值列表json字符串
+	private String sortName; //商品类别名称
+	
 	public WemallItem() {
 		super();
 	}
@@ -352,5 +355,22 @@ public class WemallItem extends DataEntity<WemallItem> {
 	public void setEndFreightPrice(Integer endFreightPrice) {
 		this.endFreightPrice = endFreightPrice;
 	}
+
+	public String getSpecInfoStr() {
+		return specInfoStr;
+	}
+
+	public void setSpecInfoStr(String specInfoStr) {
+		this.specInfoStr = specInfoStr;
+	}
+
+	public String getSortName() {
+		return sortName;
+	}
+
+	public void setSortName(String sortName) {
+		this.sortName = sortName;
+	}
 		
+	
 }

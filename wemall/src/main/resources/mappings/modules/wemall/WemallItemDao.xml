@@ -32,10 +32,12 @@
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		s.name AS "sortName"
 	</sql>
 	
 	<sql id="wemallItemJoins">
+	    LEFT JOIN wemall_item_sort s ON s.id = a.sort_id
 	</sql>
     
 	<select id="get" resultType="WemallItem">
@@ -143,6 +145,9 @@
 	</select>
 	
 	<insert id="insert">
+	    <selectKey resultType="java.lang.String" order="AFTER" keyProperty="id">
+          SELECT LAST_INSERT_ID()
+		</selectKey>
 		INSERT INTO wemall_item(
 			name,
 			sort_id,
@@ -166,7 +171,7 @@
 			freight_price,
 			activity_sort,
 			activity_id,
-			desc,
+			`desc`,
 			photo_urls,
 			create_by,
 			create_date,
@@ -230,7 +235,7 @@
 			freight_price = #{freightPrice},
 			activity_sort = #{activitySort},
 			activity_id = #{activityId},
-			desc = #{desc},
+			`desc` = #{desc},
 			photo_urls = #{photoUrls},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate}

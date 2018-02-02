@@ -19,6 +19,8 @@ public class WemallSpec extends DataEntity<WemallSpec> {
 	private String name;		// 属性类别名
 	private Integer sort;		// 排序
 	
+	private String specInfoStr; //规格值列表json字符串
+	
 	public WemallSpec() {
 		super();
 	}
@@ -43,6 +45,14 @@ public class WemallSpec extends DataEntity<WemallSpec> {
 
 	public void setSort(Integer sort) {
 		this.sort = sort;
+	}
+
+	public String getSpecInfoStr() {
+		return specInfoStr;
+	}
+
+	public void setSpecInfoStr(String specInfoStr) {
+		this.specInfoStr = specInfoStr;
 	}
 	
 }

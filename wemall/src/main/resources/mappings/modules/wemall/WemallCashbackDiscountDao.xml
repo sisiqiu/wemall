@@ -90,15 +90,18 @@
 	</select>
 	
 	<insert id="insert">
+	    <selectKey resultType="java.lang.String" order="AFTER" keyProperty="id">
+          SELECT LAST_INSERT_ID()
+		</selectKey>
 		INSERT INTO wemall_cashback_discount(
-			name,
+			`name`,
 			sort,
 			start_date,
 			end_date,
 			label,
 			type,
 			cashback,
-			limit,
+			`limit`,
 			create_date,
 			update_date,
 			remarks,
@@ -121,14 +124,14 @@
 	
 	<update id="update">
 		UPDATE wemall_cashback_discount SET 	
-			name = #{name},
+			`name` = #{name},
 			sort = #{sort},
 			start_date = #{startDate},
 			end_date = #{endDate},
 			label = #{label},
 			type = #{type},
 			cashback = #{cashback},
-			limit = #{limit},
+			`limit` = #{limit},
 			update_date = #{updateDate},
 			remarks = #{remarks}
 		WHERE id = #{id}

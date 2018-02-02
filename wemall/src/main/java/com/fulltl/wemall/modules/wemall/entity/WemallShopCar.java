@@ -21,6 +21,8 @@ public class WemallShopCar extends DataEntity<WemallShopCar> {
 	private Integer itemNum;		// 商品数量
 	private Integer status;		// 状态（0--禁用；1--可用）
 	
+	private String itemName;		// 商品名称
+	
 	public WemallShopCar() {
 		super();
 	}
@@ -63,6 +65,14 @@ public class WemallShopCar extends DataEntity<WemallShopCar> {
 
 	public void setStatus(Integer status) {
 		this.status = status;
+	}
+
+	public String getItemName() {
+		return itemName;
+	}
+
+	public void setItemName(String itemName) {
+		this.itemName = itemName;
 	}
 	
 }

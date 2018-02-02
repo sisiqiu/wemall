@@ -24,6 +24,7 @@
 		a.currentpeoplenum AS "currentpeoplenum",
 		a.status AS "status",
 		a.prize AS "prize",
+		a.live_url AS "liveUrl",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -140,6 +141,7 @@
 			currentpeoplenum,
 			status,
 			prize,
+			live_url,
 			create_by,
 			create_date,
 			update_by,
@@ -166,6 +168,7 @@
 			#{currentpeoplenum},
 			#{status},
 			#{prize},
+			#{liveUrl},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -196,6 +199,7 @@
 			currentpeoplenum = #{currentpeoplenum},
 			status = #{status},
 			prize = #{prize},
+			live_url = #{liveUrl},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate}
 		WHERE id = #{id}

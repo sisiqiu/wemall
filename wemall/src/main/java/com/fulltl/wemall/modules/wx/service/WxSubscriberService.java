@@ -6,6 +6,7 @@ package com.fulltl.wemall.modules.wx.service;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,8 +49,22 @@ public class WxSubscriberService extends CrudService<WxSubscriberDao, WxSubscrib
 	
 	@Transactional(readOnly = false)
 	public void save(WxSubscriber wxSubscriber) {
-		System.err.println(wxSubscriber.getHeadImgUrl());
-		super.save(wxSubscriber);
+		WxSubscriber findByOpenId = null;
+		if(StringUtils.isNotBlank(wxSubscriber.getOpenId())) {
+			findByOpenId = dao.findByOpenId(wxSubscriber.getOpenId());
+		}
+		if(findByOpenId != null) {
+			wxSubscriber.preUpdate();
+			dao.update(wxSubscriber);
+		} else {
+			if (wxSubscriber.getIsNewRecord()){
+				wxSubscriber.preInsert();
+				dao.insert(wxSubscriber);
+			}else{
+				wxSubscriber.preUpdate();
+				dao.update(wxSubscriber);
+			}
+		}
 	}
 	
 	@Transactional(readOnly = false)
@@ -79,8 +94,6 @@ public class WxSubscriberService extends CrudService<WxSubscriberDao, WxSubscrib
 	 * @return
 	 */
 	public WxSubscriber getWxSubscriberBy(String openId, String serviceId) {
-		System.err.println("微信号：" + serviceId);
-		
 		//查询关注用户表中是否有该用户
 		WxSubscriber curSubscriber = this.findByOpenId(openId);
 		if(curSubscriber == null) {
@@ -104,7 +117,6 @@ public class WxSubscriberService extends CrudService<WxSubscriberDao, WxSubscrib
 		//设定系统管理员，默认用户是系统管理员添加的
 		User administrator = new User();
 		administrator.setId("1");
-		System.err.println(curSubscriber.getSubscriberId());
 		if(curSubscriber.getSubscriberId() != null && !curSubscriber.getSubscriberId().equals(0)) {
 			//查询数据库中的关注用户对象，为后续确定是否需要update做准备。
 			WxSubscriber oldWxSubscriber = this.get(curSubscriber.getSubscriberId().toString());
@@ -176,12 +188,16 @@ public class WxSubscriberService extends CrudService<WxSubscriberDao, WxSubscrib
 					System.err.println("已设定绑定系统用户：" + curSubscriber.getSlUserId());
 					//需要判断当前用户到底关注了没有。。暂时先默认为已关注。
 					curSubscriber.setStatus("3"); //3--已关注已绑定
+					if("0".equals(oldWxSubscriber.getStatus()) || "1".equals(oldWxSubscriber.getStatus())) {
+						curSubscriber.setStatus("1"); //1--未关注已绑定
+					}
 					if(!curSubscriber.equals(oldWxSubscriber)) {
 						//改变了才更新。
 						this.save(curSubscriber); //更新关注用户
 					}
 					
-					wxUserInfo = new WxUserinfo();
+					wxUserInfo = wxUserinfoService.findByOpenId(curSubscriber.getOpenId());
+					if(wxUserInfo == null) wxUserInfo = new WxUserinfo();
 					wxUserInfo.initBySubscriberAndUser(curSubscriber, user);
 					wxUserinfoService.save(wxUserInfo); //保存绑定用户
 					break;
@@ -199,7 +215,6 @@ public class WxSubscriberService extends CrudService<WxSubscriberDao, WxSubscrib
 				return;
 			}
 			
-			System.out.println(curSubscriber.getServiceId() + "---" + wxServiceaccount);
 			//同时判断是否已设定serviceId和openId
 			System.err.println("已设定serviceId：" + curSubscriber.getServiceId() + ";已设定openId：" + curSubscriber.getOpenId());
 			curSubscriber.setSaId(wxServiceaccount.getSaId());
@@ -225,19 +240,45 @@ public class WxSubscriberService extends CrudService<WxSubscriberDao, WxSubscrib
 				curSubscriber.initByUser(user);
 				System.err.println("已设定绑定系统用户：" + curSubscriber.getSlUserId());
 				//需要判断当前用户到底关注了没有。。暂时先默认为已关注。
-				curSubscriber.setStatus("3"); //3--已关注已绑定
+				curSubscriber.setStatus("1"); //1--未关注已绑定
 				this.save(curSubscriber); //保存关注用户
 				
-				WxUserinfo wxUserInfo = new WxUserinfo();
+				WxUserinfo wxUserInfo = wxUserinfoService.findByOpenId(curSubscriber.getOpenId());
+				if(wxUserInfo == null) wxUserInfo = new WxUserinfo();
 				wxUserInfo.initBySubscriberAndUser(curSubscriber, user);
 				wxUserinfoService.save(wxUserInfo); //保存绑定用户
 				break;
 			}
 			
-			System.err.println("获取自增的id值：" + curSubscriber.getSubscriberId());
-			
 			logger.info("----------------用户：openId=" + curSubscriber.getOpenId() + " 已加入关注用户表!-----------------");
 		}
 	}
 	
+	@Transactional(readOnly = false)
+	public void updateByOpenId(WxSubscriber wxSubscriber) {
+		wxSubscriber.preUpdate();
+		dao.updateByOpenId(wxSubscriber);
+	}
+	
+	/**
+	 * 更新用户基础信息
+	 * @param curSubscriber
+	 */
+	@Transactional(readOnly = false)
+	public void updateInfo(WxSubscriber curSubscriber) {
+		User administrator = new User("1");
+		if(StringUtils.isBlank(curSubscriber.getSubscribe())) {
+			curSubscriber.setSubscribe("0");
+		}
+		if(StringUtils.isBlank(curSubscriber.getStatus())) {
+			curSubscriber.setStatus("0");
+		}
+		curSubscriber.setCreateBy(administrator);
+		curSubscriber.setUpdateBy(administrator);
+		this.save(curSubscriber); //保存关注用户
+		
+		WxUserinfo wxUserInfo = new WxUserinfo();
+		wxUserInfo.initBySubscriberAndUser(curSubscriber, null);
+		wxUserinfoService.updateByOpenId(wxUserInfo);
+	}
 }

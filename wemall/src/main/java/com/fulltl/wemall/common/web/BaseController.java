@@ -32,6 +32,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.collect.Maps;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.fulltl.wemall.common.beanvalidator.BeanValidators;
 import com.fulltl.wemall.common.config.Global;
 import com.fulltl.wemall.common.mapper.JsonMapper;
@@ -45,6 +47,8 @@ import com.fulltl.wemall.modules.sys.utils.UserUtils;
  */
 public abstract class BaseController {
 
+	protected static Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
+	
 	/**
 	 * 日志对象
 	 */

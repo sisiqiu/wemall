@@ -42,6 +42,9 @@
 			<li><label>活动ID：</label>
 				<form:input path="activityid" htmlEscape="false" maxlength="8" class="input-medium"/>
 			</li>
+			<li><label>活动标题：</label>
+				<form:input path="activityTitle" htmlEscape="false" maxlength="200" class="input-medium"/>
+			</li>
 			<li><label>联系方式：</label>
 				<form:input path="mobile" htmlEscape="false" maxlength="20" class="input-medium"/>
 			</li>
@@ -54,10 +57,12 @@
 			<li><label>奖项：</label>
 				<form:input path="price" htmlEscape="false" maxlength="40" class="input-medium"/>
 			</li>
+			<li><label>奖品：</label>
+				<form:input path="priceGoods" htmlEscape="false" maxlength="100" class="input-medium"/>
+			</li>
 			<li class="btns">
 				<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
 				<input id="btnExport" class="btn btn-primary" type="button" value="导出"/>
-				<a class="btn btn-primary" href="${ctxBasic}/f/wx/conActivity/prizeDraw"  target="_blank">抽奖</a>
 			</li>
 			<li class="clearfix"></li>
 		</ul>
@@ -68,9 +73,11 @@
 			<tr>
 				<th>用户ID</th>
 				<th>活动ID</th>
+				<th>活动标题</th>
 				<th>联系方式</th>
 				<th>用户状态</th>
 				<th>奖项</th>
+				<th>奖品</th>
 				<shiro:hasPermission name="wx:conUserActivity:edit"><th>操作</th></shiro:hasPermission>
 			</tr>
 		</thead>
@@ -84,6 +91,9 @@
 					${conUserActivity.activityid}
 				</td>
 				<td>
+					${conUserActivity.activityTitle}
+				</td>
+				<td>
 					${conUserActivity.mobile}
 				</td>
 				<td>
@@ -92,8 +102,11 @@
 				<td>
 					${conUserActivity.price}
 				</td>
+				<td>
+					${conUserActivity.priceGoods}
+				</td>
 				<shiro:hasPermission name="wx:conUserActivity:edit"><td>
-    				<a href="${ctx}/wx/conUserActivity/form?id=${conUserActivity.id}">修改</a>
+    				<%-- <a href="${ctx}/wx/conUserActivity/form?id=${conUserActivity.id}">修改</a> --%>
 					<a href="${ctx}/wx/conUserActivity/delete?id=${conUserActivity.id}" onclick="return confirmx('确认要删除该用户活动表吗？', this.href)">删除</a>
 				</td></shiro:hasPermission>
 			</tr>

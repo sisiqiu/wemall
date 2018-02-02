@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fulltl.wemall.modules.wemall.dao.WemallItemActivityDao">
+    
+	<sql id="wemallItemActivityColumns">
+		a.item_id AS "itemId",
+		a.activity_id AS "activityId"
+	</sql>
+	
+	<sql id="wemallItemActivityJoins">
+	</sql>
+    
+	<select id="get" resultType="WemallItemActivity">
+		SELECT 
+			<include refid="wemallItemActivityColumns"/>
+		FROM wemall_item_activity a
+		<include refid="wemallItemActivityJoins"/>
+		WHERE a.item_id = #{itemId} and a.activity_id = #{activityId}
+	</select>
+	
+	<select id="findList" resultType="WemallItemActivity">
+		SELECT 
+			<include refid="wemallItemActivityColumns"/>
+		FROM wemall_item_activity a
+		<include refid="wemallItemActivityJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WemallItemActivity">
+		SELECT 
+			<include refid="wemallItemActivityColumns"/>
+		FROM wemall_item_activity a
+		<include refid="wemallItemActivityJoins"/>
+		<where>
+			<if test="itemId != null and itemId != ''">
+				AND a.item_id = #{itemId}
+			</if>
+			<if test="activityId != null and activityId != ''">
+				AND a.activity_id = #{activityId}
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wemall_item_activity(
+			item_id,
+			activity_id
+		) VALUES (
+			#{itemId},
+			#{activityId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wemall_item_activity SET 	
+			item_id = #{itemId},
+			activity_id = #{activityId}
+		WHERE item_id = #{itemId} and activity_id = #{activityId}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM wemall_item_activity
+		WHERE item_id = #{itemId} and activity_id = #{activityId}
+	</update>
+	
+</mapper>

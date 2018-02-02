@@ -4,9 +4,11 @@
 package com.fulltl.wemall.modules.wemall.entity;
 
 import javax.validation.constraints.NotNull;
+
 import org.hibernate.validator.constraints.Length;
 
 import com.fulltl.wemall.common.persistence.DataEntity;
+import com.google.common.base.Objects;
 
 /**
  * 属性值管理Entity
@@ -16,7 +18,7 @@ import com.fulltl.wemall.common.persistence.DataEntity;
 public class WemallSpecInfo extends DataEntity<WemallSpecInfo> {
 	
 	private static final long serialVersionUID = 1L;
-	private Integer specId;		// 属性类别id
+	private String specId;		// 属性类别id
 	private String name;		// 属性名称
 	private Integer sort;		// 排序
 	
@@ -31,11 +33,11 @@ public class WemallSpecInfo extends DataEntity<WemallSpecInfo> {
 	}
 
 	@NotNull(message="属性类别id不能为空")
-	public Integer getSpecId() {
+	public String getSpecId() {
 		return specId;
 	}
 
-	public void setSpecId(Integer specId) {
+	public void setSpecId(String specId) {
 		this.specId = specId;
 	}
 	
@@ -65,4 +67,24 @@ public class WemallSpecInfo extends DataEntity<WemallSpecInfo> {
 		this.specName = specName;
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if (null == obj) {
+	        return false;
+	    }
+	    if (this == obj) {
+	        return true;
+	    }
+	    if (!getClass().equals(obj.getClass())) {
+	        return false;
+	    }
+	    WemallSpecInfo specInfo = (WemallSpecInfo)obj;
+	    if(Objects.equal(this.id, specInfo.getId()) &&
+	    		Objects.equal(this.specId, specInfo.getSpecId()) &&
+	    		Objects.equal(this.name, specInfo.getName()) &&
+	    		Objects.equal(this.sort, specInfo.getSort())) {
+	    	return true;
+	    }
+	    return false;
+	}
 }

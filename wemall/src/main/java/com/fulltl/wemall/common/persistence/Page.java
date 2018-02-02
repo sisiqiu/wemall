@@ -326,9 +326,10 @@ public class Page<T> implements Serializable {
 	 */
 	public void setCount(long count) {
 		this.count = count;
-		if (pageSize >= count){
+		//防止页码大于真实页数时也有数据返回。
+		/*if (pageSize >= count){
 			pageNo = 1;
-		}
+		}*/
 	}
 	
 	/**
@@ -541,9 +542,10 @@ public class Page<T> implements Serializable {
 	 */
 	public int getFirstResult(){
 		int firstResult = (getPageNo() - 1) * getPageSize();
-		if (firstResult >= getCount()) {
+		//防止页码大于真实页数时也有数据返回。
+		/*if (firstResult >= getCount()) {
 			firstResult = 0;
-		}
+		}*/
 		return firstResult;
 	}
 	/**

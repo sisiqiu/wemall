@@ -6,7 +6,6 @@ package com.fulltl.wemall.modules.wx.dao;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
-
 import com.fulltl.wemall.common.persistence.CrudDao;
 import com.fulltl.wemall.common.persistence.annotation.MyBatisDao;
 import com.fulltl.wemall.modules.wx.entity.ConUserActivity;
@@ -23,5 +22,7 @@ public interface ConUserActivityDao extends CrudDao<ConUserActivity> {
 	public ConUserActivity getByActUserPhone(@Param(value="mobile") String mobile);
 	//根据活动Id与状态
 	public List<ConUserActivity> getByActidStatu (@Param(value="activityId") String activityId, @Param(value="status") String status);
+	
+	public void updatePriceBy(ConUserActivity conUserActivity);
 	
 }
