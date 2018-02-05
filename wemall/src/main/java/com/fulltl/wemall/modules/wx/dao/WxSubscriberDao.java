@@ -17,4 +17,6 @@ public interface WxSubscriberDao extends CrudDao<WxSubscriber> {
 
 	WxSubscriber findByOpenId(String openId);
 	
+	public void updateByOpenId(WxSubscriber wxSubscriber);
+	
 }

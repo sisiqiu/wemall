@@ -19,13 +19,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.fulltl.wemall.common.config.Global;
-import com.fulltl.wemall.common.web.BaseController;
 import com.fulltl.wemall.common.utils.StringUtils;
+import com.fulltl.wemall.common.web.BaseController;
 import com.fulltl.wemall.modules.wemall.entity.WemallItemSort;
 import com.fulltl.wemall.modules.wemall.service.WemallItemSortService;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /**
  * 商品分类管理Controller

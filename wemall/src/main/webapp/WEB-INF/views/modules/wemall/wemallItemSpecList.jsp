@@ -25,23 +25,17 @@
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
+			<li><label>主键id：</label>
+				<form:input path="id" htmlEscape="false" maxlength="11" class="input-medium"/>
+			</li>
 			<li><label>商品id：</label>
 				<form:input path="itemId" htmlEscape="false" maxlength="11" class="input-medium"/>
 			</li>
-			<li><label>属性类别id：</label>
-				<form:input path="specId" htmlEscape="false" maxlength="11" class="input-medium"/>
+			<li><label>属性类别名：</label>
+				<form:input path="specName" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
-			<li><label>属性值id：</label>
-				<form:input path="specInfoId" htmlEscape="false" maxlength="11" class="input-medium"/>
-			</li>
-			<li><label>价格：</label>
-				<form:input path="price" htmlEscape="false" maxlength="11" class="input-medium"/>
-			</li>
-			<li><label>拼团价：</label>
-				<form:input path="teamPrice" htmlEscape="false" maxlength="11" class="input-medium"/>
-			</li>
-			<li><label>库存量：</label>
-				<form:input path="storage" htmlEscape="false" maxlength="11" class="input-medium"/>
+			<li><label>属性值名称：</label>
+				<form:input path="specInfoName" htmlEscape="false" maxlength="40" class="input-medium"/>
 			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<li class="clearfix"></li>
@@ -51,9 +45,11 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
+				<th>主键id</th>
 				<th>商品id</th>
-				<th>属性类别id</th>
-				<th>属性值id</th>
+				<th>属性类别名</th>
+				<th>属性值名称</th>
+				<th>排序</th>
 				<th>价格</th>
 				<th>拼团价</th>
 				<th>库存量</th>
@@ -63,14 +59,20 @@
 		<tbody>
 		<c:forEach items="${page.list}" var="wemallItemSpec">
 			<tr>
-				<td><a href="${ctx}/wemall/wemallItemSpec/form?itemId=${wemallItemSpec.itemId}&specId=${wemallItemSpec.specId}">
-					${wemallItemSpec.itemId}
+				<td><a href="${ctx}/wemall/wemallItemSpec/form?id=${wemallItemSpec.id}">
+					${wemallItemSpec.id}
 				</a></td>
 				<td>
-					${wemallItemSpec.specId}
+					${wemallItemSpec.itemId}
 				</td>
 				<td>
-					${wemallItemSpec.specInfoId}
+					${wemallItemSpec.specName}
+				</td>
+				<td>
+					${wemallItemSpec.specInfoName}
+				</td>
+				<td>
+					${wemallItemSpec.sort}
 				</td>
 				<td>
 					${wemallItemSpec.price}
@@ -82,8 +84,8 @@
 					${wemallItemSpec.storage}
 				</td>
 				<shiro:hasPermission name="wemall:wemallItemSpec:edit"><td>
-    				<a href="${ctx}/wemall/wemallItemSpec/form?itemId=${wemallItemSpec.itemId}&specId=${wemallItemSpec.specId}">修改</a>
-					<a href="${ctx}/wemall/wemallItemSpec/delete?itemId=${wemallItemSpec.itemId}&specId=${wemallItemSpec.specId}" onclick="return confirmx('确认要删除该商品-属性信息吗？', this.href)">删除</a>
+    				<a href="${ctx}/wemall/wemallItemSpec/form?id=${wemallItemSpec.id}">修改</a>
+					<a href="${ctx}/wemall/wemallItemSpec/delete?id=${wemallItemSpec.id}" onclick="return confirmx('确认要删除该商品-属性信息吗？', this.href)">删除</a>
 				</td></shiro:hasPermission>
 			</tr>
 		</c:forEach>

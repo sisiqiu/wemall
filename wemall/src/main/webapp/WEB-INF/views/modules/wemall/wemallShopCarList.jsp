@@ -35,6 +35,9 @@
 			<li><label>商品id：</label>
 				<form:input path="itemId" htmlEscape="false" maxlength="11" class="input-medium"/>
 			</li>
+			<li><label>商品名称：</label>
+				<form:input path="itemName" htmlEscape="false" maxlength="100" class="input-medium"/>
+			</li>
 			<li><label>商品数量：</label>
 				<form:input path="itemNum" htmlEscape="false" maxlength="6" class="input-medium"/>
 			</li>
@@ -52,6 +55,7 @@
 				<th>主键id</th>
 				<th>用户id</th>
 				<th>商品id</th>
+				<th>商品名称</th>
 				<th>商品数量</th>
 				<th>状态</th>
 				<th>更新时间</th>
@@ -69,6 +73,9 @@
 				</td>
 				<td>
 					${wemallShopCar.itemId}
+				</td>
+				<td>
+					${wemallShopCar.itemName}
 				</td>
 				<td>
 					${wemallShopCar.itemNum}

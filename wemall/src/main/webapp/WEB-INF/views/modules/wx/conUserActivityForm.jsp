@@ -63,6 +63,12 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">活动标题：</label>
+			<div class="controls">
+				<form:input readOnly="true" path="activityTitle" htmlEscape="false" maxlength="200" class="input-xlarge"/>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">联系方式：</label>
 			<div class="controls">
 				<form:input readOnly="true" path="mobile" htmlEscape="false" maxlength="20" class="input-xlarge "/>
@@ -90,6 +96,12 @@
 			<label class="control-label">奖项：</label>
 			<div class="controls">
 				<form:input readOnly="true" path="price" htmlEscape="false" maxlength="40" class="input-xlarge "/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">奖品：</label>
+			<div class="controls">
+				<form:input readOnly="true" path="priceGoods" htmlEscape="false" maxlength="100" class="input-xlarge "/>
 			</div>
 		</div>
 		<div class="control-group">

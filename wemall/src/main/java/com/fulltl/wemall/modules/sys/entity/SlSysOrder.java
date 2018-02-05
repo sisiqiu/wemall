@@ -44,9 +44,81 @@ public class SlSysOrder extends DataEntity<SlSysOrder> {
 	private String redEvpUseAmount;		// 使用红包金额
 	private String coupUseAmount;		// 使用优惠券金额
 	private Office office;		// 单位ID
+	private String prepayId;		// 订单付款的预备码
 	
 	private String regId;		// 预约id
 
+	/**
+	 * 订单类别
+	 * @author Administrator
+	 *
+	 */
+	public enum OrderTypeEnum {
+		/**
+		 * 专家
+		 */
+		expert("01"), 
+		/**
+		 * 普通
+		 */
+		oridinary("02"), 
+		/**
+		 * 特需
+		 */
+		need("03"),
+		/**
+		 * 膏方
+		 */
+		formula("04"),
+		/**
+		 * 护理预约
+		 */
+		careAppo("05")
+		;
+		
+		private String value;
+		private OrderTypeEnum(String value) {
+			this.value = value;
+		}
+		public String getValue() {
+			return value;
+		}
+	}
+	
+	/**
+	 * 预约大类别
+	 * @author Administrator
+	 *
+	 */
+	public enum AppoTypeEnum {
+		/**
+		 * 预约
+		 */
+		reg, 
+		/**
+		 * 护理预约
+		 */
+		careAppo
+		;
+	}
+	
+	/**
+	 * 付款方式
+	 * @author Administrator
+	 *
+	 */
+	public enum PayMethod {
+		/**
+		 * 支付宝
+		 */
+		alipay, 
+		/**
+		 * 微信支付
+		 */
+		weixin
+		;
+	}
+	
 	public SlSysOrder() {
 		super();
 	}
@@ -235,6 +307,14 @@ public class SlSysOrder extends DataEntity<SlSysOrder> {
 	public void setRegId(String regId) {
 		this.regId = regId;
 	}
+	
+	public String getPrepayId() {
+		return prepayId;
+	}
+
+	public void setPrepayId(String prepayId) {
+		this.prepayId = prepayId;
+	}
 
 	/**
 	 * 初始化新建订单对象，
@@ -242,7 +322,7 @@ public class SlSysOrder extends DataEntity<SlSysOrder> {
 	 * @param payMethod
 	 */
 	public void initSlSysOrder() {
-		String outTradeNo = IdGen.uuid();
+		String outTradeNo = IdGen.generateOrderNo();
 		this.setOrderNo(outTradeNo);		//订单号
 		User user = UserUtils.getUser();
 		this.setUser(user);	//用户id

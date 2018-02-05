@@ -21,4 +21,5 @@ public interface WxUserinfoDao extends CrudDao<WxUserinfo> {
 
 	WxUserinfo findByOpenId(String openId);
 	
+	public void updateByOpenId(WxUserinfo wxUserinfo);
 }

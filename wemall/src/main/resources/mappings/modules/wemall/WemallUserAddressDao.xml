@@ -106,6 +106,9 @@
 	</select>
 	
 	<insert id="insert">
+	    <selectKey resultType="java.lang.String" order="AFTER" keyProperty="id">
+          SELECT LAST_INSERT_ID()
+		</selectKey>
 		INSERT INTO wemall_user_address(
 			user_id,
 			receiver_country,

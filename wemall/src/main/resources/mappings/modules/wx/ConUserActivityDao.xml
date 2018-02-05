@@ -12,14 +12,19 @@
 		a.note AS "note",
 		a.status AS "status",
 		a.price AS "price",
+		a.priceGoods AS "priceGoods",
 		a.registration_time AS "registrationTime",
 		a.attendance_time AS "attendanceTime",
 		a.lottery_time AS "lotteryTime",
-		u2.name AS "user.name"
+		u2.name AS "user.name",
+		c.title AS "activityTitle",
+		wxUser.photo AS "userPhoto"
 	</sql>
 	
 	<sql id="conUserActivityJoins">
 		LEFT JOIN sys_user u2 ON u2.id = a.user_id
+		LEFT JOIN wx_userinfo wxUser ON wxUser.sl_userid = a.user_id
+		LEFT JOIN con_activity c ON c.id = a.activityid
 	</sql>
     
 	<select id="get" resultType="ConUserActivity">
@@ -57,17 +62,21 @@
 		where a.activityid = #{activityId} and a.status = #{status}
 	</select>
 	
-	
-	
 	<select id="findList" resultType="ConUserActivity">
 		SELECT 
 			<include refid="conUserActivityColumns"/>
 		FROM con_user_activity a
 		<include refid="conUserActivityJoins"/>
 		<where>
-			
+			1 = 1
 			<if test="user != null and user.id != null and user.id != ''">
 				AND a.user_id = #{user.id}
+			</if>
+			<if test="userIdList != null">
+				AND a.user_id IN  
+			    <foreach collection="userIdList" index="index" item="item" open="(" separator="," close=")">  
+			        #{item}  
+			    </foreach>  
 			</if>
 			<if test="activityid != null and activityid != ''">
 				AND a.activityid = #{activityid}
@@ -78,6 +87,12 @@
 					<if test="dbName == 'mssql'">'%'+#{mobile}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{mobile},'%')</if>
 			</if>
+			<if test="activityTitle != null and activityTitle != ''">
+				AND c.title LIKE 
+					<if test="dbName == 'oracle'">'%'||#{activityTitle}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{activityTitle}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{activityTitle},'%')</if>
+			</if>
 			<if test="status != null and status != ''">
 				AND a.status = #{status}
 			</if>
@@ -86,6 +101,12 @@
 					<if test="dbName == 'oracle'">'%'||#{price}||'%'</if>
 					<if test="dbName == 'mssql'">'%'+#{price}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{price},'%')</if>
+			</if>
+			<if test="priceGoods != null and priceGoods != ''">
+				AND a.priceGoods LIKE 
+					<if test="dbName == 'oracle'">'%'||#{priceGoods}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{priceGoods}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{priceGoods},'%')</if>
 			</if>
 		</where>
 		<choose>
@@ -124,6 +145,7 @@
 			note,
 			status,
 			price,
+			priceGoods,
 			registration_time,
 			attendance_time,
 			lottery_time
@@ -136,6 +158,7 @@
 			#{note},
 			#{status},
 			#{price},
+			#{priceGoods},
 			#{registrationTime},
 			#{attendanceTime},
 			#{lotteryTime}
@@ -152,10 +175,25 @@
 			note = #{note},
 			status = #{status},
 			price = #{price},
+			priceGoods = #{priceGoods},
 			registration_time = #{registrationTime},
 			attendance_time = #{attendanceTime},
 			lottery_time = #{lotteryTime}
 		WHERE id = #{id}
+	</update>
+	
+	<update id="updatePriceBy">
+		UPDATE con_user_activity SET 	
+			status = #{status},
+			price = #{price},
+			priceGoods = #{priceGoods}
+		WHERE activityid = #{activityid}
+			<if test="userIdList != null">
+				AND user_id IN  
+			    <foreach collection="userIdList" index="index" item="item" open="(" separator="," close=")">  
+			        #{item}  
+			    </foreach>  
+			</if>
 	</update>
 	
 	<update id="delete">

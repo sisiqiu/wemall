@@ -3,6 +3,8 @@
  */
 package com.fulltl.wemall.modules.wemall.dao;
 
+import java.util.List;
+
 import com.fulltl.wemall.common.persistence.CrudDao;
 import com.fulltl.wemall.common.persistence.annotation.MyBatisDao;
 import com.fulltl.wemall.modules.wemall.entity.WemallSpecInfo;
@@ -14,5 +16,9 @@ import com.fulltl.wemall.modules.wemall.entity.WemallSpecInfo;
  */
 @MyBatisDao
 public interface WemallSpecInfoDao extends CrudDao<WemallSpecInfo> {
+
+	public void insertAll(List<WemallSpecInfo> insertList);
+
+	public void removeAll(List<WemallSpecInfo> removeList);
 	
 }

@@ -106,6 +106,7 @@
 				<shiro:hasPermission name="wx:conActivity:edit"><td>
     				<a href="${ctx}/wx/conActivity/form?id=${conActivity.id}">修改</a>
 					<a href="${ctx}/wx/conActivity/delete?id=${conActivity.id}" onclick="return confirmx('确认要删除该活动表吗？', this.href)">删除</a>
+					<a href="${ctxStatic}/sanlen_website/newYear/index.html?id=${conActivity.id}" target="_blank">抽奖</a>
 				</td></shiro:hasPermission>
 			</tr>
 		</c:forEach>

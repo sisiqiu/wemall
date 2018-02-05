@@ -6,6 +6,9 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
+			if($("#salesNum").val() == "") {
+				$("#salesNum").val("0");
+			}
 			//$("#name").focus();
 			$("#inputForm").validate({
 				submitHandler: function(form){
@@ -22,7 +25,119 @@
 					}
 				}
 			});
+			
+			trObj = $("#specInfoTable tbody tr").prop("outerHTML");
+			init($("#specInfoStr").val());
+			initWemallSpecSelect();
 		});
+		
+		var trObj;
+		var classNameArr = [{"className":"id","required":false},
+		                    {"className":"specName","required":true},
+		                    {"className":"specInfoName","required":true},
+		                    {"className":"sort","required":true},
+		                    {"className":"price","required":true},
+		                    {"className":"teamPrice","required":false},
+		                    {"className":"storage","required":true},
+								];
+		
+		/**
+		*	向上插入
+		*/
+		function insertOne(obj) {
+			$(obj).parent().parent().before(trObj);
+		}
+		
+		/**
+		*	向下添加
+		*/
+		function addOne(obj) {
+			$("#specInfoTable tbody").append(trObj);
+		}
+		
+		function deleteOne(obj) {
+			$(obj).parent().parent().remove();
+		}
+		
+		function init(priceJsonStr) {
+			var priceJson;
+			try {
+				priceJson = JSON.parse(priceJsonStr);
+			} catch(e) {
+				return;
+			}
+			
+			$.each(priceJson, function(index, item) {
+				$.each(classNameArr, function(objIndex, objItem) {
+					eval("$(\"." + objItem.className + "\").last().val(item." + objItem.className + ");");
+				});
+				$("#specInfoTable tbody").append(trObj);
+			});
+		}
+		
+		function formatResult() {
+			var trArr = [];
+			$.each($("#specInfoTable tbody tr"), function(index, item) {
+				var newTrJson = {};
+				var canPush = true;
+				$.each(classNameArr, function(objIndex, objItem) {
+					eval("newTrJson." + objItem.className + " = $(item).find(\"." + objItem.className + "\").val();");
+					if(objItem.required && eval("newTrJson." + objItem.className) == "") {
+						canPush = false;
+					}
+				});
+				if(canPush) {
+					trArr.push(newTrJson);
+				}
+			});
+			$("#specInfoStr").val(JSON.stringify(trArr));
+		}
+		
+		function save() {
+			formatResult();
+			console.log($("#specInfoStr").val());
+			$("#inputForm").submit();
+		}
+		
+		
+		
+		function initWemallSpecSelect() {
+			$.ajax({
+	             type: "POST",
+	             url: "${ctx}/wemall/wemallSpec/wemallSpecList",
+	             data: {},
+	             dataType: "json",
+	             success: function(data){
+					$.each(data, function(index, item){
+					    var html = "<option value=\"" + item.id + "\" label=\"" + item.name + "\">" + item.name + "</option>";
+					 	$('#wemallSpecSelect').append(html);
+					});
+				}
+			});
+		}
+		
+		function changeWemallSpecSelect() {
+			var specId = $("#wemallSpecSelect").val();
+			if(specId == "") return;
+			$.ajax({
+	             type: "POST",
+	             url: "${ctx}/wemall/wemallSpecInfo/wemallSpecInfoList",
+	             data: {"specId":specId},
+	             dataType: "json",
+	             success: function(data){
+					$.each(data, function(index, item){
+						$.each(classNameArr, function(objIndex, objItem) {
+							if(objItem.className == "specInfoName") {
+								eval("$(\"." + objItem.className + "\").last().val(item.name);");
+							} else {
+								eval("$(\"." + objItem.className + "\").last().val(item." + objItem.className + ");");
+							}
+						});
+						$("#specInfoTable tbody").append(trObj);
+					});
+				}
+			});
+		}
 	</script>
 </head>
 <body>
@@ -43,7 +158,9 @@
 		<div class="control-group">
 			<label class="control-label">商品类别id：</label>
 			<div class="controls">
-				<form:input path="sortId" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
+				<sys:treeselect id="sortId" name="sortId" value="${wemallItem.sortId}" labelName="sortName" labelValue="${wemallItem.sortName}"
+						title="商品类别" url="/wemall/wemallItemSort/treeData" extId="${wemallItem.sortId}" cssClass="required"/>
+				<%-- <form:input path="sortId" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/> --%>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
@@ -72,7 +189,7 @@
 			<label class="control-label">缩略图：</label>
 			<div class="controls">
 				<input type="hidden" id="photo" name="photo" value="${wemallItem.photo}" />
-				<sys:ckfinder input="photo" type="thumb" uploadPath="/wemall/wemallItem" selectMultiple="false"/>
+				<sys:ckfinder input="photo" type="thumb" uploadPath="/wemall" selectMultiple="false"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
@@ -108,7 +225,7 @@
 			<label class="control-label">销量：</label>
 			<div class="controls">
 				<form:input path="salesNum" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<span class="help-inline"><font color="red">*</font> 初始默认为0</span>
 			</div>
 		</div>
 		<div class="control-group">
@@ -200,12 +317,52 @@
 			<label class="control-label">图片列表：</label>
 			<div class="controls">
 				<form:hidden id="photoUrls" path="photoUrls" htmlEscape="false" maxlength="2000" class="input-xlarge"/>
-				<sys:ckfinder input="photoUrls" type="files" uploadPath="/wemall/wemallItem" selectMultiple="true"/>
+				<sys:ckfinder input="photoUrls" type="images" uploadPath="/wemall" selectMultiple="true"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
+		<div class="control-group">
+			<label class="control-label">商品属性值列表：</label>
+			<div class="controls">
+				选择属性类别添加对应属性值列表到下列表单：
+				<select id="wemallSpecSelect" class="input-medium" onchange="changeWemallSpecSelect()">
+					<option value="" label=""/>
+				</select>
+				<table id="specInfoTable" class="table table-striped table-bordered table-condensed">
+					<thead>
+						<tr>
+							<!-- <th>属性值id</th> -->
+							<th>属性类别名称</th>
+							<th>属性值名称</th>
+							<th>排序</th>
+							<th>价格</th>
+							<th>拼团价</th>
+							<th>库存量</th>
+							<th>操作<a style="cursor:pointer;" onclick="addOne(this)">  向下添加</a></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<input type="hidden" class="input-medium valid id" type="text" >
+							<td><input class="input-small valid specName" type="text" ></td>
+							<td><input class="input-small valid specInfoName" type="text" ></td>
+							<td><input class="valid sort" style="width:50px;" type="text" ></td>
+							<td><input class="input-mini valid price" type="text" ></td>
+							<td><input class="input-mini valid teamPrice" type="text" ></td>
+							<td><input class="input-mini valid storage" type="text" ></td>
+							<td>
+								<a style="cursor:pointer;" onclick="insertOne(this)">向上插入</a>
+								<a style="cursor:pointer;" onclick="deleteOne(this)">删除</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			
+				<textarea id="specInfoStr" name="specInfoStr" rows="4" style="display:none" class="input-xxlarge">${wemallItem.specInfoStr}</textarea>
+			</div>
+		</div>
 		<div class="form-actions">
-			<shiro:hasPermission name="wemall:wemallItem:edit"><input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
+			<shiro:hasPermission name="wemall:wemallItem:edit"><input id="btnSubmit" class="btn btn-primary" type="button" onclick="save()" value="保 存"/>&nbsp;</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
 		</div>
 	</form:form>

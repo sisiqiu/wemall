@@ -22,7 +22,73 @@
 					}
 				}
 			});
+			
+			trObj = $("#specInfoTable tbody tr").prop("outerHTML");
+			init($("#specInfoStr").val());
 		});
+		
+		var trObj;
+		var classNameArr = [{"className":"id","required":false},
+		                    {"className":"name","required":true},
+		                    {"className":"sort","required":true}
+								];
+		
+		/**
+		*	向上插入
+		*/
+		function insertOne(obj) {
+			$(obj).parent().parent().before(trObj);
+		}
+		
+		/**
+		*	向下添加
+		*/
+		function addOne(obj) {
+			$("#specInfoTable tbody").append(trObj);
+		}
+		
+		function deleteOne(obj) {
+			$(obj).parent().parent().remove();
+		}
+		
+		function init(priceJsonStr) {
+			var priceJson;
+			try {
+				priceJson = JSON.parse(priceJsonStr);
+			} catch(e) {
+				return;
+			}
+			
+			$.each(priceJson, function(index, item) {
+				$.each(classNameArr, function(objIndex, objItem) {
+					eval("$(\"." + objItem.className + "\").last().val(item." + objItem.className + ");");
+				});
+				$("#specInfoTable tbody").append(trObj);
+			});
+		}
+		
+		function formatResult() {
+			var trArr = [];
+			$.each($("#specInfoTable tbody tr"), function(index, item) {
+				var newTrJson = {};
+				var canPush = true;
+				$.each(classNameArr, function(objIndex, objItem) {
+					eval("newTrJson." + objItem.className + " = $(item).find(\"." + objItem.className + "\").val();");
+					if(objItem.required && eval("newTrJson." + objItem.className) == "") {
+						canPush = false;
+					}
+				});
+				if(canPush) {
+					trArr.push(newTrJson);
+				}
+			});
+			$("#specInfoStr").val(JSON.stringify(trArr));
+		}
+		
+		function save() {
+			formatResult();
+			$("#inputForm").submit();
+		}
 	</script>
 </head>
 <body>
@@ -53,47 +119,37 @@
 				<form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="255" class="input-xxlarge "/>
 			</div>
 		</div>
-		
-		<table id="contentTable" class="table table-striped table-bordered table-condensed">
-			<thead>
-				<tr>
-					<th>属性值id</th>
-					<th>属性类别id</th>
-					<th>属性名称</th>
-					<th>排序</th>
-					<th>更新时间</th>
-					<shiro:hasPermission name="wemall:wemallSpecInfo:edit"><th>操作</th></shiro:hasPermission>
-				</tr>
-			</thead>
-			<tbody>
-			<c:forEach items="${specInfoList}" var="wemallSpecInfo">
-				<tr>
-					<td><a href="${ctx}/wemall/wemallSpecInfo/form?id=${wemallSpecInfo.id}">
-						${wemallSpecInfo.id}
-					</a></td>
-					<td>
-						${wemallSpecInfo.specName}
-					</td>
-					<td>
-						${wemallSpecInfo.name}
-					</td>
-					<td>
-						${wemallSpecInfo.sort}
-					</td>
-					<td>
-						<fmt:formatDate value="${wemallSpecInfo.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
-					</td>
-					<shiro:hasPermission name="wemall:wemallSpecInfo:edit"><td>
-	    				<a href="${ctx}/wemall/wemallSpecInfo/form?id=${wemallSpecInfo.id}">修改</a>
-						<a href="${ctx}/wemall/wemallSpecInfo/delete?id=${wemallSpecInfo.id}" onclick="return confirmx('确认要删除该属性值信息吗？', this.href)">删除</a>
-					</td></shiro:hasPermission>
-				</tr>
-			</c:forEach>
-			</tbody>
-		</table>
+		<div class="control-group">
+			<label class="control-label">属性值列表：</label>
+			<div class="controls">
+				<table id="specInfoTable" class="table table-striped table-bordered table-condensed">
+					<thead>
+						<tr>
+							<!-- <th>属性值id</th> -->
+							<th>属性名称</th>
+							<th>排序</th>
+							<th>操作<a style="cursor:pointer;" onclick="addOne(this)">  向下添加</a></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<input type="hidden" class="input-medium valid id" type="text" >
+							<td><input class="input-medium valid name" type="text" ></td>
+							<td><input class="input-medium valid sort" type="text" ></td>
+							<td>
+								<a style="cursor:pointer;" onclick="insertOne(this)">向上插入</a>
+								<a style="cursor:pointer;" onclick="deleteOne(this)">删除</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			
+				<textarea id="specInfoStr" name="specInfoStr" rows="4" style="display:none" class="input-xxlarge">${wemallSpec.specInfoStr}</textarea>
+			</div>
+		</div>
 		
 		<div class="form-actions">
-			<shiro:hasPermission name="wemall:wemallSpec:edit"><input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
+			<shiro:hasPermission name="wemall:wemallSpec:edit"><input id="btnSubmit" class="btn btn-primary" type="button" onclick="save()" value="保 存"/>&nbsp;</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
 		</div>
 	</form:form>

@@ -1,5 +1,6 @@
 package com.fulltl.wemall.common.utils;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -31,7 +32,7 @@ public class RegExpValidatorUtil {
 	/**
 	 * 正则表达式：验证身份证
 	 */
-	public static final String REGEX_ID_CARD = "(^[1-9]\\d{7}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}$)|"
+	public static final String REGEX_ID_CARD = "(^[1-9]\\d{5}\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{2}[0-9Xx]$)|"
 												+ "(^[1-9]\\d{5}[1-9]\\d{3}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}([0-9]|X|x)$)";
 	
 	/**
@@ -201,4 +202,21 @@ public class RegExpValidatorUtil {
 		return !java.nio.charset.Charset.forName("GBK").newEncoder().canEncode(str);
 	}
 
+	/**
+     * 判断是否含有特殊字符
+     *
+     * @param str
+     * @return true为包含，false为不包含
+     */
+    public static boolean isSpecialChar(String str) {
+        String regEx = "[ _`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]|\n|\r|\t";
+        Pattern p = Pattern.compile(regEx);
+        Matcher m = p.matcher(str);
+        return m.find();
+    }
+	
+	public static void main(String[] args) {
+		//System.err.println(Pattern.matches(REGEX_DECIMAL, "320723199510100"));
+		//System.err.println(isSpecialChar("32072319\n9510100"));
+	}
 }

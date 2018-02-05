@@ -122,4 +122,14 @@ public class WxUserinfoService extends CrudService<WxUserinfoDao, WxUserinfo> {
 		}
 	}
 
+	@Transactional(readOnly = false)
+	public void updateByOpenId(WxUserinfo wxUserInfo) {
+		wxUserInfo.preUpdate();
+		dao.updateByOpenId(wxUserInfo);
+	}
+
+	public WxUserinfo findByOpenId(String openId) {
+		return dao.findByOpenId(openId);
+	}
+
 }

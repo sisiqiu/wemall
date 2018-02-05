@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="renderer" content="webkit">
+		<title>山丽信息2017年年会抽奖系统</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="css/mui.css" />
+		<link rel="stylesheet" href="css/index.css" />
+		<style>
+			.prize_list li {
+				display:inline;
+			}
+			.prize_list li img{
+				width: 100px;
+			    height: 100px;
+			    display:inline;
+			    margin-right:30px;
+			    margin-bottom:12px;
+			    vertical-align:middle;
+			}
+			.NAME_lucy img{
+				width: 30px;
+			    display: inline;
+			    vertical-align: middle;
+			    margin-right:10px;
+			    margin-bottom: 8px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="wrap">
+			<div class="prize_con">
+				<p class="prize_grade"><span>开始抽奖</span> <i></i></p>
+				<div class="prize_list vetically">
+					<ul>
+						<li>中奖结果</li>
+					</ul>
+				</div>
+				<p class="start"><img src="images/prize_start.png" alt=""></p>
+				<ul class="prize_set">
+					<li class="set_grade">奖励等级
+						<select id="set_grade">
+							<option>选择奖项</option>
+							<!--<option>特等奖</option>-->
+							<!-- <option>一等奖</option>
+							<option>二等奖</option>
+							<option>三等奖</option>
+							<option>四等奖</option>
+							<option>五等奖</option> -->
+						</select>
+					</li>
+					<li class="set_people" style="">人数<input type="tel" placeholder="输入中奖人数" value="1" id="prizeCount" readonly="readonly"></li>
+					<li class="set_money" style="">单次抽取人数<input type="text" placeholder="默认1" value="1" id="checkNum"></li>
+				</ul>
+			</div>
+		</div>
+		<input type="hidden" value="0" id="prize_btn">
+		<div class="luck_name">
+			<!--<img style="width: 100%; height: 100%;" src="images/bg_luck.png" />-->
+			<ul class="winnerName" style="list-style-type: none;"></ul>
+		</div>
+		<!--二维码-->
+		<div class="QR_code">
+			<table >
+				<tr><th><img src="images/logo.jpg"/></th><th><img src="images/logo.jpg"/></th></tr>
+			</table>
+		</div>
+		<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript" src="js/luckName-Config.js" ></script>
+		<script type="text/javascript" src="js/jquery-3.2.1.min.js" ></script>
+		<script type="text/javascript" src="js/rem.js" ></script>
+		<script type="text/javascript">
+			mui.init();
+
+			var myNumber;
+			var arr = [];
+			
+			//code是ajax获取的全部数据
+			//var code=[{userName:'李登柯',mobile:'15565134552'},{userName:'周明杰',mobile:'15565134552'}];
+			var code;
+			//所有滚动名单
+			var Request = new UrlSearch();
+			
+			//活动id
+			var activityId = Request.id;
+			//调用活动参会人员信息，保存到code
+			selectUserActivity(activityId);
+			//定义奖项数组
+			var prizeArr;
+			
+			//获取活动详情
+			$.ajax({
+				type: "POST",
+				url: "/f/wx/conActivity/viewActivityInfo",
+				data: "id=" + activityId,
+				success: function(data){
+					prizeArr = JSON.parse(data.prize);
+					$.each(prizeArr, function(index, item) {
+						eval("activity" + activityId + "prizeArr" + index + " = new Array();");
+						$("#set_grade").append(
+								"<option investor='" + item.investor + "' priceGoods='" + item.priceGoods + "' maxNum='" + item.maxNum + "'>" + item.price + 
+								"</option>");
+					});
+					//查看本地是否有记录，有的话显示在中奖名单上
+					checkLuckNameOfLocal();
+				}
+			});
+			
+			/*随机所有的中奖名单并且不重复*/
+			function showRandomNum(num) {
+				var li = "";
+				for(var i = 0; i < code.length; i++) {
+					arr[i] = i;
+				}
+				arr.sort(function() {
+					return 0.5 - Math.random();
+				});
+				for(var i = 0; i < num; i++) {
+					var index = arr[i];
+					//li += '<li><img src='+code[index].userPhoto+'>'+ code[index].userName+code[index].mobile+ '</li>';
+					if(code[index]) {
+						li += '<li><img src='+code[index].userPhoto+'></li>';
+					}
+				}
+				$(".prize_list ul").html(li);
+			}
+			//抽奖开始
+			$(function() {
+				$(".start").click(function() {
+					if($("#prize_btn").val() == 0) {//开始抽奖
+						if($("#set_grade").val() == "选择奖项") {
+							mui.alert("请选择奖励等级");
+							return;
+						}else {
+							//判断抽奖人数是否超过限制
+							if (judgeTheLuckNum()) {
+								$("#prize_btn").val(1);
+								// 定义一次抽几个
+								//var num = 1;
+								var num = $('#checkNum').val();
+								$(this).find("img").attr("src", "images/prize_stop.png");
+								myNumber = setInterval(function() {
+									showRandomNum(num);
+								}, 40);
+								$('#prizeCount').attr('readonly',true);
+								$('#set_grade').attr('disabled','disabled');
+							}
+						}
+					} else {//暂停
+						$("#prize_btn").val(0);
+						clearInterval(myNumber);
+
+						$('#prizeCount').attr('readonly',false);
+						$('#set_grade').removeAttr('disabled');
+
+						$(this).find("img").attr("src", "images/prize_start.png");
+						//设置单次抽取人数
+						var checknum = $('#checkNum').val();
+						if(isNaN(checknum) || checknum <= 0) {
+							checknum = 1;
+						}
+						var userIdList = [];
+						$(".prize_list ul").html("");
+						for (var i=1; i<=checknum; i++){
+							var userInfo = chooseTheLuckPrizeName();//中奖人
+							if(typeof(userInfo) == "undefined" && userIdList.length == 0) {
+								$(".prize_list ul").append("<li>无剩余候选人员</li>");
+							}
+							if(!userInfo){
+								break;	
+							}
+							//添加到大屏
+							addLuckList(userInfo, $("#set_grade").val());
+							//保存中奖名单到本地
+							saveLuckNameToLocal(userInfo);
+							userIdList.push(userInfo.userId);
+						}
+
+						//保存中奖名单到数据库
+						var price = $("#set_grade").val();
+						var priceGoods = $("#set_grade option:selected").attr("priceGoods");
+						if(userIdList.length > 0) {
+							saveUserPrice(userIdList, price, priceGoods);
+						}
+					}
+				});
+				//选择奖等
+				$("#set_grade").change(function() {
+						$(".prize_grade span").text($(this).val());
+						if($("#set_grade").val() == "选择奖等") {
+							$(".prize_grade span").text('开始抽奖');
+							$(".prize_grade i").text('');
+						}
+						
+						$(".prize_grade i").text($("#set_grade option:selected").attr("priceGoods"));
+						$('#prizeCount').val($("#set_grade option:selected").attr("maxNum"));
+				});
+			});
+			
+			function formatUserObj(userObj) {
+				var userJson = {};
+				var id = userObj.id;
+				var activityid = userObj.activityid;
+				var userId = userObj.user.id;
+				var userName = userObj.userName;
+				var userPhoto = userObj.userPhoto;
+				var mobile = userObj.mobile;
+				userJson.id = id;
+				userJson.activityid = activityid;
+				userJson.userId = userId;
+				userJson.userName = userName;
+				userJson.userPhoto = userPhoto;
+				userJson.mobile = mobile;
+				return userJson;
+			}
+			
+			//判断奖励个数是否超过设定人数
+			function judgeTheLuckNum(isNotAlert){
+				var lucyNum = 0;
+				var lucyArr = new Array();
+				var setNum = 0;//填写的中奖个数是否超过候选人员个数
+				
+				var index = $("#set_grade option").index($("#set_grade option:selected")) - 1;
+				lucyArr = localStorage.getItem("activity" + activityId + "prizeArr" + index);
+				
+				//setNum = eval("code.length + " + ("activity" + activityId + "prizeArr" + index) + ".length");
+				lucyArr = JSON.parse(lucyArr);
+				lucyNum = lucyArr ? lucyArr.length : 0;
+				if (lucyNum >= $("#prizeCount").val()) {
+					if(!isNotAlert) {
+						mui.alert('奖励人数超过预定人数');
+					}
+					return false;
+				}else{
+					return true;
+				}
+			};
+			
+			//将中奖名单保存在本地
+			function saveLuckNameToLocal(luckName){
+				var index = $("#set_grade option").index($("#set_grade option:selected")) - 1;
+				eval(("activity" + activityId + "prizeArr" + index) + ".push(luckName);");
+				localStorage.setItem("activity" + activityId + "prizeArr" + index, JSON.stringify(eval("activity" + activityId + "prizeArr" + index)));
+			};
+			
+			//查看本地是否有记录，有的话显示在中奖名单上
+			function checkLuckNameOfLocal(){
+				$.each(prizeArr, function(index, item) {
+					var prizeNameArr = localStorage.getItem("activity" + activityId + "prizeArr" + index);
+					if (prizeNameArr) {
+						var userInfoArr = JSON.parse(prizeNameArr);
+						$.each(userInfoArr, function(userInfoIndex, userInfoItem) {
+							//添加到大屏
+							addLuckList(userInfoItem, item.price,true);
+							
+							//从候选名单中删除
+							$.each(code, function(codeIndex, codeItem) {
+								if(codeItem.id == userInfoItem.id) {
+									code.splice(codeIndex, 1);
+									eval(("activity" + activityId + "prizeArr" + index) + ".push(codeItem);");
+								}
+							});
+						});
+					}
+				});
+			};
+			
+			//添加到中奖名单
+			function addLuckList(userInfo, price, notshow){
+				//大屏显示中奖名单
+				//$(".prize_list ul li:first").html('<img src='+userInfo.userPhoto+'>'+ userInfo.userName+userInfo.mobile);
+				if(!notshow){
+					$(".prize_list ul").append("<li><img src="+userInfo.userPhoto+"></li>");
+				}
+				//将中奖名单显示到中奖列表
+				var li = '<li class="NAME_lucy">'+ price +":"+ '<img src='+userInfo.userPhoto+'>'+ userInfo.userName+userInfo.mobile +'</li>';
+				$('.winnerName').prepend(li);
+				
+				//从候选名单中删除
+			};
+			
+			//筛选不同等级的中奖名单，返回中奖名单
+			function chooseTheLuckPrizeName(){
+				if(judgeTheLuckNum(true)){
+					var luckPrizeName = '';
+					luckPrizeName = luckOne(code);
+					code.splice(code.indexOf(luckPrizeName),1);
+					return luckPrizeName;
+				} else {
+					return null;
+				}
+			}
+			
+			//随机抽取一个中奖名单
+			function luckOne(listArr){
+				listArr.sort(function() {
+					return 0.5 - Math.random();
+				});
+				
+				var luck = listArr[Math.floor(Math.random()*listArr.length)];
+				return luck;
+			}
+			
+			//url地址截取
+			function UrlSearch(){
+				   var name,value; 
+				   var str=location.href; //取得整个地址栏
+				   var num=str.indexOf("?") 
+				   str=str.substr(num+1); //取得所有参数   stringvar.substr(start [, length ]
+				   var arr=str.split("&"); //各个参数放到数组里
+				   for(var i=0;i < arr.length;i++){ 
+				    num=arr[i].indexOf("="); 
+				    if(num>0){ 
+				     name=arr[i].substring(0,num);
+				     value=arr[i].substr(num+1);
+				     value=decodeURI(value);
+				     this[name]=value;
+				     } 
+				    } 
+				}; 
+				
+				/**
+				 * 查询参加某活动并满足条件的用户并存入集合
+				 */
+				function selectUserActivity(activityId) {
+					$.ajax({
+						type: "POST",
+						url: "/f/wx/conActivity/userActByPrice",
+						data: "id=" + activityId,
+						success: function(msg){
+							var arr = new Array();
+							$.each(msg, function(index, item) {
+								var userInfo = formatUserObj(item);
+								arr.push(userInfo);
+							});
+							code = arr;
+						}
+					});
+				}
+				
+				//提交中奖结果信息
+				function saveUserPrice(userIdList, price, priceGoods) {
+					var param = {};
+					param.userIdList = userIdList.toString();
+					param.activityid = activityId;
+					param.price = price;
+					param.priceGoods = priceGoods;
+					
+					$.ajax({
+						type: "POST",
+						url: "/f/wx/conActivity/addPrice",
+						data: param,
+						success: function(msg){
+							var json = JSON.parse(msg);
+							if(json.ret == "0") {
+								//保存成功
+							} else {
+								mui.alert(json.retMsg);
+							}
+						}
+					});
+				}
+		
+			
+		</script>
+	</body>
+		
+</html>

@@ -21,8 +21,8 @@
                     	//attendanceStarttime  attendanceEndtime  lotteryStarttime  lotteryEndtime
                     	var startJoin=$("[name=registrationStarttime]").val();
                     	var endJoin=$("[name=registrationEndtime]").val();
-                    	var startQian=$("[name=attendanceStarttime]").val();
-                    	var endQian=$("[name=attendanceEndtime]").val();
+                    	/* var startQian=$("[name=attendanceStarttime]").val();
+                    	var endQian=$("[name=attendanceEndtime]").val(); */
                     	var startChou=$("[name=lotteryStarttime]").val();
                     	var endChou=$("[name=lotteryEndtime]").val();
                     	//startActive endActive
@@ -53,14 +53,14 @@
 	                	        alert("报名结束时间不能等于报名开始时间!");
 	                	        return;
 	                	    } 
-	                    var b=comptime(startQian,endQian);
+	                    /* var b=comptime(startQian,endQian);
 	                    	if (b < 0) {
 	                	        alert("签到结束时间不能比签到开始时间早!");
 	                	        return;
 	                	    }  else if (b == 0) {
 	                	        alert("签到结束时间不能等于签到开始时间!");
 	                	        return;
-	                	    } 
+	                	    }  */
 	                    var c=comptime(startChou,endChou);
 	                    	if (c < 0) {
 	                	        alert("抽奖结束时间不能比抽奖开始时间早!");
@@ -68,31 +68,31 @@
 	                	    }  else if (c == 0) {
 	                	        alert("抽奖结束时间不能等于抽奖开始时间!");
 	                	        return;
-	                	    } 	 
+	                	    }
 	                    //判断活动状态时间比较
-	                    var d=comptime(endJoin,startQian);
+	                    /* var d=comptime(endJoin,startQian);
 	                    	if (d < 0) {
 	                	        alert("签到开始时间不能比报名结束时间早!");
 	                	        return;
-	                	    }  /* else if (d == 0) {
+	                	    } */  /* else if (d == 0) {
 	                	        alert("签到开始时间不能等于参加结束时间!");
 	                	        return;
 	                	    }  */
-	                    var e=comptime(endQian,startChou);
+	                    /* var e=comptime(endQian,startChou);
 	                    	if (e < 0) {
 	                	        alert("抽奖开始时间不能比签到结束时间早!");
 	                	        return;
-	                	    }  /* else if (e == 0) {
+	                	    } */  /* else if (e == 0) {
 	                	        alert("抽奖开始时间不能等于签到结束时间");
 	                	        return;
 	                	    }  */
 	                    //活动时间比较
 	                    //startActive endActive
-	                    var f=comptime(startActive,startJoin);
+	                   /*  var f=comptime(startActive,startJoin);
 	                    	if (f < 0) {
 	                	        alert("报名开始时间不能比活动开始时间早");
 	                	        return;
-	                	    }  
+	                	    }   */
 	                    var g=comptime(endChou,endActive);
 	                    	if (g < 0) {
 	                	        alert("活动结束时间不能比抽奖结束时间早!");
@@ -149,8 +149,67 @@
 				url = url + "&viewCommonFile=1";
 				windowOpen(url,"文件管理",1000,700);
 			};
+			
+			trObj = $("#prizeTable tbody tr").prop("outerHTML");
+			init($("#prize").val());
 		});
 		
+		var trObj;
+		
+		/**
+		*	向上插入
+		*/
+		function insertOne(obj) {
+			$(obj).parent().parent().before(trObj);
+		}
+		
+		/**
+		*	向下添加
+		*/
+		function addOne(obj) {
+			$("#prizeTable tbody").append(trObj);
+		}
+		
+		function deleteOne(obj) {
+			$(obj).parent().parent().remove();
+		}
+		
+		function init(priceJsonStr) {
+			var priceJson;
+			try {
+				priceJson = JSON.parse(priceJsonStr);
+			} catch(e) {
+				return;
+			}
+			
+			$.each(priceJson, function(index, item) {
+				$(".price").last().val(item.price);
+				$(".priceGoods").last().val(item.priceGoods);
+				$(".maxNum").last().val(item.maxNum);
+				$(".investor").last().val(item.investor);
+				$("#prizeTable tbody").append(trObj);
+			});
+		}
+		
+		function formatResult() {
+			var trArr = [];
+			$.each($("#prizeTable tbody tr"), function(index, item) {
+				var newTrJson = {};
+				newTrJson.price = $(item).find(".price").val();
+				newTrJson.priceGoods = $(item).find(".priceGoods").val();
+				newTrJson.maxNum = $(item).find(".maxNum").val();
+				newTrJson.investor = $(item).find(".investor").val();
+				if(newTrJson.price != "" && newTrJson.priceGoods != "" && newTrJson.maxNum != "") {
+					trArr.push(newTrJson);
+				}
+			});
+			$("#prize").val(JSON.stringify(trArr));
+		}
+		
+		function save() {
+			formatResult();
+			$("#inputForm").submit();
+		}
 	</script>
 </head>
 <body>
@@ -240,7 +299,7 @@
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
 			</div>
 		</div>
-		<div class="control-group">
+		<%-- <div class="control-group">
 			<label class="control-label">签到开始时间：</label>
 			<div class="controls">
 				<input name="attendanceStarttime" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate "
@@ -255,7 +314,7 @@
 					value="<fmt:formatDate value="${conActivity.attendanceEndtime}" pattern="yyyy-MM-dd HH:mm:ss"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
 			</div>
-		</div>
+		</div> --%>
 		<div class="control-group">
 			<label class="control-label">抽奖开始时间：</label>
 			<div class="controls">
@@ -325,11 +384,41 @@
 		<div class="control-group">
 			<label class="control-label">奖项json：</label>
 			<div class="controls">
-				<form:input path="prize" htmlEscape="false" maxlength="1000" class="input-xlarge "/>
+				<table id="prizeTable" class="table table-striped table-bordered table-condensed">
+					<thead>
+						<tr>
+							<th>奖项</th>
+							<th>奖品</th>
+							<th>获奖最大人数</th>
+							<th>投资人</th>
+							<th>操作<a style="cursor:pointer;" onclick="addOne(this)">  向下添加</a></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><input class="input-medium valid price" type="text" ></td>
+							<td><input class="input-medium valid priceGoods" type="text" ></td>
+							<td><input class="input-medium valid maxNum" type="text" ></td>
+							<td><input class="input-medium valid investor" type="text" ></td>
+							<td>
+								<a style="cursor:pointer;" onclick="insertOne(this)">向上插入</a>
+								<a style="cursor:pointer;" onclick="deleteOne(this)">删除</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			
+				<textarea id="prize" name="prize" rows="4" style="display:none" class="input-xxlarge">${conActivity.prize}</textarea>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">直播间地址：</label>
+			<div class="controls">
+				<form:input path="liveUrl" htmlEscape="false" maxlength="200" class="input-xlarge"/>
 			</div>
 		</div>
 		<div class="form-actions">
-			<shiro:hasPermission name="wx:conActivity:edit"><input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
+			<shiro:hasPermission name="wx:conActivity:edit"><input id="btnSubmit" class="btn btn-primary" type="button" onclick="save()" value="保 存"/>&nbsp;</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
 		</div>
 	</form:form>

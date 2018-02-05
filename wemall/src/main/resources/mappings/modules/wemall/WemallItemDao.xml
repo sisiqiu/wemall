@@ -32,10 +32,12 @@
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		s.name AS "sortName"
 	</sql>
 	
 	<sql id="wemallItemJoins">
+	    LEFT JOIN wemall_item_sort s ON s.id = a.sort_id
 	</sql>
     
 	<select id="get" resultType="WemallItem">
@@ -143,6 +145,9 @@
 	</select>
 	
 	<insert id="insert">
+	    <selectKey resultType="java.lang.String" order="AFTER" keyProperty="id">
+          SELECT LAST_INSERT_ID()
+		</selectKey>
 		INSERT INTO wemall_item(
 			name,
 			sort_id,
@@ -242,5 +247,4 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-	
 </mapper>

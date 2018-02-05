@@ -28,36 +28,57 @@
 <body>
 	<ul class="nav nav-tabs">
 		<li><a href="${ctx}/wemall/wemallItemSpec/">商品-属性信息列表</a></li>
-		<li class="active"><a href="${ctx}/wemall/wemallItemSpec/form?itemId=${wemallItemSpec.itemId}&specId=${wemallItemSpec.specId}">商品-属性信息<shiro:hasPermission name="wemall:wemallItemSpec:edit">${not empty wemallItemSpec.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="wemall:wemallItemSpec:edit">查看</shiro:lacksPermission></a></li>
+		<li class="active"><a href="${ctx}/wemall/wemallItemSpec/form?id=${wemallItemSpec.id}">商品-属性信息<shiro:hasPermission name="wemall:wemallItemSpec:edit">${not empty wemallItemSpec.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="wemall:wemallItemSpec:edit">查看</shiro:lacksPermission></a></li>
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="wemallItemSpec" action="${ctx}/wemall/wemallItemSpec/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
 		<sys:message content="${message}"/>		
 		<div class="control-group">
-			<label class="control-label">属性类别id：</label>
+			<label class="control-label">商品id：</label>
 			<div class="controls">
-				<form:input path="specId" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
+				<form:input path="itemId" htmlEscape="false" maxlength="11" class="input-xlarge required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">属性类别名：</label>
+			<div class="controls">
+				<form:input path="specName" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">属性值名称：</label>
+			<div class="controls">
+				<form:input path="specInfoName" htmlEscape="false" maxlength="40" class="input-xlarge required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">排序：</label>
+			<div class="controls">
+				<form:input path="sort" htmlEscape="false" maxlength="11" class="input-xlarge required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">价格：</label>
 			<div class="controls">
-				<form:input path="price" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
+				<form:input path="price" htmlEscape="false" maxlength="11" class="input-xlarge required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">拼团价：</label>
 			<div class="controls">
-				<form:input path="teamPrice" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
+				<form:input path="teamPrice" htmlEscape="false" maxlength="11" class="input-xlarge required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">库存量：</label>
 			<div class="controls">
-				<form:input path="storage" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
+				<form:input path="storage" htmlEscape="false" maxlength="11" class="input-xlarge required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>

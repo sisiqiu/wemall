@@ -44,7 +44,7 @@
 			<label class="control-label">缩略图：</label>
 			<div class="controls">
 				<input type="hidden" id="photo" name="photo" value="${wemallItemSort.photo}" />
-				<sys:ckfinder input="photo" type="thumb" uploadPath="/wemall/item" selectMultiple="false"/>
+				<sys:ckfinder input="photo" type="thumb" uploadPath="/wemall" selectMultiple="false"/>
 				<%-- <form:input path="photo" htmlEscape="false" maxlength="200" class="input-xlarge "/> --%>
 			</div>
 		</div>
