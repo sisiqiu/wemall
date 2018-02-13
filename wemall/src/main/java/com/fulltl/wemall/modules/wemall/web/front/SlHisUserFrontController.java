@@ -35,7 +35,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * 验证用户名是否已被使用。
 	 * 
 	 * 测试用例：
-	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/his/user/checkLoginName
+	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/user/checkLoginName
 	 *	参数：loginName=用户名  或  mobile=用户名
 	 * 	例：loginName=13838548839
 	 * 
@@ -46,7 +46,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = {"his/user/checkLoginName"})
+	@RequestMapping(value = {"wemall/user/checkLoginName"})
 	@ResponseBody
 	public String checkLoginName(HttpServletRequest request, HttpServletResponse response, Model model) {
 		Map<String, Object> retMap = Maps.newHashMap();
@@ -64,7 +64,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * 发送验证码
 	 * 
 	 * 测试用例：
-	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/his/user/getCode
+	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/user/getCode
 	 *	参数：mobile=手机号
 	 * 	例：mobile=13838548839
 	 * 
@@ -74,7 +74,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * @param mobile
 	 * @return
 	 */
-    @RequestMapping(value = "his/user/getCode")
+    @RequestMapping(value = "wemall/user/getCode")
     @ResponseBody
     public String getSMSCode(HttpServletRequest request) {
     	String mobile = WebUtils.getCleanParam(request, "mobile");
@@ -85,7 +85,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * 患者快速注册接口
 	 * 
 	 * 测试用例：
-	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/his/user/registerForPatient
+	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/user/registerForPatient
 	 *	参数：mobile=用户名，
 	 *		verifyServID=验证码ID，
 	 *		sms_code=验证码值，
@@ -107,7 +107,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = {"his/user/registerForPatient"})
+	@RequestMapping(value = {"wemall/user/registerForPatient"})
 	@ResponseBody
 	public String registerForPatient(HttpServletRequest request, HttpServletResponse response, Model model) {
 		return new Gson().toJson(formatReturnMsg(slHisUserFrontService.registerAndGetResult(SystemService.USERTYPE_PATIENT, request)));
@@ -117,7 +117,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * 医生快速注册接口
 	 * 
 	 * 测试用例（参数与患者注册接口基本一致）：
-	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/his/user/registerForDoctor
+	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/user/registerForDoctor
 	 *	参数：mobile=用户名，
 	 *		verifyServID=验证码ID，
 	 *		sms_code=验证码值，
@@ -140,7 +140,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = {"his/user/registerForDoctor"})
+	@RequestMapping(value = {"wemall/user/registerForDoctor"})
 	@ResponseBody
 	public String registerForDoctor(HttpServletRequest request, HttpServletResponse response, Model model) {
 		return new Gson().toJson(formatReturnMsg(slHisUserFrontService.registerAndGetResult(SystemService.USERTYPE_DOCTOR, request)));
@@ -150,7 +150,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * 患者登陆接口
 	 * 
 	 * 测试用例：
-	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/his/user/loginForPatient
+	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/user/loginForPatient
 	 *	参数：loginFrom=user_login
 	 *		loginName=用户名，
 	 *		password=密码，
@@ -188,7 +188,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = {"his/user/loginForPatient"})
+	@RequestMapping(value = {"wemall/user/loginForPatient"})
 	@ResponseBody
 	public String loginForPatient(HttpServletRequest request, HttpServletResponse response, Model model) {
 		Map<String, Object> retMap = slHisUserFrontService.loginAndGetResult(SystemService.USERTYPE_PATIENT, request);
@@ -199,7 +199,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * 医生登陆接口
 	 * 
 	 * 测试用例（参数与患者登陆接口基本一致）：
-	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/his/user/loginForDoctor
+	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/user/loginForDoctor
 	 *	参数：loginFrom=user_login
 	 *		loginName=用户名，
 	 *		password=密码，
@@ -237,7 +237,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = {"his/user/loginForDoctor"})
+	@RequestMapping(value = {"wemall/user/loginForDoctor"})
 	@ResponseBody
 	public String loginForDoctor(HttpServletRequest request, HttpServletResponse response, Model model) {
 		Map<String, Object> retMap = slHisUserFrontService.loginAndGetResult(SystemService.USERTYPE_DOCTOR, request);
@@ -248,7 +248,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * 根据系统用户id，查询该用户对应的医生信息的接口。
 	 * 
 	 * 测试用例（参数与患者注册接口基本一致）：
-	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/his/user/getDoctorInfo
+	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/user/getDoctorInfo
 	 *	参数：userId=用户ID，
 	 * 
 	 * 结果示例：{"ret":"0","retMsg":"获取成功！","data":{"userInfo":{...},"doctorInfo":{...}}}
@@ -258,7 +258,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = {"his/user/getDoctorInfo"})
+	@RequestMapping(value = {"wemall/user/getDoctorInfo"})
 	@ResponseBody
 	public String getDoctorInfo(HttpServletRequest request, HttpServletResponse response, Model model) {
 		String userId = WebUtils.getCleanParam(request, "userId");
@@ -270,7 +270,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * step1:校验旧手机验证码的接口。设定可设定新手机号的有效时长，返回校验成功与否。
 	 * 
 	 * 测试用例（参数与患者注册接口基本一致）：
-	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/his/user/checkSMSCodeForOldMobile
+	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/user/checkSMSCodeForOldMobile
 	 *	参数：oldMobile=原手机号，
 	 *		verifyServID=验证码ID，
 	 *		sms_code=验证码值，
@@ -287,7 +287,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = {"his/user/checkSMSCodeForOldMobile"})
+	@RequestMapping(value = {"wemall/user/checkSMSCodeForOldMobile"})
 	@ResponseBody
 	public String checkSMSCodeForOldMobile(HttpServletRequest request, HttpServletResponse response, Model model) {
 		return new Gson().toJson(formatReturnMsg(slHisUserFrontService.checkSMSCodeForOldMobile(request)));
@@ -298,7 +298,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * step2:更新手机号码(需要验证可设定新手机号的有效时间是否已超过，验证新手机验证码是否匹配)
 	 * 
 	 * 测试用例（参数与患者注册接口基本一致）：
-	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/his/user/updateMobile
+	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/user/updateMobile
 	 *	参数：oldMobile=原手机号，
 	 *		newMobile=新手机号，
 	 *		verifyServID=新手机号对应的验证码ID，
@@ -319,7 +319,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = {"his/user/updateMobile"})
+	@RequestMapping(value = {"wemall/user/updateMobile"})
 	@ResponseBody
 	public String updateMobile(HttpServletRequest request, HttpServletResponse response, Model model) {
 		return new Gson().toJson(formatReturnMsg(slHisUserFrontService.updateMobile(request)));
@@ -329,7 +329,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * 根据手机号，验证码，修改密码的接口。
 	 * 
 	 * 测试用例（参数与患者注册接口基本一致）：
-	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/his/user/updatePWByMobile
+	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/user/updatePWByMobile
 	 *	参数：mobile=手机号，
 	 *		verifyServID=手机号对应的验证码ID，
 	 *		sms_code=手机号对应的验证码值，
@@ -350,7 +350,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = {"his/user/updatePWByMobile"})
+	@RequestMapping(value = {"wemall/user/updatePWByMobile"})
 	@ResponseBody
 	public String updatePWByMobile(HttpServletRequest request, HttpServletResponse response, Model model) {
 		return new Gson().toJson(formatReturnMsg(slHisUserFrontService.updatePWByMobile(request)));
@@ -360,7 +360,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * 根据原密码，新密码，修改密码的接口。
 	 * 
 	 * 测试用例（参数与患者注册接口基本一致）：
-	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/his/user/updatePWByOldPW
+	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/user/updatePWByOldPW
 	 *	参数：oldPassword=旧密码，
 	 *		newPassword=新密码，
 	 *
@@ -377,7 +377,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = {"his/user/updatePWByOldPW"})
+	@RequestMapping(value = {"wemall/user/updatePWByOldPW"})
 	@ResponseBody
 	public String updatePWByOldPW(HttpServletRequest request, HttpServletResponse response, Model model) {
 		String oldPassword = WebUtils.getCleanParam(request, "oldPassword");
@@ -389,7 +389,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * 医生或患者更新用户基本信息的接口。
 	 * 
 	 * 测试用例（参数与患者注册接口基本一致）：
-	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/his/user/updateUserInfo
+	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/user/updateUserInfo
 	 *	参数：type=doctor或者patient，
 	 *		photo=头像
 	 *		name=昵称
@@ -411,7 +411,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = {"his/user/updateUserInfo"})
+	@RequestMapping(value = {"wemall/user/updateUserInfo"})
 	@ResponseBody
 	public String updateUserInfo(HttpServletRequest request, HttpServletResponse response, Model model) {
 		String type = WebUtils.getCleanParam(request, "type");
@@ -422,7 +422,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * 医生或患者更新身份证信息的接口
 	 * 
 	 * 测试用例（参数与患者注册接口基本一致）：
-	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/his/user/updateIdCard
+	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/user/updateIdCard
 	 *	参数：type=doctor或者patient，
 	 *		idCard=身份证
 	 *
@@ -438,7 +438,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = {"his/user/updateIdCard"})
+	@RequestMapping(value = {"wemall/user/updateIdCard"})
 	@ResponseBody
 	public String updateIdCard(HttpServletRequest request, HttpServletResponse response, Model model) {
 		String type = WebUtils.getCleanParam(request, "type");
@@ -449,7 +449,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * 获取当前系统用户的接口
 	 * 
 	 * 测试用例（参数与患者注册接口基本一致）：
-	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/his/user/getCurrentUser
+	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/user/getCurrentUser
 	 *	参数：无
 	 *
 	 * 	例：
@@ -463,7 +463,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = {"his/user/getCurrentUser"})
+	@RequestMapping(value = {"wemall/user/getCurrentUser"})
 	@ResponseBody
 	public String getCurrentUser(HttpServletRequest request, HttpServletResponse response, Model model) {
 		return new Gson().toJson(formatReturnMsg(slHisUserFrontService.getCurrentUser()));
@@ -473,7 +473,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * 验证当前用户手机号的接口。
 	 * 
 	 * 测试用例：
-	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/his/user/checkCurUserMobile
+	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/user/checkCurUserMobile
 	 *	参数：mobile=手机号，
 	 *		verifyServID=手机号对应的验证码ID，
 	 *		sms_code=手机号对应的验证码值，
@@ -492,7 +492,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = {"his/user/checkCurUserMobile"})
+	@RequestMapping(value = {"wemall/user/checkCurUserMobile"})
 	@ResponseBody
 	public String checkCurUserMobile(HttpServletRequest request, HttpServletResponse response, Model model) {
 		return new Gson().toJson(formatReturnMsg(slHisUserFrontService.checkCurUserMobile(request)));
@@ -502,7 +502,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * 验证手机号的接口。
 	 * 
 	 * 测试用例：
-	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/his/user/checkMobile
+	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/user/checkMobile
 	 *	参数：mobile=手机号，
 	 *		verifyServID=手机号对应的验证码ID，
 	 *		sms_code=手机号对应的验证码值，
@@ -521,7 +521,7 @@ public class SlHisUserFrontController extends BaseController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = {"his/user/checkMobile"})
+	@RequestMapping(value = {"wemall/user/checkMobile"})
 	@ResponseBody
 	public String checkMobile(HttpServletRequest request, HttpServletResponse response, Model model) {
 		return new Gson().toJson(formatReturnMsg(slHisUserFrontService.checkMobile(request)));

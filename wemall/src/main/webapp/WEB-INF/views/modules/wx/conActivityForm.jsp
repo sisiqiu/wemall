@@ -278,7 +278,7 @@
 		<div class="control-group">
 			<label class="control-label">活动内容:</label>
 			<div class="controls">
-				<form:textarea id="content" htmlEscape="true" path="content" rows="4" maxlength="200" class="input-xxlarge"/>
+				<form:textarea id="content" htmlEscape="true" path="content" rows="4" class="input-xxlarge"/>
 				<sys:ckeditor replace="content" uploadPath="/wx/activity" />
 			</div>
 		</div>

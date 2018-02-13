@@ -43,5 +43,19 @@ public class WemallUserAddressService extends CrudService<WemallUserAddressDao, 
 	public void delete(WemallUserAddress wemallUserAddress) {
 		super.delete(wemallUserAddress);
 	}
+
+	@Transactional(readOnly = false)
+	public void delete(List<String> ids) {
+		dao.deleteByIds(ids);
+	}
+
+	@Transactional(readOnly = false)
+	public void setNotDefaultUserAddr(String userId) {
+		dao.setNotDefaultUserAddr(userId);
+	}
 	
+	@Transactional(readOnly = false)
+	public void setDefaultUserAddr(String id) {
+		dao.setDefaultUserAddr(id);
+	}
 }

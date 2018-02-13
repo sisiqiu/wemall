@@ -9,11 +9,17 @@
 			if($("#salesNum").val() == "") {
 				$("#salesNum").val("0");
 			}
+			var editorElement = CKEDITOR.document.getById('desc');
+			editorElement.setHtml(CKEDITOR.instances.desc.getData());
 			//$("#name").focus();
 			$("#inputForm").validate({
 				submitHandler: function(form){
-					loading('正在提交，请稍等...');
-					form.submit();
+					if (CKEDITOR.instances.desc.getData()==""){
+                        top.$.jBox.tip('请填写商品描述','warning');
+                    } else {
+						loading('正在提交，请稍等...');
+						form.submit();
+                    }
 				},
 				errorContainer: "#messageBox",
 				errorPlacement: function(error, element) {
@@ -309,8 +315,10 @@
 		<div class="control-group">
 			<label class="control-label">商品描述：</label>
 			<div class="controls">
-				<form:textarea path="desc" htmlEscape="false" rows="4" class="input-xxlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:textarea id="desc" htmlEscape="true" path="desc" rows="4" class="input-xxlarge required"/>
+				<sys:ckeditor replace="desc" uploadPath="/wemall" />
+				<%-- <form:textarea path="desc" htmlEscape="false" rows="4" class="input-xxlarge required"/>
+				<span class="help-inline"><font color="red">*</font> </span> --%>
 			</div>
 		</div>
 		<div class="control-group">

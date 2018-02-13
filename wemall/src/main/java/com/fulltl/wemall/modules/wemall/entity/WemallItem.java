@@ -4,9 +4,13 @@
 package com.fulltl.wemall.modules.wemall.entity;
 
 import org.hibernate.validator.constraints.Length;
+
+import java.util.Map;
+
 import javax.validation.constraints.NotNull;
 
 import com.fulltl.wemall.common.persistence.DataEntity;
+import com.google.common.collect.Maps;
 
 /**
  * 商品管理Entity
@@ -370,6 +374,34 @@ public class WemallItem extends DataEntity<WemallItem> {
 
 	public void setSortName(String sortName) {
 		this.sortName = sortName;
+	}
+
+	/**
+	 * 获取列表接口展示使用的小型数据map
+	 * @return
+	 */
+	public Map<String, Object> getSmallEntityMap() {
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("id", this.getId());
+		map.put("name", this.getName());
+		map.put("sortId", this.getSortId());
+		map.put("photo", this.getPhoto());
+		map.put("sort", this.getSort());
+		map.put("originalPrice", this.getOriginalPrice());
+		map.put("currentPrice", this.getCurrentPrice());
+		map.put("storage", this.getStorage());
+		map.put("salesNum", this.getSalesNum());
+		map.put("isTop", this.getIsTop());
+		map.put("isNew", this.getIsNew());
+		map.put("salesNum", this.getSalesNum());
+		map.put("freightFree", this.getFreightFree());
+		map.put("canUseBounty", this.getCanUseBounty());
+		map.put("canUseCoupon", this.getCanUseCoupon());
+		map.put("canUseScoreDeduct", this.getCanUseScoreDeduct());
+		map.put("scoreDeductPrice", this.getScoreDeductPrice());
+		map.put("canUseScoreExchange", this.getCanUseScoreExchange());
+		super.formatEmptyString(map);
+		return map;
 	}
 		
 	

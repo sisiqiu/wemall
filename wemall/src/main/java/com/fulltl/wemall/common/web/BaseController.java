@@ -263,16 +263,16 @@ public abstract class BaseController {
 		
 		Object ret = map.get("ret");
 		Object retMsg = map.get("retMsg");
-		Object sid = map.get("sid");
-		Object access_token = map.get("access_token");
+		/*Object sid = map.get("sid");
+		Object access_token = map.get("access_token");*/
 		
 		Object data = map.get("data");
-		if(map.size() == 5 && 
+		if(map.size() == 3 && 
 				ret != null && 
 				retMsg != null && 
-				data != null && 
+				data != null /*&& 
 				sid != null && 
-				access_token != null) {
+				access_token != null*/) {
 			//数据无需格式化
 			return map;
 		}
@@ -289,20 +289,20 @@ public abstract class BaseController {
 		}
 		
 		//sid格式化
-		if(sid == null) {
+		/*if(sid == null) {
 			String userSid = UserUtils.getUser().getSid();
 			retMap.put("sid", StringUtils.isBlank(userSid) ? UserUtils.getSession().getId().toString() : userSid);
 		} else {
 			retMap.put("sid", sid);
 			map.remove("sid");
-		}
+		}*/
 		//access_token格式化
-		if(access_token == null) {
+		/*if(access_token == null) {
 			retMap.put("access_token", "");
 		} else {
 			retMap.put("access_token", access_token);
 			map.remove("access_token");
-		}
+		}*/
 		//最后判断data
 		if(map.containsKey("data") && map.size() == 1) {
 			retMap.put("data", data);

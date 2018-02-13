@@ -490,6 +490,27 @@
 			<if test="realName != null">
 				realName = #{realName}, 
 		    </if>
+		    <if test="curBountyNum != null and curBountyNum != ''">
+				cur_bounty_num = #{curBountyNum},
+		    </if>
+		    <if test="totalBountyNum != null and totalBountyNum != ''">
+				total_bounty_num = #{totalBountyNum},
+		    </if>
+		    <if test="curScoreNum != null and curScoreNum != ''">
+				cur_score_num = #{curScoreNum},
+		    </if>
+		    <if test="totalScoreNum != null and totalScoreNum != ''">
+				total_score_num = #{totalScoreNum},
+		    </if>
+		    <if test="vipCardIs != null and vipCardIs != ''">
+				vip_card_ids = #{vipCardIs},
+		    </if>
+		    <if test="totalOrderNum != null and totalOrderNum != ''">
+				total_order_num = #{totalOrderNum},
+		    </if>
+		    <if test="totalConsumeNum != null and totalConsumeNum != ''">
+				total_consume_num = #{totalConsumeNum},
+		    </if>
 			update_by = #{updateBy.id}, 
 			update_date = #{updateDate}
 		WHERE id = #{id}

@@ -28,7 +28,7 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 	private Integer totalRefundFee;		// 总退款金额
 	private String title;		// 订单名称
 	private String body;		// 订单描述
-	private Integer status;		// 状态（1、未付款，2、已付款，3、未发货，4、已发货，5、交易成功，6、交易关闭）
+	private Integer status;		// 状态（1、未付款，2、已付款，3、未发货，4、已发货，5、交易成功，6、交易退货，7、交易关闭）
 	private Date paymentDate;		// 付款时间
 	private Date consignDate;		// 发货时间
 	private Date endDate;		// 交易完成时间

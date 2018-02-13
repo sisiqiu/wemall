@@ -47,6 +47,14 @@
 			<li><label>金额：</label>
 				<form:input path="price" htmlEscape="false" maxlength="11" class="input-medium"/>
 			</li>
+			<li><label>创建时间：</label>
+				<input name="beginCreateDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="<fmt:formatDate value="${wemallScoreInfo.beginCreateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/> - 
+				<input name="endCreateDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="<fmt:formatDate value="${wemallScoreInfo.endCreateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<li class="clearfix"></li>
 		</ul>

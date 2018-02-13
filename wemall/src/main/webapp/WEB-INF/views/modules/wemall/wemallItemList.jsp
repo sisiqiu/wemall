@@ -32,7 +32,9 @@
 				<form:input path="name" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
 			<li><label>商品类别id：</label>
-				<form:input path="sortId" htmlEscape="false" maxlength="11" class="input-medium"/>
+				<sys:treeselect id="sortId" name="sortId" value="${wemallItem.sortId}" labelName="sortName" labelValue="${wemallItem.sortName}"
+						title="商品类别" url="/wemall/wemallItemSort/treeData" extId="${wemallItem.sortId}" cssClass="required"/>
+				<%-- <form:input path="sortId" htmlEscape="false" maxlength="11" class="input-medium"/> --%>
 			</li>
 			<li><label>商品原价：</label>
 				<form:input path="originalPrice" htmlEscape="false" maxlength="11" class="input-medium"/>
@@ -118,7 +120,7 @@
 					${wemallItem.name}
 				</td>
 				<td>
-					${wemallItem.sortId}
+					${wemallItem.sortName}
 				</td>
 				<td>
 					${wemallItem.originalPrice}
