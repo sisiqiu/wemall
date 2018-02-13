@@ -33,10 +33,12 @@
 					title="用户" url="/sys/office/treeData?type=3" cssClass="input-small" allowClear="true" notAllowSelectParent="true"/>
 			</li>
 			<li><label>商品id：</label>
+				<%-- <sys:treeselect id="itemId" name="itemId" value="${wemallShopCar.itemId}" labelName="item.name" labelValue="${wemallShopCar.item.name}"
+						title="商品名称" url="/wemall/wemallItem/treeData" extId="${wemallShopCar.itemId}" cssClass="required"/> --%>
 				<form:input path="itemId" htmlEscape="false" maxlength="11" class="input-medium"/>
 			</li>
 			<li><label>商品名称：</label>
-				<form:input path="itemName" htmlEscape="false" maxlength="100" class="input-medium"/>
+				<form:input path="item.name" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
 			<li><label>商品数量：</label>
 				<form:input path="itemNum" htmlEscape="false" maxlength="6" class="input-medium"/>
@@ -75,7 +77,7 @@
 					${wemallShopCar.itemId}
 				</td>
 				<td>
-					${wemallShopCar.itemName}
+					${wemallShopCar.item.name}
 				</td>
 				<td>
 					${wemallShopCar.itemNum}

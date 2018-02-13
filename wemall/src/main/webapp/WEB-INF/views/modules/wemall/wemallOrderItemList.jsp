@@ -37,6 +37,12 @@
 			<li><label>商品总金额：</label>
 				<form:input path="totalFee" htmlEscape="false" maxlength="11" class="input-medium"/>
 			</li>
+			<li><label>状态：</label>
+				<form:select path="status" class="input-medium">
+					<form:option value="" label=""/>
+					<form:options items="${fns:getDictList('order_status')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+			</li>
 			<li><label>物流名称：</label>
 				<form:input path="freightName" htmlEscape="false" maxlength="50" class="input-medium"/>
 			</li>
@@ -58,9 +64,11 @@
 				<th>商品数量</th>
 				<th>商品标题</th> 
 				<th>商品总金额</th>
+				<th>状态</th>
 				<th>物流名称</th>
 				<th>物流单号</th>
 				<th>买家昵称</th>
+				<th>买家评分</th>
 				<th>买家是否评价</th>
 				<shiro:hasPermission name="wemall:wemallOrderItem:edit"><th>操作</th></shiro:hasPermission>
 			</tr>
@@ -81,6 +89,9 @@
 					${wemallOrderItem.totalFee}
 				</td>
 				<td>
+					${fns:getDictLabel(wemallOrderItem.status, 'order_status', '')}
+				</td>
+				<td>
 					${wemallOrderItem.freightName}
 				</td>
 				<td>
@@ -88,6 +99,9 @@
 				</td>
 				<td>
 					${wemallOrderItem.buyerNick}
+				</td>
+				<td>
+					${wemallOrderItem.buyerScore}
 				</td>
 				<td>
 					${fns:getDictLabel(wemallOrderItem.buyerComment, 'yes_no', '')}

@@ -3,11 +3,15 @@
  */
 package com.fulltl.wemall.modules.wemall.entity;
 
-import org.hibernate.validator.constraints.Length;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import java.util.Map;
+
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.validator.constraints.Length;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fulltl.wemall.common.persistence.TreeEntity;
+import com.google.common.collect.Maps;
 
 /**
  * 商品分类管理Entity
@@ -79,5 +83,20 @@ public class WemallItemSort extends TreeEntity<WemallItemSort> {
 	
 	public String getParentId() {
 		return parent != null && parent.getId() != null ? parent.getId() : "0";
+	}
+
+	/**
+	 * 获取列表接口展示使用的小型数据map
+	 * @return
+	 */
+	public Map<String, Object> getSmallEntityMap() {
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("id", this.getId());
+		map.put("name", this.getName());
+		map.put("photo", this.getPhoto());
+		map.put("sort", this.getSort());
+		map.put("parentId", this.getParent() == null ? null : this.getParent().getId());
+		super.formatEmptyString(map);
+		return map;
 	}
 }

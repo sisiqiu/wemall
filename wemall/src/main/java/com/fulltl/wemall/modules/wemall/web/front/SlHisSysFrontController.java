@@ -23,7 +23,7 @@ import com.google.gson.Gson;
  *
  */
 @Controller
-@RequestMapping(value = "${frontPath}/interface/his/sys")
+@RequestMapping(value = "${frontPath}/interface/wemall/sys")
 public class SlHisSysFrontController extends BaseController {
 	@Autowired
 	private SlHisSysFrontService slHisSysFrontService;

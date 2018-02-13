@@ -13,7 +13,7 @@ import com.fulltl.wemall.modules.wemall.service.front.SlHisMarketFrontService;
  *
  */
 @Controller
-@RequestMapping(value = "${frontPath}/interface/his/cusService")
+@RequestMapping(value = "${frontPath}/interface/wemall/market")
 public class SlHisMarketFrontController extends BaseController {
 	
 	@Autowired 

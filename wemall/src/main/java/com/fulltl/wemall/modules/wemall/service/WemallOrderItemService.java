@@ -23,7 +23,7 @@ import com.fulltl.wemall.modules.wemall.dao.WemallOrderItemDao;
 @Transactional(readOnly = true)
 public class WemallOrderItemService extends CrudService<WemallOrderItemDao, WemallOrderItem> {
 
-	public WemallOrderItem get(String orderNo, Integer itemId) {
+	public WemallOrderItem get(String orderNo, String itemId) {
 		WemallOrderItem wemallOrderItem = new WemallOrderItem();
 		wemallOrderItem.setOrderNo(orderNo);
 		wemallOrderItem.setItemId(itemId);
@@ -46,6 +46,11 @@ public class WemallOrderItemService extends CrudService<WemallOrderItemDao, Wema
 	@Transactional(readOnly = false)
 	public void delete(WemallOrderItem wemallOrderItem) {
 		super.delete(wemallOrderItem);
+	}
+
+	@Transactional(readOnly = false)
+	public void saveBuyerEvaluate(WemallOrderItem wemallOrderItem) {
+		dao.saveBuyerEvaluate(wemallOrderItem);
 	}
 	
 }

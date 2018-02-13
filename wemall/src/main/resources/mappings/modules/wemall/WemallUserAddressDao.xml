@@ -165,4 +165,25 @@
 		WHERE id = #{id}
 	</update>
 	
+	<update id="deleteByIds">
+		UPDATE wemall_user_address SET 
+			del_flag = '1'
+		WHERE id in
+			<foreach collection="list" index="index" item="item" open="(" separator="," close=")">  
+		        #{item}  
+		    </foreach>
+	</update>
+	
+	<update id="setNotDefaultUserAddr">
+		UPDATE wemall_user_address SET 
+			is_default = '0'
+		WHERE user_id = #{userId} and is_default = '1'
+	</update>
+	
+	<update id="setDefaultUserAddr">
+		UPDATE wemall_user_address SET 
+			is_default = '1'
+		WHERE id = #{id}
+	</update>
+	
 </mapper>

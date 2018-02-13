@@ -7,12 +7,33 @@
 		a.user_id AS "user.id",
 		a.item_id AS "itemId",
 		a.item_num AS "itemNum",
+		a.item_spec_ids AS "itemSpecIds",
 		a.status AS "status",
 		a.create_date AS "createDate",
 		a.update_date AS "updateDate",
 		a.del_flag AS "delFlag",
 		u2.name AS "user.name",
-		i.name AS "itemName"
+		i.id AS "item.id",
+		i.name AS "item.name",
+		i.sort_id AS "item.sortId",
+		i.original_price AS "item.originalPrice",
+		i.current_price AS "item.currentPrice",
+		i.storage AS "item.storage",
+		i.photo AS "item.photo",
+		i.sort AS "item.sort",
+		i.is_top AS "item.isTop",
+		i.is_new AS "item.isNew",
+		i.is_on_shelf AS "item.isOnShelf",
+		i.sales_num AS "item.salesNum",
+		i.product_place AS "item.productPlace",
+		i.can_use_bounty AS "item.canUseBounty",
+		i.can_use_coupon AS "item.canUseCoupon",
+		i.can_use_score_deduct AS "item.canUseScoreDeduct",
+		i.score_deduct_price AS "item.scoreDeductPrice",
+		i.can_use_score_exchange AS "item.canUseScoreExchange",
+		i.sub_stock AS "item.subStock",
+		i.freight_free AS "item.freightFree",
+		i.freight_price AS "item.freightPrice"
 	</sql>
 	
 	<sql id="wemallShopCarJoins">
@@ -44,11 +65,11 @@
 			<if test="itemId != null and itemId != ''">
 				AND a.item_id = #{itemId}
 			</if>
-			<if test="itemName != null and itemName != ''">
+			<if test="item != null and item.name != null and item.name != ''">
 				AND i.name LIKE 
-					<if test="dbName == 'oracle'">'%'||#{itemName}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{itemName}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{itemName},'%')</if>
+					<if test="dbName == 'oracle'">'%'||#{item.name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{item.name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{item.name},'%')</if>
 			</if>
 			<if test="itemNum != null and itemNum != ''">
 				AND a.item_num = #{itemNum}
@@ -93,6 +114,7 @@
 			user_id,
 			item_id,
 			item_num,
+			item_spec_ids,
 			status,
 			create_date,
 			update_date,
@@ -101,6 +123,7 @@
 			#{user.id},
 			#{itemId},
 			#{itemNum},
+			#{itemSpecIds},
 			#{status},
 			#{createDate},
 			#{updateDate},
@@ -113,6 +136,7 @@
 			user_id = #{user.id},
 			item_id = #{itemId},
 			item_num = #{itemNum},
+			item_spec_ids = #{itemSpecIds},
 			status = #{status},
 			update_date = #{updateDate}
 		WHERE id = #{id}
@@ -122,6 +146,15 @@
 		UPDATE wemall_shop_car SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
+	</update>
+	
+	<update id="deleteByIds">
+		UPDATE wemall_shop_car SET 
+			del_flag = '1'
+		WHERE id in
+			<foreach collection="list" index="index" item="item" open="(" separator="," close=")">  
+		        #{item}  
+		    </foreach>
 	</update>
 	
 </mapper>

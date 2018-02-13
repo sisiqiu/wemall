@@ -5,15 +5,18 @@
 	<sql id="wemallOrderItemColumns">
 		a.order_no AS "orderNo",
 		a.item_id AS "itemId",
+		a.user_id AS "userId",
 		a.item_num AS "itemNum",
 		a.title AS "title",
 		a.photo AS "photo",
 		a.total_fee AS "totalFee",
 		a.items_data AS "itemsData",
+		a.status AS "status",
 		a.freight_name AS "freightName",
 		a.freight_no AS "freightNo",
 		a.buyer_message AS "buyerMessage",
 		a.buyer_nick AS "buyerNick",
+		a.buyer_score AS "buyerScore",
 		a.buyer_comment AS "buyerComment",
 		a.del_flag AS "delFlag"
 	</sql>
@@ -39,8 +42,17 @@
 			<if test="itemId != null and itemId != ''">
 				AND a.item_id = #{itemId}
 			</if>
+			<if test="userId != null and userId != ''">
+				AND a.user_id = #{userId}
+			</if>
 			<if test="itemNum != null and itemNum != ''">
 				AND a.item_num = #{itemNum}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="buyerScore != null and buyerScore != ''">
+				AND a.buyer_score = #{buyerScore}
 			</if>
 			<if test="title != null and title != ''">
 				AND a.title LIKE 
@@ -97,29 +109,35 @@
 		INSERT INTO wemall_order_item(
 			order_no,
 			item_id,
+			user_id,
 			item_num,
 			title,
 			photo,
 			total_fee,
 			items_data,
+			status,
 			freight_name,
 			freight_no,
 			buyer_message,
 			buyer_nick,
+			buyer_score,
 			buyer_comment,
 			del_flag
 		) VALUES (
 			#{orderNo},
 			#{itemId},
+			#{userId},
 			#{itemNum},
 			#{title},
 			#{photo},
 			#{totalFee},
 			#{itemsData},
+			#{status},
 			#{freightName},
 			#{freightNo},
 			#{buyerMessage},
 			#{buyerNick},
+			#{buyerScore},
 			#{buyerComment},
 			#{delFlag}
 		)
@@ -132,10 +150,21 @@
 			photo = #{photo},
 			total_fee = #{totalFee},
 			items_data = #{itemsData},
+			status = #{status},
 			freight_name = #{freightName},
 			freight_no = #{freightNo},
 			buyer_message = #{buyerMessage},
 			buyer_nick = #{buyerNick},
+			buyer_score = #{buyerScore},
+			buyer_comment = #{buyerComment}
+		WHERE order_no = #{orderNo} AND item_id = #{itemId}
+	</update>
+	
+	<update id="saveBuyerEvaluate">
+		UPDATE wemall_order_item SET 	
+			buyer_message = #{buyerMessage},
+			buyer_nick = #{buyerNick},
+			buyer_score = #{buyerScore},
 			buyer_comment = #{buyerComment}
 		WHERE order_no = #{orderNo} AND item_id = #{itemId}
 	</update>

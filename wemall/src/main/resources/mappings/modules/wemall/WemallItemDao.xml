@@ -26,8 +26,6 @@
 		a.freight_price AS "freightPrice",
 		a.activity_sort AS "activitySort",
 		a.activity_id AS "activityId",
-		a.desc AS "desc",
-		a.photo_urls AS "photoUrls",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -36,12 +34,18 @@
 		s.name AS "sortName"
 	</sql>
 	
+	<sql id="wemallItemDetail">
+		a.desc AS "desc",
+		a.photo_urls AS "photoUrls",
+	</sql>
+	
 	<sql id="wemallItemJoins">
 	    LEFT JOIN wemall_item_sort s ON s.id = a.sort_id
 	</sql>
     
 	<select id="get" resultType="WemallItem">
 		SELECT 
+			<include refid="wemallItemDetail"/>
 			<include refid="wemallItemColumns"/>
 		FROM wemall_item a
 		<include refid="wemallItemJoins"/>

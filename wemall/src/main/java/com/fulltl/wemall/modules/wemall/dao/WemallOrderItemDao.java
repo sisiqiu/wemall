@@ -14,5 +14,7 @@ import com.fulltl.wemall.modules.wemall.entity.WemallOrderItem;
  */
 @MyBatisDao
 public interface WemallOrderItemDao extends CrudDao<WemallOrderItem> {
+
+	public void saveBuyerEvaluate(WemallOrderItem wemallOrderItem);
 	
 }

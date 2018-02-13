@@ -27,7 +27,7 @@ import com.google.gson.Gson;
  *
  */
 @Controller
-@RequestMapping(value = "${frontPath}/interface/his/operate")
+@RequestMapping(value = "${frontPath}/interface/wemall/operate")
 public class SlHisOperateFrontController extends BaseController {
 	
 	@Autowired 
