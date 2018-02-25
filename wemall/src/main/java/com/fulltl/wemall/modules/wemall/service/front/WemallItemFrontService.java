@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +28,7 @@ import com.google.common.collect.Maps;
  */
 @Service
 @Transactional(readOnly = true)
-public class SlHisItemFrontService extends BaseService {
+public class WemallItemFrontService extends BaseService {
 
 	@Autowired
 	private WemallItemSortService wemallItemSortService;
@@ -73,7 +74,14 @@ public class SlHisItemFrontService extends BaseService {
 			map.put("retMsg", "缺少页码和每页条数！");
 			return map;
 		}
-		Page<WemallItem> page = wemallItemService.findPage(new Page<WemallItem>(pageNo, pageSize), wemallItem);
+		
+		Page<WemallItem> queryPage = new Page<WemallItem>(pageNo, pageSize);
+		
+		String orderBy = request.getParameter("orderBy");
+		if(StringUtils.isNotBlank(orderBy)) {
+			queryPage.setOrderBy(orderBy);
+		}
+		Page<WemallItem> page = wemallItemService.findPage(queryPage, wemallItem);
 		List<Map<String, Object>> dataList = Lists.newArrayList();
 		for(WemallItem entity : page.getList()) {
 			dataList.add(entity.getSmallEntityMap());
@@ -99,6 +107,11 @@ public class SlHisItemFrontService extends BaseService {
 			return map;
 		}
 		WemallItem entity = wemallItemService.get(wemallItem);
+		if(entity == null) {
+			map.put("ret", "-1");
+			map.put("retMsg", "对应商品不存在！");
+			return map;
+		}
 		map.put("data",entity);
 		map.put("ret", "0");
 		map.put("retMsg", "获取成功");

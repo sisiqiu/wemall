@@ -3,20 +3,17 @@
  */
 package com.fulltl.wemall.modules.sys.service;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.base.Objects;
-import com.google.common.collect.Sets;
 import com.fulltl.wemall.common.persistence.Page;
 import com.fulltl.wemall.common.service.CrudService;
 import com.fulltl.wemall.common.utils.DateUtils;
@@ -25,6 +22,7 @@ import com.fulltl.wemall.modules.sys.entity.SlSysOrder;
 import com.fulltl.wemall.modules.sys.entity.SlSysOrder.OrderTypeEnum;
 import com.fulltl.wemall.modules.sys.entity.User;
 import com.fulltl.wemall.modules.sys.utils.UserUtils;
+import com.google.common.base.Objects;
 
 /**
  * 订单管理Service
@@ -163,7 +161,7 @@ public class SlSysOrderService extends CrudService<SlSysOrderDao, SlSysOrder> {
 	 */
 	@Transactional(readOnly = false)
 	public void updateOrderAndUpdateRegStatus(SlSysOrder slSysOrder) {
-	/*	slSysOrder.setPayState("3");	//支付成功
+		/*slSysOrder.setPayState("3");	//支付成功
 		slSysOrder.setStatus("2");		//已付款
 		this.save(slSysOrder);
 		slHisRegbookingService.updateStatusByOrderNo(slSysOrder.getOrderNo(), "2");*/
@@ -254,7 +252,12 @@ public class SlSysOrderService extends CrudService<SlSysOrderDao, SlSysOrder> {
 		/*slSysOrder.setPayState("3");	//支付成功
 		slSysOrder.setStatus("2");		//已付款
 		this.save(slSysOrder);
-		slHisCareappoService.updateStatusByOrderNo(slSysOrder.getOrderNo(), "1");
+		
+		SlHisCareappo slHisCareappo = new SlHisCareappo();
+		slHisCareappo.setOrderNo(slSysOrder.getOrderNo());
+		slHisCareappo.setStatus("1");
+		slHisCareappo.setPayTime(new Date());
+		slHisCareappoService.updateStatusByOrderNo(slHisCareappo);
 		
 		//向mongodb中存储护理预约信息
 		SlHisCareappo query = new SlHisCareappo();
@@ -262,7 +265,22 @@ public class SlSysOrderService extends CrudService<SlSysOrderDao, SlSysOrder> {
 		query.setStatus("1");
 		List<SlHisCareappo> findList = slHisCareappoService.findList(query);
 		if(findList != null && findList.size() > 0) {
+			//向mongodb中存储护理预约信息，此步骤最后应放在付款成功之后
 			careAppoAddrDao.insertBySlHisCareAppo(findList.get(0));
+			//推送预约数据到附近3公里范围内的未接单护工端，此步骤放在消息队列中执行
+			pushCareAppoInfoProducer.sendDataToQueue(findList.get(0));
 		}*/
 	}
+
+	/**
+	 * 更新订单退款金额
+	 * @param slSysOrder
+	 * @param refundFee
+	 */
+	@Transactional(readOnly = false)
+	public void updateOrderRefundFee(SlSysOrder slSysOrder, String refundFee) {
+		slSysOrder.setTotalRefundFee(new BigDecimal(slSysOrder.getTotalRefundFee()).add(new BigDecimal(refundFee)).toString());
+		this.save(slSysOrder);
+	}
+
 }

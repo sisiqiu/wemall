@@ -384,6 +384,8 @@
 			#{curScoreNum},
 			#{totalScoreNum},
 			#{vipCardIds},
+			#{totalOrderNum},
+			#{totalConsumeNum},
 			#{realName},
 			#{status},
 			#{emailValidateCode}
@@ -420,7 +422,7 @@
 			total_bounty_num = #{totalBountyNum},
 			cur_score_num = #{curScoreNum},
 			total_score_num = #{totalScoreNum},
-			vip_card_ids = #{vipCardIs},
+			vip_card_ids = #{vipCardIds},
 			total_order_num = #{totalOrderNum},
 			total_consume_num = #{totalConsumeNum},
 			realName = #{realName},
@@ -502,8 +504,8 @@
 		    <if test="totalScoreNum != null and totalScoreNum != ''">
 				total_score_num = #{totalScoreNum},
 		    </if>
-		    <if test="vipCardIs != null and vipCardIs != ''">
-				vip_card_ids = #{vipCardIs},
+		    <if test="vipCardIds != null and vipCardIds != ''">
+				vip_card_ids = #{vipCardIds},
 		    </if>
 		    <if test="totalOrderNum != null and totalOrderNum != ''">
 				total_order_num = #{totalOrderNum},

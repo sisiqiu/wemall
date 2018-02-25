@@ -124,6 +124,13 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">买家头像：</label>
+			<div class="controls">
+				<input type="hidden" id="buyerPhoto" name="buyerPhoto" value="${wemallOrderItem.buyerPhoto}" />
+				<sys:ckfinder input="buyerPhoto" type="thumb" uploadPath="/wemall" selectMultiple="false"/>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">买家评分：</label>
 			<div class="controls">
 				<form:input path="buyerScore" htmlEscape="false" maxlength="1" class="input-xlarge"/>
@@ -133,6 +140,14 @@
 			<label class="control-label">买家是否已评价：</label>
 			<div class="controls">
 				<form:radiobuttons path="buyerComment" items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false" />
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">评价时间：</label>
+			<div class="controls">
+				<input name="commentTime" type="text" maxlength="20" class="input-medium Wdate "
+					value="<fmt:formatDate value="${wemallOrderItem.commentTime}" pattern="yyyy-MM-dd HH:mm:ss"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
 			</div>
 		</div>
 		<div class="form-actions">

@@ -92,7 +92,7 @@
 					${fns:getDictLabel(wemallBountyInfo.type, 'out_in', '')}
 				</td>
 				<td>
-					${wemallBountyInfo.price}
+					￥<fmt:formatNumber type="number" value="${wemallBountyInfo.price/100}" pattern="0.00" maxFractionDigits="2"/>
 				</td>
 				<td>
 					<fmt:formatDate value="${wemallBountyInfo.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>

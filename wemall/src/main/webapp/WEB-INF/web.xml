@@ -133,6 +133,16 @@
 		<filter-name>JSONPFilter</filter-name>
 		<url-pattern>/act/service/*</url-pattern>
 	</filter-mapping>
+	
+	<!-- 	接口请求统一认证 -->
+	<filter>
+        <filter-name>interfaceFilter</filter-name>
+        <filter-class>com.fulltl.wemall.modules.wemall.web.front.WemallProxyFrontServletFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>interfaceFilter</filter-name>
+        <url-pattern>/f/interface/*</url-pattern>
+    </filter-mapping>
 
 	<!-- DruidStatView -->
 	<servlet>

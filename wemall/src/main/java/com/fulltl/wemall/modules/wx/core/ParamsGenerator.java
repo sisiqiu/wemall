@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,9 +67,72 @@ public class ParamsGenerator {
 		
 		paramsMap.put("out_refund_no", wemallRefund.getRefundId());
 		paramsMap.put("out_trade_no", wemallRefund.getOrderNo());
-		paramsMap.put("total_fee", new BigDecimal(wemallRefund.getOrderPrice()).toString());//订单总金额，单位为分
-		paramsMap.put("refund_fee", new BigDecimal(wemallRefund.getRefundFee()).toString());//订单总金额，单位为分
+		paramsMap.put("total_fee", new BigDecimal(wemallRefund.getOrderPrice()).movePointRight(2).toString());//订单总金额，单位为分
+		paramsMap.put("refund_fee", new BigDecimal(wemallRefund.getRefundFee()).movePointRight(2).toString());//订单总金额，单位为分
 		paramsMap.put("refund_desc", wemallRefund.getRefundDesc());
+		
+		//最后根据参数map生成签名
+		generateSignForParams(paramsMap);
+		return paramsMap;
+	}
+	
+	/**
+	 * 为调用微信接口查询订单构建参数map
+	 * @param orderNo 商户订单号，商户网站订单系统中唯一订单号
+	 * @param trade_no 微信订单号
+	 * @return
+	 */
+	public static Map<String, String> generateParamsForOrderQuery(String orderNo, String trade_no) {
+		Map<String, String> paramsMap = generateCommonParams();
+		
+		if(StringUtils.isNotBlank(trade_no)) {
+			paramsMap.put("transaction_id", trade_no);
+		} else {
+			paramsMap.put("out_trade_no", orderNo);
+		}
+		
+		//最后根据参数map生成签名
+		generateSignForParams(paramsMap);
+		return paramsMap;
+	}
+	
+	/**
+	 * 为调用微信接口查询退款构建参数map
+	 * @param orderNo 商户订单号
+	 * @param trade_no 微信订单号
+	 * @param refundId 退款商户业务号
+	 * @return
+	 */
+	public static Map<String, String> generateParamsForRefundQuery(String orderNo, String trade_no, String refundId) {
+		Map<String, String> paramsMap = generateCommonParams();
+		
+		if(StringUtils.isNotBlank(refundId)) {
+			paramsMap.put("refund_id", refundId);
+		} else if(StringUtils.isNotBlank(trade_no)) {
+			paramsMap.put("transaction_id", trade_no);
+		} else {
+			paramsMap.put("out_trade_no", orderNo);
+		}
+		
+		//最后根据参数map生成签名
+		generateSignForParams(paramsMap);
+		return paramsMap;
+	}
+	
+	/**
+	 * 为调用微信接口下载对账单构建参数map
+	 * @param bill_type
+	 * @param bill_date
+	 * @param tar_type
+	 * @return
+	 */
+	public static Map<String, String> generateParamsForDownloadBill(String bill_type, String bill_date,
+			boolean tar) {
+		Map<String, String> paramsMap = generateCommonParams();
+		
+		paramsMap.put("bill_type", bill_type);
+		paramsMap.put("bill_date", bill_date);
+		if(tar) paramsMap.put("tar_type", "GZIP");
 		
 		//最后根据参数map生成签名
 		generateSignForParams(paramsMap);
@@ -99,4 +163,5 @@ public class ParamsGenerator {
 			paramsMap.put("sign", WeixinTradeSignature.getSignStrByHMACSHA256(WeixinTradeConfig.key, paramsMap));
 		}
 	}
+
 }

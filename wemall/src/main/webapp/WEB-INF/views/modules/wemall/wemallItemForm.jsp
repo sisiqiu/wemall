@@ -174,14 +174,14 @@
 			<label class="control-label">商品原价：</label>
 			<div class="controls">
 				<form:input path="originalPrice" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<span class="help-inline"><font color="red">*</font> 单位：分</span>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">商品现价：</label>
 			<div class="controls">
 				<form:input path="currentPrice" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<span class="help-inline"><font color="red">*</font> 单位：分</span>
 			</div>
 		</div>
 		<div class="control-group">
@@ -217,6 +217,13 @@
 			<label class="control-label">是否新品：</label>
 			<div class="controls">
 				<form:radiobuttons path="isNew" items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false" class="required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">是否推荐：</label>
+			<div class="controls">
+				<form:radiobuttons path="isRecommend" items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false" class="required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
@@ -293,7 +300,7 @@
 			<label class="control-label">运费：</label>
 			<div class="controls">
 				<form:input path="freightPrice" htmlEscape="false" maxlength="9" class="input-xlarge required digits"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<span class="help-inline"><font color="red">*</font> 单位：分</span>
 			</div>
 		</div>
 		<div class="control-group">

@@ -37,7 +37,7 @@ import com.google.common.collect.Lists;
  *
  */
 @Service
-public class SlHisUserRelatedFrontService extends BaseService {
+public class WemallUserRelatedFrontService extends BaseService {
 
 	@Autowired
 	private WemallShopCarService wemallShopCarService;
@@ -142,7 +142,7 @@ public class SlHisUserRelatedFrontService extends BaseService {
 		wemallShopCarService.delete(Arrays.asList(ids.split(",")));
 		
 		map.put("ret", "0");
-		map.put("retMsg", "添加成功");
+		map.put("retMsg", "删除成功");
 		return map;
 	}
 
@@ -462,7 +462,7 @@ public class SlHisUserRelatedFrontService extends BaseService {
 		for(WemallScoreInfo entity : page.getList()) {
 			dataList.add(entity.getSmallEntityMap());
 		}
-		map.put("list", page.getList());
+		map.put("list", dataList);
 		map.put("count", page.getCount());
 		map.put("ret", "0");
 		map.put("retMsg", "获取成功");
@@ -499,7 +499,7 @@ public class SlHisUserRelatedFrontService extends BaseService {
 		for(WemallBountyInfo entity : page.getList()) {
 			dataList.add(entity.getSmallEntityMap());
 		}
-		map.put("list", page.getList());
+		map.put("list", dataList);
 		map.put("count", page.getCount());
 		map.put("ret", "0");
 		map.put("retMsg", "获取成功");

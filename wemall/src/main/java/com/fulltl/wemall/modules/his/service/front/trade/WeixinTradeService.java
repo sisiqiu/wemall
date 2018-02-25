@@ -1,17 +1,19 @@
 package com.fulltl.wemall.modules.his.service.front.trade;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fulltl.wemall.common.service.BaseService;
@@ -210,7 +212,6 @@ public class WeixinTradeService extends BaseService {
 	 * @param slSysOrder 传入对应的订单对象，如果为空，则会根据参数中的orderNo查询，如果不为空，省略查询
 	 * @return
 	 */
-	@RequestMapping(value = "refund")
 	@ResponseBody
 	public Map<String, Object> refund(Map<String, String> params, SlSysOrder slSysOrder) {
 		Map<String, Object> retMap = Maps.newHashMap();
@@ -250,8 +251,10 @@ public class WeixinTradeService extends BaseService {
 		refund.setRefundFee(refundFee);
 		refund.setRefundDesc(refundDesc);
 		refund.setRefundId(refundId);
-		refund.setRefundStatus("1");*/  //退款状态（0--未成功，1--已退款）
+		refund.setRefundStatus("1");  //退款状态（0--未成功，1--已退款）
 		refund.setRefundDate(new Date());//退款时间
+		refund.setPayMethod(PayMethod.weixin.toString());*/
+		refund.setIsNewRecord(true);
 		
 		//为调用微信接口申请退款构建参数map
 		Map<String, String> paramsMap = ParamsGenerator.generateParamsForRefund(refund);
@@ -278,6 +281,9 @@ public class WeixinTradeService extends BaseService {
 			//添加退款记录信息
 			wemallRefundService.save(refund);
 			
+			//更新订单退款金额
+			slSysOrderService.updateOrderRefundFee(slSysOrder, refundFee);
+			
 			System.err.println(result);
 			
 			//输出
@@ -290,6 +296,88 @@ public class WeixinTradeService extends BaseService {
 			return retMap;
 		}
 		
+	}
+	
+	/**
+	 * 根据商户订单号或者微信订单号查询订单详情。商户订单号和微信订单号请二选一设置。都添加的话，将采用微信订单号。
+	 * @param orderNo 商户订单号，商户网站订单系统中唯一订单号
+	 * @param trade_no 微信订单号
+	 * @return
+	 */
+	public String orderQuery(String orderNo, String trade_no) {
+		
+		//为调用微信接口查询订单构建参数map
+		Map<String, String> paramsMap = ParamsGenerator.generateParamsForOrderQuery(orderNo, trade_no);
+		
+		//请求微信查询订单接口，获取返回数据
+		String result = CallServletUtil.sendPost(WeixinTradeConfig.ORDER_QUERY_URL, paramsMap);
+		
+		//输出
+		return result;
+	}
+	
+	/**
+	 * 根据商户订单号或者微信订单号查询退款详情。商户订单号和微信订单号请二选一设置。都添加的话，将采用微信订单号。
+	 * @param orderNo 商户订单号，商户网站订单系统中唯一订单号
+	 * @param trade_no 微信订单号
+	 * @param refundId 退款业务号
+	 * @return
+	 */
+	public String refundQuery(String orderNo, String trade_no, String refundId) {
+		
+		//为调用微信接口查询退款构建参数map
+		Map<String, String> paramsMap = ParamsGenerator.generateParamsForRefundQuery(orderNo, trade_no, refundId);
+		
+		//请求微信查询退款接口，获取返回数据
+		String result = CallServletUtil.sendPost(WeixinTradeConfig.REFUND_QUERY_URL, paramsMap);
+		
+		//输出
+		return result;
+	}
+	
+	/**
+	 * 下载对账单
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	public Map<String, Object> downloadBill(HttpServletRequest request, HttpServletResponse response) {
+		Map<String, Object> retMap = Maps.newHashMap();
+		String bill_type = WebUtils.getCleanParam(request, "bill_type");
+		if(!"ALL".equals(bill_type) && !"SUCCESS".equals(bill_type) && !"REFUND".equals(bill_type) && !"RECHARGE_REFUND".equals(bill_type)) {
+			retMap.put("ret", "-1");
+			retMap.put("retMsg", "bill_type参数不能为空，且bill_type账单类型为：ALL、SUCCESS、REFUND、RECHARGE_REFUND；\n"
+					+ "ALL，返回当日所有订单信息，默认值;SUCCESS，返回当日成功支付的订单;REFUND，返回当日退款订单;RECHARGE_REFUND，返回当日充值退款订单");
+			return retMap;
+		}
+		String bill_date = WebUtils.getCleanParam(request, "bill_date");
+		
+		//为调用微信接口下载对账单构建参数map
+		Map<String, String> paramsMap = ParamsGenerator.generateParamsForDownloadBill(bill_type, bill_date, false);
+		
+		//请求微信下载对账单接口，获取返回数据
+		InputStream inputStream = CallServletUtil.sendPostForInputStream(WeixinTradeConfig.DOWNLOAD_BILL_URL, paramsMap);
+		try {
+			// 循环取出流中的数据
+			byte[] b = new byte[100];
+			int len;
+			while ((len = inputStream.read(b)) > 0)
+			response.getOutputStream().write(b, 0, len);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+        	try {
+        		if(inputStream != null) inputStream.close();
+        		response.getOutputStream().flush();
+        		response.getOutputStream().close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+        }
+		retMap.put("ret", "0");
+		retMap.put("retMsg", "下载成功");
+		
+		return retMap;
 	}
 	
 	/**
@@ -357,5 +445,5 @@ public class WeixinTradeService extends BaseService {
         }
 		return retMap;
 	}
-	
+
 }

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fulltl.wemall.common.web.BaseController;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrderItem;
-import com.fulltl.wemall.modules.wemall.service.front.SlHisOrderFrontService;
+import com.fulltl.wemall.modules.wemall.service.front.WemallOrderFrontService;
 import com.google.gson.Gson;
 
 /**
@@ -23,10 +23,10 @@ import com.google.gson.Gson;
  */
 @Controller
 @RequestMapping(value = "${frontPath}/interface/wemall/order")
-public class SlHisOrderFrontController extends BaseController {
+public class WemallOrderFrontController extends BaseController {
 
 	@Autowired
-	private SlHisOrderFrontService slHisOrderFrontService;
+	private WemallOrderFrontService slHisOrderFrontService;
 	
 	/**
 	 * 获取订单商品列表的接口。
@@ -37,8 +37,9 @@ public class SlHisOrderFrontController extends BaseController {
 	 *		pageNo（*）=页码
 	 *		pageSize（*）=每页条数
 	 *		orderNo=订单号
+	 *		itemId=商品id
 	 *		status=状态（1、未付款，2、已付款，3、未发货，4、已发货，5、交易成功，6、交易退货，7、交易关闭）
-	 *
+	 *		buyerComment=买家是否已评价（1--已评价，0--未评价）
 	 * 	例：
 	 * 
 	 * 结果示例：{"ret":"0","data":{"list":[{},{}],"count":3},"retMsg":"获取成功！"}
@@ -53,6 +54,32 @@ public class SlHisOrderFrontController extends BaseController {
 	@ResponseBody
 	public String getOrderItemList(WemallOrderItem wemallOrderItem, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Map<String, Object> map = slHisOrderFrontService.getOrderItemList(wemallOrderItem, request);
+		return gson.toJson(formatReturnMsg(map));
+	}
+	
+	/**
+	 * 获取商品评价列表的接口。
+	 * 
+	 * 测试用例：
+	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/order/getBuyerCommentList
+	 *	参数：
+	 *		pageNo（*）=页码
+	 *		pageSize（*）=每页条数
+	 *		itemId=商品id
+	 * 	例：
+	 * 
+	 * 结果示例：{"ret":"0","data":{"list":[{},{}],"count":3},"retMsg":"获取成功！"}
+	 * 		或
+	 * 		{"ret":"-1","data":{},"retMsg":"缺少页码和每页条数！"}
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = {"getBuyerCommentList"})
+	@ResponseBody
+	public String getBuyerCommentList(WemallOrderItem wemallOrderItem, HttpServletRequest request, HttpServletResponse response, Model model) {
+		Map<String, Object> map = slHisOrderFrontService.getBuyerCommentList(wemallOrderItem, request);
 		return gson.toJson(formatReturnMsg(map));
 	}
 	

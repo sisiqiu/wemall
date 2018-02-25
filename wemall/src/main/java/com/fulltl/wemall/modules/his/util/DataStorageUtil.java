@@ -7,25 +7,17 @@ package com.fulltl.wemall.modules.his.util;
  */
 public class DataStorageUtil {
 	/**
-	 * 对应类别为用户端首页banna图
+	 * 对应类别为商城首页banna图
 	 */
-	public static final String USER_HOME_BANNA_CATICLE_ID = "12";
+	public static final String WEMALL_HOME_BANNA_CATICLE_ID = "12";
 	/**
-	 * 对应类别为用户端导航栏
+	 * 对应类别为商城首页小型导航栏
 	 */
-	public static final String USER_NAV_CATICLE_ID = "13";
+	public static final String WEMALL_NAV_CATICLE_ID = "13";
 	/**
-	 * 对应类别为医生端导航栏
+	 * 对应类别为商城首页中型导航栏
 	 */
-	public static final String DOCTOR_NAV_CATICLE_ID = "16";
-	/**
-	 * 健康资讯文章类别
-	 */
-	public static final String HEALTHYART_CATICLE_ID = "3";
-	/**
-	 * 老中医说文章类别
-	 */
-	public static final String OLDDOCTORSAY_CATICLE_ID = "4";
+	public static final String WEMALL_MIDDLE_NAV_CATICLE_ID = "14";
 	/**
 	 * 膏方进补文章类别
 	 */
@@ -47,15 +39,7 @@ public class DataStorageUtil {
 	 */
 	public static final String USERNOTICE_CATICLE_ID = "9";
 	/**
-	 * 对应类别为用户端特色中医banna图
-	 */
-	public static final String USER_CHDOC_BANNA_CATICLE_ID = "14";
-	/**
-	 * 对应用户端全局url配置的广告位id
+	 * 对应微商城全局配置的广告位id
 	 */
 	public static final String GLOBAL_HISUSER_URL_CONFIG_ADVERTISEID = "1";
-	/**
-	 * 对应医生端全局url配置的广告位id
-	 */
-	public static final String GLOBAL_HISDOCTOR_URL_CONFIG_ADVERTISEID = "2";
 }

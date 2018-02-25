@@ -2,6 +2,7 @@ package com.fulltl.wemall.common.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -39,6 +40,25 @@ public class CallServletUtil {
 			return sendPost(url, "", null);
 		}
 	}
+	
+	/**
+	 * 向指定 URL 发送POST方法的请求
+	 * @param url 发送请求的 URL
+	 * @param param 请求参数，请求参数应该是 name1=value1&name2=value2 的形式。
+	 * @return 所代表远程资源的响应结果
+	 */
+	public static InputStream sendPostForInputStream(String url, Map<String,String> params) {
+		StringBuilder strBuilder = new StringBuilder();
+		for(String key: params.keySet()) {
+			strBuilder.append(key).append("=").append(params.get(key)).append("&");
+		}
+		if(strBuilder.length() > 0) {
+			return sendPostForInputStream(url, strBuilder.substring(0, strBuilder.length()-1));
+		} else {
+			return sendPostForInputStream(url, "");
+		}
+	}
+	
 	/**
 	 * 向指定 URL 发送POST方法的请求
 	 * @param url 发送请求的 URL
@@ -78,7 +98,7 @@ public class CallServletUtil {
 				result += line;
 			}
 		} catch (Exception e) {
-			logger.error("发送 POST 请求出现异常！",e);
+			logger.error("发送 POST 请求出现异常！");
 		}
 		// 使用finally块来关闭输出流、输入流
 		finally {
@@ -103,9 +123,25 @@ public class CallServletUtil {
 	 * @return 所代表远程资源的响应结果流
 	 */
 	public static BufferedReader sendPostForStream(String url, String param) {
-		PrintWriter out = null;
 		BufferedReader in = null;
-		String result = "";
+		try {
+			// 定义BufferedReader输入流来读取URL的响应
+			in = new BufferedReader(new InputStreamReader(sendPostForInputStream(url, param)));
+		} catch (Exception e) {
+			logger.error("发送 POST 请求出现异常！",e);
+		}
+		return in;
+	}
+	
+	/**
+	 * 向指定 URL 发送POST方法的请求
+	 * @param url 发送请求的 URL
+	 * @param param 请求参数，请求参数应该是 name1=value1&name2=value2 的形式。
+	 * @return 所代表远程资源的响应结果流
+	 */
+	public static InputStream sendPostForInputStream(String url, String param) {
+		PrintWriter out = null;
+		InputStream in = null;
 		try {
 			URL realUrl = new URL(url);
 			// 打开和URL之间的连接
@@ -123,8 +159,7 @@ public class CallServletUtil {
 			out.print(param);
 			// flush输出流的缓冲
 			out.flush();
-			// 定义BufferedReader输入流来读取URL的响应
-			in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			in = conn.getInputStream();
 		} catch (Exception e) {
 			logger.error("发送 POST 请求出现异常！",e);
 		}

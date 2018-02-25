@@ -9,11 +9,10 @@ import org.springframework.stereotype.Component;
 import com.fulltl.wemall.modules.wx.core.WXBeanFactory;
 import com.fulltl.wemall.modules.wx.core.pojo.ReceiveXmlEntity;
 import com.fulltl.wemall.modules.wx.entity.UserBehavior;
-import com.fulltl.wemall.modules.wx.entity.WxSubscriber;
+import com.fulltl.wemall.modules.wx.entity.WxUserInfo;
 import com.fulltl.wemall.modules.wx.entity.WxWechatMenu;
 import com.fulltl.wemall.modules.wx.service.WxServiceaccountService;
-import com.fulltl.wemall.modules.wx.service.WxSubscriberService;
-import com.fulltl.wemall.modules.wx.service.WxUserinfoService;
+import com.fulltl.wemall.modules.wx.service.WxUserInfoService;
 import com.fulltl.wemall.modules.wx.service.WxWechatMenuService;
 
 /**
@@ -26,11 +25,9 @@ public class EventInputHandler implements WXInputHandler {
 	@Autowired
 	private WxWechatMenuService wxWechatMenuService;
 	@Autowired
-	private WxSubscriberService wxSubscriberService;
-	@Autowired
 	private WxServiceaccountService wxServiceaccountService;
 	@Autowired
-	private WxUserinfoService wxUserinfoService;
+	private WxUserInfoService wxUserInfoService;
 	@Autowired
 	private WXBeanFactory wxBeanFactory;
 	
@@ -64,8 +61,8 @@ public class EventInputHandler implements WXInputHandler {
 	private String subscribe(ReceiveXmlEntity receiveXmlEntity) {
 		String openId = receiveXmlEntity.getFromUserName();
 		logger.info("----------------用户：openId=" + openId + " 已关注!-----------------");
-		WxSubscriber curSubscriber = wxSubscriberService.getWxSubscriberBy(receiveXmlEntity);
-		wxSubscriberService.updateWXUserBy(UserBehavior.FOCUS_ON, curSubscriber, null);
+		WxUserInfo wxUserInfo = wxUserInfoService.getWxUserInfoBy(receiveXmlEntity);
+		wxUserInfoService.updateWXUserInfoBy(UserBehavior.FOCUS_ON, wxUserInfo);
 		return null;
 	}
 	
@@ -77,8 +74,8 @@ public class EventInputHandler implements WXInputHandler {
 	private String unsubscribe(ReceiveXmlEntity receiveXmlEntity) {
 		String openId = receiveXmlEntity.getFromUserName();
 		logger.info("----------------用户：openId=" + openId + " 取消关注!-----------------");
-		WxSubscriber curSubscriber = wxSubscriberService.getWxSubscriberBy(receiveXmlEntity);
-		wxSubscriberService.updateWXUserBy(UserBehavior.FOCUS_OUT, curSubscriber, null);
+		WxUserInfo wxUserInfo = wxUserInfoService.getWxUserInfoBy(receiveXmlEntity);
+		wxUserInfoService.updateWXUserInfoBy(UserBehavior.FOCUS_OUT, wxUserInfo);
 		return null;
 	}
 	

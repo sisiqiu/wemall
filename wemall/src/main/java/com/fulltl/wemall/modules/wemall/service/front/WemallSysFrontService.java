@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fulltl.wemall.common.config.Global;
+import com.fulltl.wemall.common.persistence.Page;
 import com.fulltl.wemall.common.service.BaseService;
 import com.fulltl.wemall.common.utils.FileUtils;
 import com.fulltl.wemall.modules.cms.entity.Category;
@@ -30,6 +31,8 @@ import com.fulltl.wemall.modules.sys.service.SlSysAdvertiseService;
 import com.fulltl.wemall.modules.sys.service.SystemService;
 import com.fulltl.wemall.modules.sys.utils.DictUtils;
 import com.fulltl.wemall.modules.sys.utils.UserUtils;
+import com.fulltl.wemall.modules.wemall.entity.WemallItem;
+import com.fulltl.wemall.modules.wemall.service.WemallItemService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -40,7 +43,7 @@ import com.google.common.collect.Maps;
  */
 @Service
 @Transactional(readOnly = true)
-public class SlHisSysFrontService extends BaseService {
+public class WemallSysFrontService extends BaseService {
 	
 	@Autowired
 	private SystemService systemService;
@@ -49,7 +52,9 @@ public class SlHisSysFrontService extends BaseService {
 	@Autowired
 	private ArticleService articleService;
 	@Autowired
-	private SlHisUserFrontService slHisUserFrontService;
+	private WemallItemService wemallItemService;
+	@Autowired
+	private WemallUserFrontService slHisUserFrontService;
 	@Autowired
 	private SlSysAdvertiseService slSysAdvertiseService;
 	
@@ -78,92 +83,92 @@ public class SlHisSysFrontService extends BaseService {
 	}
 
 	/**
-	 * 获取用户端主页数据
+	 * 获取主页数据
 	 * @param request
 	 * @param response
 	 * @return
 	 */
-	public Map<String, Object> getUserHomePageData(HttpServletRequest request, HttpServletResponse response) {
+	public Map<String, Object> getHomePageData(HttpServletRequest request, HttpServletResponse response) {
 		Map<String ,Object> map = new HashMap<String, Object>();
-		String hospitalId = WebUtils.getCleanParam(request, "hospitalId");
-		if(StringUtils.isEmpty(hospitalId)) {
-			map.put("ret", "60022");
-			map.put("retMsg", "缺少医院id！");
-			return map;
-		}
 		Link link = new Link();
-		link.setDelFlag("0");//查询发布的
-		link.setCategory(new Category(DataStorageUtil.USER_HOME_BANNA_CATICLE_ID));//对应类别为banna图
+		link.setCategory(new Category(DataStorageUtil.WEMALL_HOME_BANNA_CATICLE_ID));//对应类别为商城首页大型导航栏
 		//首页banna图部分
 		List<Link> bannaArticlesList = linkService.findList(link);
 		List<Map<String, Object>> bannaArticles = Lists.newArrayList();
 		for(Link banna : bannaArticlesList) {
 			bannaArticles.add(banna.getHomePageLink());
 		}
-		//导航栏部分
-		link.setCategory(new Category(DataStorageUtil.USER_NAV_CATICLE_ID));//对应类别为用户端导航栏
-		List<Link> navArticlesList = linkService.findList(link);
-		List<Map<String, Object>> navArticles = Lists.newArrayList();
-		for(Link nav : navArticlesList) {
-			navArticles.add(nav.getHomePageLink());
+		//小型导航栏部分
+		link.setCategory(new Category(DataStorageUtil.WEMALL_NAV_CATICLE_ID));//对应类别为商城首页小型导航栏
+		List<Link> navBarsList = linkService.findList(link);
+		List<Map<String, Object>> navBars = Lists.newArrayList();
+		for(Link nav : navBarsList) {
+			navBars.add(nav.getHomePageLink());
 		}
-		//健康资讯部分
-		List<Map<String, Object>> articleList = articleService.getHomePageArticlesByCatId(1, 6, DataStorageUtil.HEALTHYART_CATICLE_ID);
-		Map<String, Object> articlesMap = Maps.newHashMap();
-		articlesMap.put("first", articleList.get(0));
-		articleList.remove(0);
-		for(Map<String, Object> articleMap : articleList) {
-			articleMap.remove("image");
-			articleMap.remove("description");
+		//中型导航栏部分
+		link.setCategory(new Category(DataStorageUtil.WEMALL_MIDDLE_NAV_CATICLE_ID));//对应类别为商城首页中型导航栏
+		List<Link> middleNavBarsList = linkService.findList(link);
+		List<Map<String, Object>> middleNavBars = Lists.newArrayList();
+		for(Link nav : middleNavBarsList) {
+			middleNavBars.add(nav.getHomePageLink());
 		}
-		articlesMap.put("others", articleList);
+		
+		//新品商品部分
+		WemallItem queryNewItem = new WemallItem();
+		queryNewItem.setIsNew(1);//新品
+		queryNewItem.setIsOnShelf(1);//上架
+		
+		Page<WemallItem> newPage = wemallItemService.findPage(new Page<WemallItem>(0, 10), queryNewItem);
+		List<Map<String, Object>> newGoodsList = Lists.newArrayList();
+		for(WemallItem entity : newPage.getList()) {
+			newGoodsList.add(entity.getSmallEntityMap());
+		}
+		
+		//推荐商品部分
+		WemallItem queryRecommendItem = new WemallItem();
+		queryRecommendItem.setIsRecommend(1);//推荐
+		queryRecommendItem.setIsOnShelf(1);//上架
+		
+		Page<WemallItem> recommendPage = wemallItemService.findPage(new Page<WemallItem>(0, 10), queryRecommendItem);
+		List<Map<String, Object>> recommendGoodsList = Lists.newArrayList();
+		for(WemallItem entity : recommendPage.getList()) {
+			recommendGoodsList.add(entity.getSmallEntityMap());
+		}
+		
 		//用户端公告部分
-		List<Map<String, Object>> noticeList = articleService.getHomePageArticlesByCatId(1, 6, DataStorageUtil.USERNOTICE_CATICLE_ID);
+		//List<Map<String, Object>> noticeList = articleService.getHomePageArticlesByCatId(1, 6, DataStorageUtil.USERNOTICE_CATICLE_ID);
+		
+		//商品列表部分
+		List<Map<String, Object>> goodsList = Lists.newArrayList();
+		Map<String, Object> newGoodsMap = Maps.newHashMap();
+		newGoodsMap.put("topurl", "/static/images/wemall/newGoods.jpg");
+		newGoodsMap.put("goodsList", newGoodsList);
+		newGoodsMap.put("href", "");
+		
+		Map<String, Object> recommendGoodsMap = Maps.newHashMap();
+		recommendGoodsMap.put("topurl", "/static/images/wemall/recommendGoods.jpg");
+		recommendGoodsMap.put("goodsList", recommendGoodsList);
+		recommendGoodsMap.put("href", "");
+		
+		goodsList.add(newGoodsMap);
+		goodsList.add(recommendGoodsMap);
 		
 		//首页banna图部分
 		map.put("banna", bannaArticles);
-		//导航栏部分
-		map.put("navBar", navArticles);
-		//健康资讯部分
-		map.put("articlesMap", articlesMap);
-		//用户端公告部分
-		map.put("noticeList", noticeList);
-		map.put("moreExpertsUrl", Global.getConfig("moreExpertsUrl"));
-		map.put("moreHealthyArticlesUrl", Global.getConfig("moreHealthyArticlesUrl"));
+		//首页小型导航栏部分
+		map.put("navBars", navBars);
+		//首页中型导航栏部分
+		map.put("middleNavBars", middleNavBars);
+		//新品商品部分
+		//map.put("newGoodsList", newGoodsList);
+		//推荐商品部分
+		//map.put("recommendGoodsList", recommendGoodsList);
 		
-		map.put("ret", "0");
-		map.put("retMsg", "获取成功");
-		return map;
-	}
-	
-	/**
-	 * 获取医生端主页数据
-	 * @param request
-	 * @param response
-	 * @return
-	 */
-	public Map<String, Object> getDoctorHomePageData(HttpServletRequest request, HttpServletResponse response) {
-		Map<String ,Object> map = new HashMap<String, Object>();
-		String userId = WebUtils.getCleanParam(request, "userId");
-		if(StringUtils.isEmpty(userId)) {
-			map.put("ret", "60018");
-			map.put("retMsg", "用户id不能为空！");
-			return map;
-		}
-		//医生端导航栏部分
-		Link link = new Link(new Category(DataStorageUtil.DOCTOR_NAV_CATICLE_ID));//对应类别为医生端导航栏
-		List<Link> navArticlesList = linkService.findList(link);
-		List<Map<String, Object>> navArticles = Lists.newArrayList();
-		for(Link nav : navArticlesList) {
-			navArticles.add(nav.getHomePageLink());
-		}
-		//医生端端公告部分
-		List<Map<String, Object>> noticeList = articleService.getHomePageArticlesByCatId(1, 6, DataStorageUtil.DOCNOTICE_CATICLE_ID);
-		
-		//医生端导航栏部分
-		map.put("navBar", navArticles);
-		//医生端公告部分
-		map.put("noticeList", noticeList);
+		map.put("goodsList", goodsList);
+		//客服电话部分
+		map.put("servicePhone", getConfig("servicePhone"));
+		//map.put("moreExpertsUrl", Global.getConfig("moreExpertsUrl"));
+		//map.put("moreHealthyArticlesUrl", Global.getConfig("moreHealthyArticlesUrl"));
 		
 		map.put("ret", "0");
 		map.put("retMsg", "获取成功");
@@ -231,21 +236,36 @@ public class SlHisSysFrontService extends BaseService {
 	}
 	
 	/**
+	 * 获取微商城配置集中的配置项
+	 * @param key
+	 * @return
+	 */
+	public Object getConfig(String key) {
+		Map<String, String> wemallGlobalConfig = Global.getWemallGlobalConfig();
+        if(wemallGlobalConfig.isEmpty()) {
+        	//从数据库中去取,初始化app页面配置到Global缓存中
+        	slSysAdvertiseService.initAppUrlConfig();
+        	wemallGlobalConfig = Global.getWemallGlobalConfig();
+        }
+        return wemallGlobalConfig.get(key);
+	}
+	
+	/**
 	 * 获取系统配置的单个单个的独立url链接地址。
 	 * @param request
 	 * @return
 	 */
 	public Map<String, Object> getConfigUrls(HttpServletRequest request) {
 		Map<String ,Object> retMap = Maps.newHashMap();
-		Map<String, String> hisUserGlobalConfig = Global.getHisUserGlobalConfig();
-        if(hisUserGlobalConfig.isEmpty()) {
+		Map<String, String> wemallGlobalConfig = Global.getWemallGlobalConfig();
+        if(wemallGlobalConfig.isEmpty()) {
         	//从数据库中去取,初始化app页面配置到Global缓存中
         	slSysAdvertiseService.initAppUrlConfig();
-        	hisUserGlobalConfig = Global.getHisUserGlobalConfig();
+        	wemallGlobalConfig = Global.getWemallGlobalConfig();
         }
         retMap.put("ret", "0");
         retMap.put("retMsg", "获取成功！");
-        retMap.put("data", hisUserGlobalConfig);
+        retMap.put("data", wemallGlobalConfig);
 		/*SlSysAdvertise slSysAdvertise = slSysAdvertiseService.get("1");
 		if(slSysAdvertise == null) {
 			retMap.put("ret", "-1");
@@ -271,12 +291,12 @@ public class SlHisSysFrontService extends BaseService {
 			retMap.put("retMsg", "类型不能为空！");
 			return retMap;
 		}
-		Map<String, String> hisGlobalConfig = Global.getHisGlobalConfigByType(type);
+		Map<String, String> hisGlobalConfig = Global.getGlobalConfigByType(type);
 		
         if(hisGlobalConfig.isEmpty()) {
         	//从数据库中去取,初始化app页面配置到Global缓存中
         	slSysAdvertiseService.initAppUrlConfig();
-        	hisGlobalConfig = Global.getHisGlobalConfigByType(type);
+        	hisGlobalConfig = Global.getGlobalConfigByType(type);
         }
         retMap.put("ret", "0");
         retMap.put("retMsg", "获取成功！");

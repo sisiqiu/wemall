@@ -9,6 +9,9 @@
 			if($("#freightFee").val() == "") {
 				$("#freightFee").val(0);
 			}
+			if($("#totalRefundFee").val() == "") {
+				$("#totalRefundFee").val(0);
+			}
 			if($("#redEvpUseAmount").val() == "") {
 				$("#redEvpUseAmount").val(0);
 			}
@@ -33,6 +36,7 @@
 				}
 			});
 		});
+		
 	</script>
 </head>
 <body>
@@ -108,6 +112,12 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">总退款金额：</label>
+			<div class="controls">
+				<form:input path="totalRefundFee" htmlEscape="false" class="input-xlarge "/>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">使用积分数：</label>
 			<div class="controls">
 				<form:input path="usedPoints" htmlEscape="false" maxlength="10" class="input-xlarge  digits"/>
@@ -180,6 +190,7 @@
 		<div class="form-actions">
 			<shiro:hasPermission name="sys:slSysOrder:edit"><input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
+			<a id="btn_detail" target="_blank" class="btn btn-primary" type="button" href="${ctx}/sys/slSysOrder/orderQuery?orderNo=${slSysOrder.orderNo}&payMethod=${slSysOrder.payMethod}" >查看第三方订单详情</a>
 		</div>
 	</form:form>
 </body>

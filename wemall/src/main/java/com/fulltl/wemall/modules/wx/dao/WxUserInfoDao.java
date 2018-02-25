@@ -5,18 +5,18 @@ package com.fulltl.wemall.modules.wx.dao;
 
 import com.fulltl.wemall.common.persistence.CrudDao;
 import com.fulltl.wemall.common.persistence.annotation.MyBatisDao;
-import com.fulltl.wemall.modules.wx.entity.WxSubscriber;
+import com.fulltl.wemall.modules.wx.entity.WxUserInfo;
 
 /**
- * 微信关注用户管理DAO接口
+ * 微信用户信息管理DAO接口
  * @author ldk
- * @version 2017-10-13
+ * @version 2018-02-18
  */
 @MyBatisDao
-public interface WxSubscriberDao extends CrudDao<WxSubscriber> {
+public interface WxUserInfoDao extends CrudDao<WxUserInfo> {
 
-	WxSubscriber findByOpenId(String openId);
-	
-	public void updateByOpenId(WxSubscriber wxSubscriber);
+	public WxUserInfo findByOpenId(String openId);
+
+	public void updateInfoByOpenId(WxUserInfo curWxUserInfo);
 	
 }

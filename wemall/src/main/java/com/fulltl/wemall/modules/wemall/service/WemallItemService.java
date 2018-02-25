@@ -35,6 +35,7 @@ public class WemallItemService extends CrudService<WemallItemDao, WemallItem> {
 		WemallItemSpec query = new WemallItemSpec();
 		query.setItemId(entity.getId());
 		List<WemallItemSpec> itemSpecList = wemallItemSpecService.findList(query);
+		if(wemallItem == null) return null;
 		wemallItem.setSpecInfoStr(gson.toJson(itemSpecList));
 		return wemallItem;
 	}

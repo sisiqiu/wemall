@@ -2,8 +2,10 @@ package com.fulltl.wemall.modules.wx.web.front;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,18 +13,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import com.google.common.collect.Maps;
-import com.google.gson.Gson;
+
 import com.fulltl.wemall.common.sms.sendmode.ccp.SMSVerify;
 import com.fulltl.wemall.modules.sys.entity.User;
 import com.fulltl.wemall.modules.sys.security.UsernamePasswordToken;
 import com.fulltl.wemall.modules.sys.service.SystemService;
 import com.fulltl.wemall.modules.sys.utils.UserUtils;
 import com.fulltl.wemall.modules.wx.entity.UserBehavior;
-import com.fulltl.wemall.modules.wx.entity.WxSubscriber;
-import com.fulltl.wemall.modules.wx.service.WxSubscriberService;
-import com.fulltl.wemall.modules.wx.service.WxUserinfoService;
+import com.fulltl.wemall.modules.wx.entity.WxUserInfo;
+import com.fulltl.wemall.modules.wx.service.WxUserInfoService;
 import com.fulltl.wemall.test.entity.TestData;
+import com.google.common.collect.Maps;
+import com.google.gson.Gson;
 
 /**
  * 前端微信用户绑定控制器
@@ -35,17 +37,15 @@ public class WxUserFrontController {
 	@Autowired
 	private SystemService systemService;
 	@Autowired
-	private WxSubscriberService wxSubscriberService;
-	@Autowired
-	private WxUserinfoService wxUserInfoService;
+	private WxUserInfoService wxUserInfoService;
 	
 	@RequestMapping(value = "bindUser")
 	@ResponseBody
 	public String bindUser(TestData testData, HttpServletRequest request, HttpServletResponse response, Model model) {
 		String ret = "400";
         String retMsg = "操作失败";
-		Map<String, Object> retMap = new HashMap<String, Object>();
-		String mobile = WebUtils.getCleanParam(request, "mobile");
+		Map<String, Object>  retMap = new HashMap<String, Object>();
+		/*String mobile = WebUtils.getCleanParam(request, "mobile");
         String verifyServID = WebUtils.getCleanParam(request, "verifyServID");
         String sms_code = WebUtils.getCleanParam(request, "sms_code");
         String openId = WebUtils.getCleanParam(request, "openId");
@@ -58,11 +58,11 @@ public class WxUserFrontController {
         	//验证短信验证码
             if (sms.checkVerifyCode(mobile, sms_code, verifyServID, false).equals("0")) {
             	//短信验证码验证通过
-            	/**
+            	*//**
             	 *  如果不允许多个微信号绑定同一个系统用户，则可以根据手机号查询微信绑定用户表，
             	 *  看存在与否，不存在，则允许绑定，否则提示该手机已绑定过微信号。
             	 *  现在，暂定允许多个微信号绑定同一个系统用户。
-            	 */
+            	 *//*
                 user = systemService.quickGetUserByMobileForWX(mobile);
                 // 自动登录
                 userToken.setUsername(user.getMobile());
@@ -72,8 +72,8 @@ public class WxUserFrontController {
                 UserUtils.getSubject().login(userToken);
 
                 //执行绑定用户
-                WxSubscriber curSubscriber = wxSubscriberService.getWxSubscriberBy(openId, serviceId);
-                wxSubscriberService.updateWXUserBy(UserBehavior.BIND, curSubscriber, user);
+                WxUserInfo curWxUserInfo = wxUserInfoService.getWxUserInfoBy(openId, serviceId);
+                wxUserInfoService.updateWXUserInfoBy(UserBehavior.BIND, curWxUserInfo, user);
                 
                 ret = "200";
                 retMsg = "操作成功";
@@ -88,7 +88,7 @@ public class WxUserFrontController {
             e.printStackTrace();
         }
         retMap.put("ret", ret);
-        retMap.put("retMsg", retMsg);
+        retMap.put("retMsg", retMsg);*/
 		return new Gson().toJson(retMap);
 	}
 

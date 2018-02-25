@@ -54,8 +54,7 @@
 		<div class="control-group">
 			<label class="control-label">订单号：</label>
 			<div class="controls">
-				<form:input path="orderNo" htmlEscape="false" maxlength="64" class="input-xlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:input path="orderNo" htmlEscape="false" maxlength="64" class="input-xlarge"/>
 			</div>
 		</div>
 		<div class="control-group">
@@ -68,8 +67,8 @@
 		<div class="control-group">
 			<label class="control-label">金额：</label>
 			<div class="controls">
-				<form:input path="price" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:input path="price" htmlEscape="false" maxlength="11" class="input-xlarge required"/>
+				<span class="help-inline"><font color="red">*</font> 单位：分</span>
 			</div>
 		</div>
 		<div class="form-actions">

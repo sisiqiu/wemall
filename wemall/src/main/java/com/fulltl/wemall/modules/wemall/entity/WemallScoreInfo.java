@@ -118,6 +118,7 @@ public class WemallScoreInfo extends DataEntity<WemallScoreInfo> {
 		map.put("fromType", DictUtils.getDictLabel(this.getFromType(), "score_fromType", ""));
 		map.put("type", this.getType());
 		map.put("score", this.getScore());
+		map.put("createDate", this.getCreateDate());
 		super.formatEmptyString(map);
 		return map;
 	}

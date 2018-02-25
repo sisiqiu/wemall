@@ -29,6 +29,7 @@ public class WemallItem extends DataEntity<WemallItem> {
 	private Integer sort;		// 排序序号
 	private Integer isTop;		// 是否置顶
 	private Integer isNew;		// 是否新品
+	private Integer isRecommend;		// 是否推荐
 	private Integer isOnShelf;		// 是否上架
 	private Integer salesNum;		// 销量
 	private String productPlace;		// 产地
@@ -147,6 +148,15 @@ public class WemallItem extends DataEntity<WemallItem> {
 		this.isNew = isNew;
 	}
 	
+	@NotNull(message="是否推荐不能为空")
+	public Integer getIsRecommend() {
+		return isRecommend;
+	}
+
+	public void setIsRecommend(Integer isRecommend) {
+		this.isRecommend = isRecommend;
+	}
+
 	@NotNull(message="是否上架不能为空")
 	public Integer getIsOnShelf() {
 		return isOnShelf;

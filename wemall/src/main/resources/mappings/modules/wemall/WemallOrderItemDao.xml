@@ -16,8 +16,10 @@
 		a.freight_no AS "freightNo",
 		a.buyer_message AS "buyerMessage",
 		a.buyer_nick AS "buyerNick",
+		a.buyer_photo AS "buyerPhoto",
 		a.buyer_score AS "buyerScore",
 		a.buyer_comment AS "buyerComment",
+		a.comment_time AS "commentTime",
 		a.del_flag AS "delFlag"
 	</sql>
 	
@@ -120,8 +122,10 @@
 			freight_no,
 			buyer_message,
 			buyer_nick,
+			buyer_photo,
 			buyer_score,
 			buyer_comment,
+			comment_time,
 			del_flag
 		) VALUES (
 			#{orderNo},
@@ -137,8 +141,10 @@
 			#{freightNo},
 			#{buyerMessage},
 			#{buyerNick},
+			#{buyerPhoto},
 			#{buyerScore},
 			#{buyerComment},
+			#{commentTime},
 			#{delFlag}
 		)
 	</insert>
@@ -155,8 +161,10 @@
 			freight_no = #{freightNo},
 			buyer_message = #{buyerMessage},
 			buyer_nick = #{buyerNick},
+			buyer_photo = #{buyerPhoto},
 			buyer_score = #{buyerScore},
-			buyer_comment = #{buyerComment}
+			buyer_comment = #{buyerComment},
+			comment_time = #{commentTime}
 		WHERE order_no = #{orderNo} AND item_id = #{itemId}
 	</update>
 	
@@ -164,8 +172,10 @@
 		UPDATE wemall_order_item SET 	
 			buyer_message = #{buyerMessage},
 			buyer_nick = #{buyerNick},
+			buyer_photo = #{buyerPhoto},
 			buyer_score = #{buyerScore},
-			buyer_comment = #{buyerComment}
+			buyer_comment = #{buyerComment},
+			comment_time = #{commentTime}
 		WHERE order_no = #{orderNo} AND item_id = #{itemId}
 	</update>
 	

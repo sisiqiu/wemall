@@ -23,6 +23,7 @@
 		i.sort AS "item.sort",
 		i.is_top AS "item.isTop",
 		i.is_new AS "item.isNew",
+		i.is_recommend AS "item.isRecommend",
 		i.is_on_shelf AS "item.isOnShelf",
 		i.sales_num AS "item.salesNum",
 		i.product_place AS "item.productPlace",
