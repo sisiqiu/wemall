@@ -15,9 +15,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.gson.Gson;
 import com.fulltl.wemall.common.persistence.Page;
 import com.fulltl.wemall.common.sms.sendmode.ccp.SMSVerify;
 import com.fulltl.wemall.common.utils.StringUtils;
@@ -29,11 +26,13 @@ import com.fulltl.wemall.modules.sys.utils.UserUtils;
 import com.fulltl.wemall.modules.wx.entity.ConActivity;
 import com.fulltl.wemall.modules.wx.entity.ConUserActivity;
 import com.fulltl.wemall.modules.wx.entity.UserBehavior;
-import com.fulltl.wemall.modules.wx.entity.WxSubscriber;
+import com.fulltl.wemall.modules.wx.entity.WxUserInfo;
 import com.fulltl.wemall.modules.wx.service.ConActivityService;
 import com.fulltl.wemall.modules.wx.service.ConUserActivityService;
-import com.fulltl.wemall.modules.wx.service.WxSubscriberService;
-import com.fulltl.wemall.modules.wx.service.WxUserinfoService;
+import com.fulltl.wemall.modules.wx.service.WxUserInfoService;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.gson.Gson;
 
 @Controller
 @RequestMapping(value = "${frontPath}/wx/conActivity")
@@ -45,11 +44,9 @@ public class ConActivityFrontController extends BaseController{
 	@Autowired
 	private ConUserActivityService conUserActivityService;
 	@Autowired
-	private WxUserinfoService wxUserInfoService;
-	@Autowired
-	private WxSubscriberService wxSubscriberService;
-	@Autowired
 	private SystemService systemService;
+	@Autowired
+	private WxUserInfoService wxUserInfoService;
 	
 	/**
 	 * 对openId和Service进行预处理
@@ -422,7 +419,7 @@ public class ConActivityFrontController extends BaseController{
 		String ret = "400";
         String retMsg = "操作失败";
 		Map<String, Object> retMap = new HashMap<String, Object>();
-		String mobile = WebUtils.getCleanParam(request, "mobile");
+		/*String mobile = WebUtils.getCleanParam(request, "mobile");
         String verifyServID = WebUtils.getCleanParam(request, "verifyServID");
         String sms_code = WebUtils.getCleanParam(request, "sms_code");
         String openId = WebUtils.getCleanParam(request, "openId");
@@ -435,11 +432,11 @@ public class ConActivityFrontController extends BaseController{
         	//验证短信验证码
             if (sms.checkVerifyCode(mobile, sms_code, verifyServID, false).equals("0")) {
             	//短信验证码验证通过
-            	/**
+            	*//**
             	 *  如果不允许多个微信号绑定同一个系统用户，则可以根据手机号查询微信绑定用户表，
             	 *  看存在与否，不存在，则允许绑定，否则提示该手机已绑定过微信号。
             	 *  现在，暂定允许多个微信号绑定同一个系统用户。
-            	 */
+            	 *//*
                 user = systemService.quickGetUserByMobileForWX(mobile);
                 // 自动登录
                 userToken.setUsername(user.getMobile());
@@ -449,8 +446,8 @@ public class ConActivityFrontController extends BaseController{
                 UserUtils.getSubject().login(userToken);
 
                 //执行绑定用户
-                WxSubscriber curSubscriber = wxSubscriberService.getWxSubscriberBy(openId, serviceId);
-                wxSubscriberService.updateWXUserBy(UserBehavior.BIND, curSubscriber, user);
+                WxUserInfo curWxUserInfo = wxUserInfoService.getWxUserInfoBy(openId, serviceId);
+                wxUserInfoService.updateWXUserInfoBy(UserBehavior.BIND, curWxUserInfo, user);
                 
                 ret = "200";
                 retMsg = "操作成功";
@@ -465,7 +462,7 @@ public class ConActivityFrontController extends BaseController{
             e.printStackTrace();
         }
         retMap.put("ret", ret);
-        retMap.put("retMsg", retMsg);
+        retMap.put("retMsg", retMsg);*/
 		return retMap;
 	}
 }

@@ -1,5 +1,6 @@
 package com.fulltl.wemall.modules.his.service.front.trade;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
@@ -7,21 +8,24 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.domain.AlipayTradeAppPayModel;
 import com.alipay.api.internal.util.AlipaySignature;
+import com.alipay.api.request.AlipayDataDataserviceBillDownloadurlQueryRequest;
 import com.alipay.api.request.AlipayTradeAppPayRequest;
+import com.alipay.api.request.AlipayTradeFastpayRefundQueryRequest;
+import com.alipay.api.request.AlipayTradeQueryRequest;
 import com.alipay.api.request.AlipayTradeRefundRequest;
+import com.alipay.api.response.AlipayDataDataserviceBillDownloadurlQueryResponse;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
 import com.fulltl.wemall.common.service.BaseService;
 import com.fulltl.wemall.common.utils.IdGen;
@@ -36,6 +40,7 @@ import com.fulltl.wemall.modules.sys.utils.UserUtils;
 import com.fulltl.wemall.modules.wemall.entity.WemallRefund;
 import com.fulltl.wemall.modules.wemall.service.WemallRefundService;
 import com.google.common.collect.Maps;
+import com.google.gson.Gson;
 
 /**
  * 医院客服管理前端服务层
@@ -60,7 +65,7 @@ public class AlipayTradeService extends BaseService {
 	public String handleNotify(AlipayTradeAllEntity alipayTradeAllEntity, HttpServletRequest request) {
 		boolean signVerified = rsaCheckV1(request);
 		//——请在这里编写您的程序（以下代码仅作参考）——
-		
+
 		/* 实际验证过程建议商户务必添加以下校验：
 		1、需要验证该通知数据中的out_trade_no是否为商户系统中创建的订单号，
 		2、判断total_amount是否确实为该订单的实际金额（即商户订单创建时的金额），
@@ -80,8 +85,9 @@ public class AlipayTradeService extends BaseService {
 			String trade_status = alipayTradeAllEntity.getTrade_status();
 			//交易退款时间
 			Date gmt_refund = alipayTradeAllEntity.getGmt_refund();
-			
-			if(trade_status.equals("TRADE_FINISHED")) {
+			logger.info("接收到支付宝付款成功异步通知，商户订单号：" + out_trade_no);
+			System.err.println(trade_status);
+			if(trade_status.equals("TRADE_FINISHED") || trade_status.equals("TRADE_CLOSED")) {
 				//注意：
 				//退款日期超过可退款期限后（如三个月可退款），支付宝系统发送该交易状态通知
 				//交易结束，执行交易关闭更新逻辑
@@ -89,7 +95,7 @@ public class AlipayTradeService extends BaseService {
 				slSysOrder.setStatus("6");		//交易关闭
 				slSysOrderService.save(slSysOrder);
 			} else if (trade_status.equals("TRADE_SUCCESS")) {
-				System.err.println("接收到支付宝付款成功异步通知，商户订单号：" + out_trade_no);
+				
 				//注意：
 				//付款完成后，支付宝系统发送该交易状态通知
 				if(gmt_refund != null) {
@@ -200,8 +206,7 @@ public class AlipayTradeService extends BaseService {
 	 * @return
 	 * @throws AlipayApiException
 	 */
-	@RequestMapping(value = "refund")
-	@ResponseBody
+	@Transactional(readOnly = false)
 	public Map<String, Object> refund(Map<String, String> params, SlSysOrder slSysOrder) throws AlipayApiException {
 		Map<String, Object> retMap = Maps.newHashMap();
 		
@@ -247,25 +252,143 @@ public class AlipayTradeService extends BaseService {
 		//请求
 		String result = alipayClient.execute(alipayRequest).getBody();
 		
-		//添加退款记录信息
-		WemallRefund refund = new WemallRefund();
-		/*refund.setOrderNo(orderNo);
-		refund.setUser(slSysOrder.getUser());
-		refund.setOrderPrice(slSysOrder.getOrderPrice());
-		refund.setPayment(slSysOrder.getActualPayment());
-		refund.setRefundFee(refundFee);
-		refund.setRefundDesc(refundDesc);
-		refund.setRefundId(refundId);
-		refund.setRefundStatus("1");*/  //退款状态（0--未成功，1--已退款）
-		refund.setRefundDate(new Date());//退款时间
-		wemallRefundService.save(refund);
-		
-		System.err.println(result);
+		Map<String, Object> responseMap = new Gson().fromJson(result, Map.class);
+		Map<String, Object> resultMap = (Map<String, Object>)responseMap.get("alipay_trade_refund_response");
+		if("10000".equals(resultMap.get("code"))) {
+			//退款成功
+			//添加退款记录信息
+			WemallRefund refund = new WemallRefund();
+			/*refund.setOrderNo(orderNo);
+			refund.setUser(slSysOrder.getUser());
+			refund.setOrderPrice(slSysOrder.getOrderPrice());
+			refund.setPayment(slSysOrder.getActualPayment());
+			refund.setRefundFee(refundFee);
+			refund.setRefundDesc(refundDesc);
+			refund.setRefundId(refundId);
+			refund.setRefundStatus("1");  //退款状态（0--未成功，1--已退款）
+			refund.setRefundDate(new Date());//退款时间
+			refund.setPayMethod(PayMethod.alipay.toString());*/
+			refund.setIsNewRecord(true);
+			wemallRefundService.save(refund);
+			
+			//更新订单退款金额
+			slSysOrderService.updateOrderRefundFee(slSysOrder, refundFee);
+		} else {
+			retMap.put("ret", "-1");
+			retMap.put("retMsg", "退款失败，支付宝错误码：" + resultMap.get("code"));
+			return retMap;
+		}
 		
 		//输出
 		retMap.put("ret", "0");
 		retMap.put("retMsg", "退款成功");
 		return retMap;
+	}
+	
+	/**
+	 * 根据商户订单号或者支付宝交易号查询订单详情。商户订单号和支付宝交易号请二选一设置。都添加的话，将采用支付宝交易号。
+	 * @param orderNo 商户订单号，商户网站订单系统中唯一订单号
+	 * @param trade_no 支付宝交易号
+	 * @return
+	 * @throws AlipayApiException
+	 */
+	public String orderQuery(String orderNo, String trade_no) throws AlipayApiException {
+		//获得初始化的AlipayClient
+		AlipayClient alipayClient = AlipayConfig.getAlipayClient();
+		
+		//设置请求参数
+		AlipayTradeQueryRequest alipayRequest = new AlipayTradeQueryRequest();
+		
+		String bizContent = StringUtils.EMPTY;
+		if(StringUtils.isNotBlank(trade_no)) {
+			bizContent = "{\"trade_no\":\""+ trade_no +"\"}";
+		} else {
+			bizContent = "{\"out_trade_no\":\""+ orderNo +"\"}";
+		}
+		alipayRequest.setBizContent(bizContent);
+		
+		//请求
+		String result = alipayClient.execute(alipayRequest).getBody();
+		
+		//输出
+		return result;
+	}
+	
+	/**
+	 * 根据商户订单号或者支付宝交易号查询退款详情。商户订单号和支付宝交易号请二选一设置。都添加的话，将采用支付宝交易号。
+	 * @param orderNo 商户订单号，商户网站订单系统中唯一订单号
+	 * @param trade_no 支付宝交易号
+	 * @param refundId 退款业务号
+	 * @return
+	 * @throws AlipayApiException
+	 */
+	public String refundQuery(String orderNo, String trade_no, String refundId) throws AlipayApiException {
+		//获得初始化的AlipayClient
+		AlipayClient alipayClient = AlipayConfig.getAlipayClient();
+		
+		//设置请求参数
+		AlipayTradeFastpayRefundQueryRequest alipayRequest = new AlipayTradeFastpayRefundQueryRequest();
+		
+		String bizContent = StringUtils.EMPTY;
+		if(StringUtils.isNotBlank(trade_no)) {
+			bizContent = "{\"out_trade_no\":\""+ orderNo +"\"," 
+					+"\"trade_no\":\""+ trade_no +"\","
+					+"\"out_request_no\":\""+ refundId +"\"}";
+		} else {
+			bizContent = "{\"out_trade_no\":\""+ orderNo +"\"," 
+					+"\"out_request_no\":\""+ refundId +"\"}";
+		}
+		alipayRequest.setBizContent(bizContent);
+		
+		//请求
+		String result = alipayClient.execute(alipayRequest).getBody();
+		
+		//输出
+		return result;
+	}
+	
+	/**
+	 * 下载对账单
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 * @throws AlipayApiException
+	 */
+	public Map<String, Object> downloadBill(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException, AlipayApiException {
+		Map<String, Object> retMap = Maps.newHashMap();
+		String bill_type = WebUtils.getCleanParam(request, "bill_type");
+		if(!"trade".equals(bill_type) && !"signcustomer".equals(bill_type)) {
+			retMap.put("ret", "-1");
+			retMap.put("retMsg", "bill_type参数不能为空，且bill_type账单类型为：trade、signcustomer；\n"
+					+ "trade指商户基于支付宝交易收单的业务账单；signcustomer是指基于商户支付宝余额收入及支出等资金变动的帐务账单");
+			return retMap;
+		}
+		String bill_date = WebUtils.getCleanParam(request, "bill_date");
+		//获得初始化的AlipayClient
+		AlipayClient alipayClient = AlipayConfig.getAlipayClient();
+		AlipayDataDataserviceBillDownloadurlQueryRequest alipayRequest = new AlipayDataDataserviceBillDownloadurlQueryRequest();
+		alipayRequest.setBizContent("{" +
+					"\"bill_type\":\"" + bill_type + "\"," + //trade
+					"\"bill_date\":\"" + bill_date + "\"" +
+					"  }");
+		AlipayDataDataserviceBillDownloadurlQueryResponse result = alipayClient.execute(alipayRequest);
+		if(result.isSuccess()){
+			String billDownloadUrl = result.getBillDownloadUrl();
+			/*try {
+				response.sendRedirect(billDownloadUrl);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}*/
+			retMap.put("ret", "0");
+			retMap.put("retMsg", billDownloadUrl);
+			return retMap;
+		} else {
+			retMap.put("ret", "-1");
+			retMap.put("retMsg", "调用失败, 错误码：" + result.getCode() + "; 错误信息：" + result.getSubMsg());
+			return retMap;
+		}
 	}
 	
 	/**

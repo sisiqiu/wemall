@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fulltl.wemall.common.web.BaseController;
 import com.fulltl.wemall.modules.sys.service.SystemService;
-import com.fulltl.wemall.modules.wemall.service.front.SlHisUserFrontService;
+import com.fulltl.wemall.modules.wemall.service.front.WemallUserFrontService;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 
@@ -26,10 +26,10 @@ import com.google.gson.Gson;
  */
 @Controller
 @RequestMapping(value = "${frontPath}/interface")
-public class SlHisUserFrontController extends BaseController {
+public class WemallUserFrontController extends BaseController {
 	
 	@Autowired
-	private SlHisUserFrontService slHisUserFrontService;
+	private WemallUserFrontService slHisUserFrontService;
 	
 	/**
 	 * 验证用户名是否已被使用。

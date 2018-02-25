@@ -30,8 +30,8 @@ public class ObtainAccessTokenScheduler {
 	/**
 	 * 获取accessToken和jsapi_ticket的操作，并将在初始化构造时和每个整点执行。
 	 */
-	/*@PostConstruct
-	@Scheduled(cron="0 0 0/1 * * ?")*/
+	@PostConstruct
+	@Scheduled(cron="0 0 0/1 * * ?")
 	public void obtainAccessToken() {
 		// 调用接口获取access_token
 		AccessToken accessToken = WXUtil.getAccessToken(APP_ID, SECRET);

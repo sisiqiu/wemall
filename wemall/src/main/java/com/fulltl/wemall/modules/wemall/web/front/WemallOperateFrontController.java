@@ -17,7 +17,7 @@ import com.fulltl.wemall.common.web.BaseController;
 import com.fulltl.wemall.modules.cms.entity.Article;
 import com.fulltl.wemall.modules.cms.entity.CmsFeedback;
 import com.fulltl.wemall.modules.sys.entity.SlSysAdvertise;
-import com.fulltl.wemall.modules.wemall.service.front.SlHisOperateFrontService;
+import com.fulltl.wemall.modules.wemall.service.front.WemallOperateFrontService;
 import com.google.gson.Gson;
 
 
@@ -28,14 +28,14 @@ import com.google.gson.Gson;
  */
 @Controller
 @RequestMapping(value = "${frontPath}/interface/wemall/operate")
-public class SlHisOperateFrontController extends BaseController {
+public class WemallOperateFrontController extends BaseController {
 	
 	@Autowired 
-	private SlHisOperateFrontService slHisOperateFrontService;
+	private WemallOperateFrontService slHisOperateFrontService;
 	
 	/**
 	 * 根据资讯类型进行分页查询
-	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/his/operate/getArticleListByCategory
+	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/operate/getArticleListByCategory
 	 *	参数：category.id=资讯类别id
 	 *		pageSize=每页查询条数
 	 * 		pageNo=页码
@@ -62,7 +62,7 @@ public class SlHisOperateFrontController extends BaseController {
 	
 	/**
 	 * 查询单个资讯
-	 * url：http://ldkadmin.viphk.ngrok.org/f/interface/his/operate/getArticleById
+	 * url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/operate/getArticleById
 	 * 参数：id  = 该表主键
 	 *	例：{
 	 * 		id="1bfc5c49ee81494dbb86e92f9a1b799d"
@@ -80,7 +80,7 @@ public class SlHisOperateFrontController extends BaseController {
 	
 	/**
 	 * 查询广告列表
-	 *url：http://ldkadmin.viphk.ngrok.org/f/interface/his/operate/getAdvertiseList
+	 *url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/operate/getAdvertiseList
 	 *参数：待定
 	 *		pageSize=每页查询条数
 	 * 		pageNo=页码
@@ -103,7 +103,7 @@ public class SlHisOperateFrontController extends BaseController {
 	
 	/**
 	 * 查询单个广告
-	 * url：http://ldkadmin.viphk.ngrok.org/f/interface/his/operate/getAdvertiseById
+	 * url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/operate/getAdvertiseById
 	 * 参数：id  = 该表主键
 	 *	例：{
 	 * 		id=200520170ad34dc8b1732228beb512c3
@@ -122,7 +122,7 @@ public class SlHisOperateFrontController extends BaseController {
 	/**
 	 * 根据用户反馈的建议给意见反馈表新增一条意见反馈数据
 	 * 测试用例（参数与患者注册接口基本一致）：
-	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/his/operate/addFeedback
+	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/operate/addFeedback
 	 *	参数：opinionText;		// 反馈内容
 	 *		telephone;		// 手机号码
 	 *		username;		// 用户的名称（可选）

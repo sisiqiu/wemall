@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fulltl.wemall.common.web.BaseController;
-import com.fulltl.wemall.modules.wemall.service.front.SlHisSysFrontService;
+import com.fulltl.wemall.modules.wemall.service.front.WemallSysFrontService;
 import com.google.gson.Gson;
 
 /**
@@ -24,15 +24,15 @@ import com.google.gson.Gson;
  */
 @Controller
 @RequestMapping(value = "${frontPath}/interface/wemall/sys")
-public class SlHisSysFrontController extends BaseController {
+public class WemallSysFrontController extends BaseController {
 	@Autowired
-	private SlHisSysFrontService slHisSysFrontService;
+	private WemallSysFrontService slHisSysFrontService;
 	
 	/**
 	 * 根据字典类型获取字典列表的接口。
 	 * 
 	 * 测试用例：
-	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/his/sys/getDictListByType
+	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/sys/getDictListByType
 	 *	参数：type=字典类型
 	 *
 	 * 	例：type=sex
@@ -53,66 +53,34 @@ public class SlHisSysFrontController extends BaseController {
 	}
 	
 	/**
-	 * 用户端首页信息获取接口
-	 * http://ldkadmin.viphk.ngrok.org/f/interface/his/sys/getUserHomePageData
-	 * 参数：hospitalId=医院id
+	 * 首页信息获取接口
+	 * http://ldkadmin.viphk.ngrok.org/f/interface/wemall/sys/getHomePageData
+	 * 参数：
 	 *	例：{
-	 *		hospitalId=1
 	 *		}
 	 *
 	 * 结果示例：{
 	 *		    "ret": "0",
 	 *		    "data": {
 	 *		        "banna": [],
-	 *		        "navBar": [],
-	 *		        "doctorList": [],
-	 *		        "articleList": [],
-	 *				"noticeList": [],
-	 *				"moreExpertsUrl": "",
-	 *				"moreHealthyArticlesUrl": ""
+	 *		        "navBars": [],
+	 *		        "middleNavBars": [],
+	 *		        "goodsList": [],
+	 *				"servicePhone": ""
 	 *		    },
 	 *		    "retMsg": "获取成功"
 	 *		}
-	 * 		或
-	 * 		{"ret":"60022","data":{},"retMsg":"缺少医院id！"}
 	 */
-	@RequestMapping(value = {"getUserHomePageData"})
+	@RequestMapping(value = {"getHomePageData"})
 	@ResponseBody
-	public String getUserHomePageData(HttpServletRequest request, HttpServletResponse response, Model model) {
-		Map<String ,Object> retMap=slHisSysFrontService.getUserHomePageData(request, response);
-		return new Gson().toJson(formatReturnMsg(retMap));
-	}
-	
-	/**
-	 * 医生端首页信息获取接口
-	 * http://ldkadmin.viphk.ngrok.org/f/interface/his/sys/getDoctorHomePageData
-	 * 参数：userId=系统用户id
-	 *	例：{
-	 *		userId=1
-	 *		}
-	 *
-	 * 结果示例：{
-	 *		    "ret": "0",
-	 *		    "data": {
-	 *		        "navBar": [],
-	 *		        "doctorInfo": {},
-	 *				"noticeList": []
-	 *		    },
-	 *		    "retMsg": "获取成功"
-	 *		}
-	 * 		或
-	 * 		{"ret":"60018","data":{},"retMsg":"用户id不能为空！"}
-	 */
-	@RequestMapping(value = {"getDoctorHomePageData"})
-	@ResponseBody
-	public String getDoctorHomePageData(HttpServletRequest request, HttpServletResponse response, Model model) {
-		Map<String ,Object> retMap=slHisSysFrontService.getDoctorHomePageData(request, response);
+	public String getHomePageData(HttpServletRequest request, HttpServletResponse response, Model model) {
+		Map<String ,Object> retMap=slHisSysFrontService.getHomePageData(request, response);
 		return new Gson().toJson(formatReturnMsg(retMap));
 	}
 	
 	/**
 	 * 文件上传接口
-	 * url：http://ldkadmin.viphk.ngrok.org/f/interface/his/sys/uploadFile
+	 * url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/sys/uploadFile
 	 * 参数：file=文件
 	 *
 	 *	例：
@@ -135,7 +103,7 @@ public class SlHisSysFrontController extends BaseController {
 	
 	/**
 	 * 头像上传接口
-	 * url：http://ldkadmin.viphk.ngrok.org/f/interface/his/sys/uploadUserPhoto
+	 * url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/sys/uploadUserPhoto
 	 * 参数：file=文件
 	 * 		type=doctor或者patient，
 	 *	例：
@@ -158,7 +126,7 @@ public class SlHisSysFrontController extends BaseController {
 	
 	/**
 	 * 获取系统配置的独立url链接接口
-	 * url：http://ldkadmin.viphk.ngrok.org/f/interface/his/sys/getConfigUrls
+	 * url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/sys/getConfigUrls
 	 * 参数：
 	 * 
 	 *	例：
@@ -181,7 +149,7 @@ public class SlHisSysFrontController extends BaseController {
 	
 	/**
 	 * 根据类别获取系统配置的独立url链接接口
-	 * url：http://ldkadmin.viphk.ngrok.org/f/interface/his/sys/getConfigUrlsByType
+	 * url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/sys/getConfigUrlsByType
 	 * 参数：type=类别
 	 * 
 	 *	例：

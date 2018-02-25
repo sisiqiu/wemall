@@ -12,6 +12,6 @@ import com.fulltl.wemall.common.service.BaseService;
  */
 @Service
 @Transactional(readOnly = true)
-public class SlHisMarketFrontService extends BaseService {
+public class WemallMarketFrontService extends BaseService {
 	
 }

@@ -51,6 +51,9 @@
 			<li><label>是否新品：</label>
 				<form:radiobuttons path="isNew" items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 			</li>
+			<li><label>是否推荐：</label>
+				<form:radiobuttons path="isRecommend" items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+			</li>
 			<li><label>是否上架：</label>
 				<form:radiobuttons path="isOnShelf" items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 			</li>
@@ -123,10 +126,10 @@
 					${wemallItem.sortName}
 				</td>
 				<td>
-					${wemallItem.originalPrice}
+					￥<fmt:formatNumber type="number" value="${wemallItem.originalPrice/100}" pattern="0.00" maxFractionDigits="2"/>
 				</td>
 				<td>
-					${wemallItem.currentPrice}
+					￥<fmt:formatNumber type="number" value="${wemallItem.currentPrice/100}" pattern="0.00" maxFractionDigits="2"/>
 				</td>
 				<td>
 					${wemallItem.storage}
@@ -138,7 +141,7 @@
 					${wemallItem.salesNum}
 				</td>
 				<td>
-					${wemallItem.freightPrice}
+					￥<fmt:formatNumber type="number" value="${wemallItem.freightPrice/100}" pattern="0.00" maxFractionDigits="2"/>
 				</td>
 				<td>
 					${fns:getDictLabel(wemallItem.activitySort, 'item_activity_sort', '')}

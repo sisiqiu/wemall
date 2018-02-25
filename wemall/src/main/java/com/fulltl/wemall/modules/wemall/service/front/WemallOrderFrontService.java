@@ -1,6 +1,7 @@
 package com.fulltl.wemall.modules.wemall.service.front;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +20,7 @@ import com.fulltl.wemall.modules.wemall.entity.WemallOrderItem;
 import com.fulltl.wemall.modules.wemall.service.WemallFreightInfoService;
 import com.fulltl.wemall.modules.wemall.service.WemallOrderAddressService;
 import com.fulltl.wemall.modules.wemall.service.WemallOrderItemService;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -27,7 +29,7 @@ import com.google.common.collect.Maps;
  *
  */
 @Service
-public class SlHisOrderFrontService extends BaseService {
+public class WemallOrderFrontService extends BaseService {
 	@Autowired
 	private WemallOrderItemService wemallOrderItemService;
 	@Autowired
@@ -67,6 +69,39 @@ public class SlHisOrderFrontService extends BaseService {
 		for(WemallOrderItem entity : page.getList()) {
 			dataList.add(entity.getSmallEntityMap());
 		}*/
+		map.put("list", page.getList());
+		map.put("count", page.getCount());
+		map.put("ret", "0");
+		map.put("retMsg", "获取成功");
+		return map;
+	}
+	
+	/**
+	 * 获取订单评价列表
+	 * @param wemallOrderItem
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> getBuyerCommentList(WemallOrderItem wemallOrderItem, HttpServletRequest request) {
+		Integer pageNo = null;
+		Integer pageSize  = null;
+		Map<String ,Object> map=new HashMap<String, Object>();
+		try {
+			pageNo = Integer.parseInt(request.getParameter("pageNo"));
+			pageSize = Integer.parseInt(request.getParameter("pageSize"));
+		} catch (NumberFormatException e) {
+			map.put("ret", "-1");
+			map.put("retMsg", "缺少页码和每页条数！");
+			return map;
+		}
+		
+		wemallOrderItem.setBuyerComment(1);
+		
+		Page<WemallOrderItem> page = wemallOrderItemService.findPage(new Page<WemallOrderItem>(pageNo, pageSize), wemallOrderItem);
+		List<Map<String, Object>> dataList = Lists.newArrayList();
+		for(WemallOrderItem entity : page.getList()) {
+			dataList.add(entity.getBuyerCommentMap());
+		}
 		map.put("list", page.getList());
 		map.put("count", page.getCount());
 		map.put("ret", "0");
@@ -162,4 +197,5 @@ public class SlHisOrderFrontService extends BaseService {
 		map.put("retMsg", "评价成功");
 		return map;
 	}
+
 }

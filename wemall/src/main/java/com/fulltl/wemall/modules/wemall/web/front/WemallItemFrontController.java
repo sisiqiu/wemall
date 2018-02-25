@@ -15,7 +15,7 @@ import com.fulltl.wemall.common.web.BaseController;
 import com.fulltl.wemall.modules.wemall.entity.WemallItem;
 import com.fulltl.wemall.modules.wemall.entity.WemallItemSort;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrderItem;
-import com.fulltl.wemall.modules.wemall.service.front.SlHisItemFrontService;
+import com.fulltl.wemall.modules.wemall.service.front.WemallItemFrontService;
 import com.google.gson.Gson;
 
 /**
@@ -25,10 +25,10 @@ import com.google.gson.Gson;
  */
 @Controller
 @RequestMapping(value = "${frontPath}/interface/wemall/item")
-public class SlHisItemFrontController extends BaseController {
+public class WemallItemFrontController extends BaseController {
 	
 	@Autowired 
-	private SlHisItemFrontService slHisItemFrontService;
+	private WemallItemFrontService slHisItemFrontService;
 	
 	/**
 	 * 获取商品类别列表的接口。
@@ -57,7 +57,7 @@ public class SlHisItemFrontController extends BaseController {
 	}
 	
 	/**
-	 * 获取商品类别列表的接口。
+	 * 获取商品列表的接口。
 	 * 
 	 * 测试用例：
 	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/item/getItemList
@@ -72,7 +72,7 @@ public class SlHisItemFrontController extends BaseController {
 	 *		canUseCoupon=是否可用优惠券；1--是，0--否
 	 *		canUseScoreDeduct=是否可用积分抵扣；1--是，0--否
 	 *		canUseScoreExchange=是否可用积分兑换；1--是，0--否
-	 *		
+	 *		orderBy=排序方式
 	 *
 	 * 	例：
 	 * 

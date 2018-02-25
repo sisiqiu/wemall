@@ -13,6 +13,7 @@
 		a.sort AS "sort",
 		a.is_top AS "isTop",
 		a.is_new AS "isNew",
+		a.is_recommend AS "isRecommend",
 		a.is_on_shelf AS "isOnShelf",
 		a.sales_num AS "salesNum",
 		a.product_place AS "productPlace",
@@ -86,6 +87,9 @@
 			<if test="isNew != null and isNew != ''">
 				AND a.is_new = #{isNew}
 			</if>
+			<if test="isRecommend != null and isRecommend != ''">
+				AND a.is_recommend = #{isRecommend}
+			</if>
 			<if test="isOnShelf != null and isOnShelf != ''">
 				AND a.is_on_shelf = #{isOnShelf}
 			</if>
@@ -125,7 +129,7 @@
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
-				ORDER BY a.update_date DESC
+				ORDER BY a.is_top DESC, sort ASC
 			</otherwise>
 		</choose>
 	</select>
@@ -162,6 +166,7 @@
 			sort,
 			is_top,
 			is_new,
+			is_recommend,
 			is_on_shelf,
 			sales_num,
 			product_place,
@@ -192,6 +197,7 @@
 			#{sort},
 			#{isTop},
 			#{isNew},
+			#{isRecommend},
 			#{isOnShelf},
 			#{salesNum},
 			#{productPlace},
@@ -226,6 +232,7 @@
 			sort = #{sort},
 			is_top = #{isTop},
 			is_new = #{isNew},
+			is_recommend = #{isRecommend},
 			is_on_shelf = #{isOnShelf},
 			sales_num = #{salesNum},
 			product_place = #{productPlace},

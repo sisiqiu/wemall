@@ -24,10 +24,10 @@ import com.fulltl.wemall.common.utils.StringUtils;
 import com.fulltl.wemall.modules.sys.entity.User;
 import com.fulltl.wemall.modules.sys.security.UsernamePasswordToken;
 import com.fulltl.wemall.modules.sys.service.SystemService;
-import com.fulltl.wemall.modules.sys.utils.DictUtils;
 import com.fulltl.wemall.modules.sys.utils.UserUtils;
+import com.fulltl.wemall.modules.wx.entity.WxUserInfo;
+import com.fulltl.wemall.modules.wx.service.WxUserInfoService;
 import com.google.common.base.Objects;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 
@@ -38,10 +38,12 @@ import com.google.gson.Gson;
  */
 @Service
 @Transactional(readOnly = true)
-public class SlHisUserFrontService extends BaseService {
+public class WemallUserFrontService extends BaseService {
 
 	@Autowired
 	private SystemService systemService;
+	@Autowired
+	private WxUserInfoService wxUserInfoService;
 	
 	/**
 	 * 验证用户名是否已被使用。
@@ -616,9 +618,18 @@ public class SlHisUserFrontService extends BaseService {
 		User user = UserUtils.getUser();
 		retMap = systemService.checkCurrentUser(user);
 		if(!"0".equals(retMap.get("ret"))) return retMap;
+		
+		WxUserInfo query = new WxUserInfo();
+		query.setUser(user);
+		List<WxUserInfo> userInfoList = wxUserInfoService.findList(query);
+		WxUserInfo userInfo = null;
+		if(userInfoList.size() > 0) {
+			userInfo = userInfoList.get(0);
+			userInfo.setUser(user);
+		}
 		retMap.put("ret", "0");
 		retMap.put("retMsg", "获取用户成功！");
-		retMap.put("user", user.getSmallUser());
+		retMap.put("userInfo", userInfo);
 		return retMap;
 	}
 

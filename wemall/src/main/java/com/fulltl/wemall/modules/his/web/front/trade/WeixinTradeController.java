@@ -13,10 +13,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.google.gson.Gson;
 import com.fulltl.wemall.common.web.BaseController;
 import com.fulltl.wemall.modules.his.service.front.trade.WeixinTradeService;
-import com.fulltl.wemall.modules.sys.entity.SlSysOrder.AppoTypeEnum;
+import com.google.gson.Gson;
 
 
 /**

@@ -938,4 +938,25 @@ public class SystemService extends BaseService implements InitializingBean {
 	}
 
 	///////////////// write by ldk end //////////////////////////////////
+	
+	/**
+	 * 获取用户（没有执行添加，有用户没有角色执行更新）。
+	 * @param loginName
+	 * @param name
+	 * @param password
+	 * @return
+	 */
+	@Transactional(readOnly = false)
+	public User saveUserByTypeAndLoginName(String loginName, String name, String password) {
+		User user = this.getUserByLoginName(loginName);
+		if(user == null) {
+			User u = new User();
+			u.quickInitByLoginName(loginName, name, password, "", null);
+			//u.setUserCategory("doctor");
+			this.saveUser(u);
+			return u;
+		} else {
+			return user;
+		}
+	}
 }

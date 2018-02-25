@@ -18,7 +18,7 @@ import com.fulltl.wemall.modules.wemall.entity.WemallScoreInfo;
 import com.fulltl.wemall.modules.wemall.entity.WemallShopCar;
 import com.fulltl.wemall.modules.wemall.entity.WemallUserAddress;
 import com.fulltl.wemall.modules.wemall.entity.WemallVipCard;
-import com.fulltl.wemall.modules.wemall.service.front.SlHisUserRelatedFrontService;
+import com.fulltl.wemall.modules.wemall.service.front.WemallUserRelatedFrontService;
 import com.google.gson.Gson;
 
 /**
@@ -28,9 +28,9 @@ import com.google.gson.Gson;
  */
 @Controller
 @RequestMapping(value = "${frontPath}/interface/wemall/userRelated")
-public class SlHisUserRelatedFrontController extends BaseController {
+public class WemallUserRelatedFrontController extends BaseController {
 	@Autowired
-	private SlHisUserRelatedFrontService slHisUserRelatedFrontService;
+	private WemallUserRelatedFrontService slHisUserRelatedFrontService;
 	
 	/**
 	 * 获取购物车列表的接口。

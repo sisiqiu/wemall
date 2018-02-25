@@ -5,7 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fulltl.wemall.common.web.BaseController;
-import com.fulltl.wemall.modules.wemall.service.front.SlHisMarketFrontService;
+import com.fulltl.wemall.modules.wemall.service.front.WemallMarketFrontService;
 
 /**
  * 营销管理前端接口
@@ -14,9 +14,9 @@ import com.fulltl.wemall.modules.wemall.service.front.SlHisMarketFrontService;
  */
 @Controller
 @RequestMapping(value = "${frontPath}/interface/wemall/market")
-public class SlHisMarketFrontController extends BaseController {
+public class WemallMarketFrontController extends BaseController {
 	
 	@Autowired 
-	private SlHisMarketFrontService slHisMarketServiceFrontService ;
+	private WemallMarketFrontService slHisMarketServiceFrontService ;
 	
 }

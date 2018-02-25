@@ -32,13 +32,9 @@ public class Global {
 	private static Map<String, String> map = Maps.newHashMap();
 	
 	/**
-	 * 保存互联网医院中的用户端配置集
+	 * 保存微商城中的商城配置集
 	 */
-	private static Map<String, String> hisUserMap = Maps.newHashMap();
-	/**
-	 * 保存互联网医院中的医生端配置集
-	 */
-	private static Map<String, String> hisDoctorMap = Maps.newHashMap();
+	private static Map<String, String> wemallMap = Maps.newHashMap();
 	
 	/**
 	 * 属性文件加载对象
@@ -81,12 +77,10 @@ public class Global {
 	 */
 	public static String getConfig(String key) {
 		String value = map.get(key);
-		String hisUserValue = hisUserMap.get(key);
-		String hisDoctorValue = hisDoctorMap.get(key);
+		String wemallValue = wemallMap.get(key);
 		
 		if(value != null) return value;
-		if(hisUserValue != null) return hisUserValue;
-		if(hisDoctorValue != null) return hisDoctorValue;
+		if(wemallValue != null) return wemallValue;
 		
 		//都没有，去配置文件找
 		value = loader.getProperty(key);
@@ -203,35 +197,19 @@ public class Global {
     }
 	
     /**
-     * 对互联网医院用户端缓存集进行添加，替换
+     * 对微商城用户端缓存集进行添加，替换
      * @param addMap
      */
-    public static void putAllToHisUserMap(Map<String, String> addMap) {
-    	hisUserMap.putAll(addMap);
+    public static void putAllToWemallMap(Map<String, String> addMap) {
+    	wemallMap.putAll(addMap);
     }
     
     /**
-     * 对互联网医院缓医生端存集进行添加，替换
-     * @param addMap
-     */
-    public static void putAllToHisDoctorMap(Map<String, String> addMap) {
-    	hisDoctorMap.putAll(addMap);
-    }
-
-    /**
-     * 返回互联网医院用户端缓存集
+     * 返回微商城用户端缓存集
      * @return 
      */
-	public static Map<String, String> getHisUserGlobalConfig() {
-		return hisUserMap;
-	}
-	
-	/**
-	 * 返回互联网医院医生端缓存集
-	 * @return 
-	 */
-	public static Map<String, String> getHisDoctorGlobalConfig() {
-		return hisDoctorMap;
+	public static Map<String, String> getWemallGlobalConfig() {
+		return wemallMap;
 	}
 	
 	/**
@@ -239,12 +217,12 @@ public class Global {
 	 * @param type
 	 * @return
 	 */
-	public static Map<String, String> getHisGlobalConfigByType(String type) {
+	public static Map<String, String> getGlobalConfigByType(String type) {
 		Map<String, String> hisGlobalConfig = Maps.newHashMap();
 		if("userApp".equals(type)) {
-			hisGlobalConfig = Global.getHisUserGlobalConfig();
+			hisGlobalConfig = Global.getWemallGlobalConfig();
 		} else if("doctorApp".equals(type)) {
-			hisGlobalConfig = Global.getHisUserGlobalConfig();
+			hisGlobalConfig = Global.getWemallGlobalConfig();
 		}
 		return hisGlobalConfig;
 	}

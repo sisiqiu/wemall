@@ -32,6 +32,7 @@ public class SlSysOrder extends DataEntity<SlSysOrder> {
 	private String actualPayment;		// 实际支付价格
 	private String payMethod;		// 付款方式（alipay--支付宝；weixin--微信支付）
 	private String freightFee;		// 运费
+	private String totalRefundFee;		// 运费
 	private Integer usedPoints;		// 使用积分数
 	private String status;		// 订单状态（1--未付款；2--已付款；3--未发货；4--已发货；5--交易成功；6--交易关闭）
 	private String payState;		// 支付状态（1--交易创建，等待买家付款；此状态不会接收到通知
@@ -208,6 +209,16 @@ public class SlSysOrder extends DataEntity<SlSysOrder> {
 		this.freightFee = freightFee;
 	}
 	
+	@Pattern(regexp=RegExpValidatorUtil.REGEX_NULL_OR_DECIMAL, 
+			message="总退款金额格式错误")
+	public String getTotalRefundFee() {
+		return totalRefundFee;
+	}
+
+	public void setTotalRefundFee(String totalRefundFee) {
+		this.totalRefundFee = totalRefundFee;
+	}
+
 	public Integer getUsedPoints() {
 		return usedPoints;
 	}
@@ -329,5 +340,6 @@ public class SlSysOrder extends DataEntity<SlSysOrder> {
 		this.setStatus("1");	//订单状态；1--未付款
 		this.setPayState("1");	//支付状态；1--未支付
 		this.setOrderDate(new Date());	//下单日期
+		this.setTotalRefundFee("0");	//总退款金额
 	}
 }

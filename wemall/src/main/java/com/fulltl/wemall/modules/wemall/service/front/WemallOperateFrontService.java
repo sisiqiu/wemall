@@ -37,7 +37,7 @@ import com.google.common.collect.Lists;
 @Service
 @Transactional(readOnly = true)
 @Lazy(false)
-public class SlHisOperateFrontService extends BaseService {
+public class WemallOperateFrontService extends BaseService {
 	@Autowired
 	private SystemService systemService;
 	@Autowired
