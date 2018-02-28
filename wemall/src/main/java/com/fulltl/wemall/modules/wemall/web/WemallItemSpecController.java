@@ -18,13 +18,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.fulltl.wemall.common.config.Global;
 import com.fulltl.wemall.common.persistence.Page;
 import com.fulltl.wemall.common.web.BaseController;
+import com.fulltl.wemall.common.utils.StringUtils;
 import com.fulltl.wemall.modules.wemall.entity.WemallItemSpec;
 import com.fulltl.wemall.modules.wemall.service.WemallItemSpecService;
 
 /**
  * 商品-属性管理Controller
  * @author ldk
- * @version 2018-01-05
+ * @version 2018-02-01
  */
 @Controller
 @RequestMapping(value = "${adminPath}/wemall/wemallItemSpec")
@@ -34,11 +35,10 @@ public class WemallItemSpecController extends BaseController {
 	private WemallItemSpecService wemallItemSpecService;
 	
 	@ModelAttribute
-	public WemallItemSpec get(@RequestParam(required=false, value="itemId") Integer itemId,
-			@RequestParam(required=false, value="specId") Integer specId) {
+	public WemallItemSpec get(@RequestParam(required=false) String id) {
 		WemallItemSpec entity = null;
-		if (specId != null && itemId != null){
-			entity = wemallItemSpecService.get(itemId, specId);
+		if (StringUtils.isNotBlank(id)){
+			entity = wemallItemSpecService.get(id);
 		}
 		if (entity == null){
 			entity = new WemallItemSpec();
@@ -57,10 +57,6 @@ public class WemallItemSpecController extends BaseController {
 	@RequiresPermissions("wemall:wemallItemSpec:view")
 	@RequestMapping(value = "form")
 	public String form(WemallItemSpec wemallItemSpec, Model model) {
-		if (wemallItemSpec.getSpecId() != null && 
-				wemallItemSpec.getItemId() != null){
-			wemallItemSpec.setIsNewRecord(true);
-		}
 		model.addAttribute("wemallItemSpec", wemallItemSpec);
 		return "modules/wemall/wemallItemSpecForm";
 	}

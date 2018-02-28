@@ -12,8 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fulltl.wemall.common.persistence.Page;
 import com.fulltl.wemall.common.service.CrudService;
-import com.fulltl.wemall.modules.wx.dao.ConUserActivityDao;
 import com.fulltl.wemall.modules.wx.entity.ConUserActivity;
+import com.fulltl.wemall.modules.wx.dao.ConUserActivityDao;
 
 /**
  * gvvService
@@ -53,6 +53,11 @@ public class ConUserActivityService extends CrudService<ConUserActivityDao, ConU
 	}
 	public List<ConUserActivity> getByActidStatu (String activityId, String status){
 		return dao.getByActidStatu(activityId, status);
+	}
+
+	@Transactional(readOnly = false)
+	public void updatePriceBy(ConUserActivity conUserActivity) {
+		dao.updatePriceBy(conUserActivity);
 	}
 	
 }

@@ -20,8 +20,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fulltl.wemall.common.config.Global;
 import com.fulltl.wemall.common.persistence.Page;
-import com.fulltl.wemall.common.utils.StringUtils;
 import com.fulltl.wemall.common.web.BaseController;
+import com.fulltl.wemall.common.utils.StringUtils;
 import com.fulltl.wemall.modules.wx.entity.ConActivity;
 import com.fulltl.wemall.modules.wx.service.ConActivityService;
 

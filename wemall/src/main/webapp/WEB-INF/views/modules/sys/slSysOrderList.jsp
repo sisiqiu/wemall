@@ -17,6 +17,94 @@
 			$("#searchForm").submit();
         	return false;
         }
+		
+		function refund(href) {
+			href = href + "&refundFee=";
+			promptx("填写退款金额", "退款金额", href, null);
+		}
+		
+		function downloadBill() {
+			var href = "${ctx}/sys/slSysOrder/downloadBill";
+			mypromptx("下载对账单", href, null);
+		}
+		
+		function mypromptx(title, href, closed){
+			top.$.jBox("<div class='form-search' style='padding:20px;text-align:center;'>" + 
+						"第三方类型：<select id='payMethod1' name='payMethod1'>" +
+									"<option value=''>请选择</option>" +
+									"<option value='alipay'>支付宝</option>" +
+									"<option value='weixin'>微信</option>" +
+								"</select></div>" +
+						"<div class='form-search' style='padding:20px;text-align:center;'>" + 
+						"账单类型：<select id='bill_type' name='bill_type'>" +
+									"<option value=''>请选择</option>" +
+								"</select></div>" +
+						"<div class='form-search' style='padding:20px;text-align:center;'>" + 
+						"日期：<input type='text' id='bill_date' name='bill_date' /></div>"
+						, {
+					title: title, submit: function (v, h, f){
+			    if (f.payMethod1 == '') {
+			        top.$.jBox.tip("请选择第三方类型。", 'error');
+			        return false;
+			    }
+			    if (f.bill_type == '') {
+			        top.$.jBox.tip("请选择账单类型。", 'error');
+			        return false;
+			    }
+			    if (f.bill_date == '') {
+			        top.$.jBox.tip("请输入日期。", 'error');
+			        return false;
+			    }
+				if (typeof href == 'function') {
+					href();
+				}else{
+					resetTip(); //loading();
+					
+					var url = href + 
+							"?payMethod=" + encodeURIComponent(f.payMethod1) +
+							"&bill_type=" + encodeURIComponent(f.bill_type) +
+							"&bill_date=" + encodeURIComponent(f.bill_date);
+					$.ajax({
+			             type: "GET",
+			             url: url,
+			             data: {},
+			             dataType: "json",
+			             success: function(data){
+			            	 if(data.ret != '0') {
+			            		 top.$.jBox.tip(data.retMsg, 'error');
+			            	 } else {
+			            		 top.$.jBox.close(true);
+			            		 location = data.retMsg;
+			            	 }
+			             }
+			        });
+					return false;
+				}
+			},closed:function(){
+				if (typeof closed == 'function') {
+					closed();
+				}
+			},loaded: function (h) {
+				h.find("#payMethod1").change(function() {
+					h.find("#bill_date").attr("placeholder", "");
+					h.find("#bill_type").empty();
+					if($(this).val() == "alipay") {
+						h.find("#bill_date").attr("placeholder", "格式为yyyy-MM-dd或者yyyy-MM");
+						h.find("#bill_type").append("<option value=''>请选择</option>" +
+								"<option value='trade'>trade</option>" +
+								"<option value='signcustomer'>signcustomer</option>");
+					} else if($(this).val() == "weixin") {
+						h.find("#bill_date").attr("placeholder", "格式为yyyyMMdd");
+						h.find("#bill_type").append("<option value=''>请选择</option>" +
+								"<option value='ALL'>ALL</option>" +
+								"<option value='SUCCESS'>SUCCESS</option>" +
+								"<option value='REFUND'>REFUND</option>" +
+								"<option value='RECHARGE_REFUND'>RECHARGE_REFUND</option>");
+					}
+				});
+			}});
+			return false;
+		}
 	</script>
 </head>
 <body>
@@ -62,6 +150,7 @@
 			<li class="btns">
 				<input id="btn_reset" class="btn btn-primary" type="button" value="重置"/>
 				<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
+				<input id="btn_downloadBill" class="btn btn-primary" type="button" value="下载对账单" onclick="downloadBill()"/>
 			</li>
 			<li class="clearfix"></li>
 		</ul>
@@ -78,12 +167,14 @@
 				<th>实际支付价格</th>
 				<th>支付方式</th>
 				<th>运费</th>
+				<th>总退款金额</th>
 				<th>订单状态</th>
 				<th>支付状态</th>
 				<th>下单日期</th>
 				<th>手机号</th>
 				<th>更新时间</th>
 				<shiro:hasPermission name="sys:slSysOrder:edit"><th>操作</th></shiro:hasPermission>
+				<shiro:hasPermission name="sys:slSysOrder:refund"><th>退款</th></shiro:hasPermission>
 			</tr>
 		</thead>
 		<tbody>
@@ -114,6 +205,9 @@
 					${slSysOrder.freightFee}
 				</td>
 				<td>
+					${slSysOrder.totalRefundFee}
+				</td>
+				<td>
 					${fns:getDictLabel(slSysOrder.status, 'order_status', '')}
 				</td>
 				<td>
@@ -131,6 +225,9 @@
 				<shiro:hasPermission name="sys:slSysOrder:edit"><td>
     				<a href="${ctx}/sys/slSysOrder/form?id=${slSysOrder.orderNo}">修改</a>
 					<a href="${ctx}/sys/slSysOrder/delete?id=${slSysOrder.orderNo}" onclick="return confirmx('确认要删除该订单吗？', this.href)">删除</a>
+				</td></shiro:hasPermission>
+				<shiro:hasPermission name="sys:slSysOrder:refund"><td>
+					<a onclick="return refund('${ctx}/sys/slSysOrder/refund?id=${slSysOrder.orderNo}')" >退款</a>
 				</td></shiro:hasPermission>
 			</tr>
 		</c:forEach>

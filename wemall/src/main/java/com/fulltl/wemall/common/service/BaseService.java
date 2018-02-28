@@ -241,7 +241,7 @@ public abstract class BaseService {
 	 * @param request
 	 * @return
 	 */
-	protected String getBasePath(HttpServletRequest request) {
+	public static String getBasePath(HttpServletRequest request) {
 		String basePath = request.getScheme() + "://" + request.getServerName() + request.getContextPath();
 		return basePath;
 	}

@@ -3,9 +3,14 @@
  */
 package com.fulltl.wemall.modules.wx.entity;
 
-import javax.validation.constraints.NotNull;
-import org.hibernate.validator.constraints.Length;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.Length;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fulltl.wemall.common.persistence.DataEntity;
 import com.fulltl.wemall.common.utils.excel.annotation.ExcelField;
@@ -27,9 +32,15 @@ public class ConUserActivity extends DataEntity<ConUserActivity> {
 	private String note;		// 备注
 	private String status;		// 用户状态
 	private String price;		// 奖项
+	private String priceGoods;		// 奖品
 	private Date registrationTime;		// 报名时间
 	private Date attendanceTime;		// 签到时间
 	private Date lotteryTime;		// 抽奖时间
+	
+	private String activityTitle;		// 活动标题
+	private String userPhoto; //用户头像
+	
+	private List<String> userIdList; //用户id列表
 	
 	public ConUserActivity() {
 		super();
@@ -147,6 +158,42 @@ public class ConUserActivity extends DataEntity<ConUserActivity> {
 
 	public void setLotteryTime(Date lotteryTime) {
 		this.lotteryTime = lotteryTime;
+	}
+
+	public String getPriceGoods() {
+		return priceGoods;
+	}
+
+	public void setPriceGoods(String priceGoods) {
+		this.priceGoods = priceGoods;
+	}
+
+	public String getActivityTitle() {
+		return activityTitle;
+	}
+
+	public void setActivityTitle(String activityTitle) {
+		this.activityTitle = activityTitle;
+	}
+
+	public String getUserPhoto() {
+		return userPhoto;
+	}
+
+	public void setUserPhoto(String userPhoto) {
+		this.userPhoto = userPhoto;
+	}
+
+	public List<String> getUserIdList() {
+		return userIdList;
+	}
+
+	public void setUserIdList(List<String> userIdList) {
+		this.userIdList = userIdList;
+	}
+	
+	public void setUserIdList(String userIdList) {
+		this.userIdList = Arrays.asList(userIdList.split(","));
 	}
 	
 }

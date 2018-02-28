@@ -15,18 +15,25 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.google.common.collect.Lists;
-import com.google.gson.Gson;
 import com.fulltl.wemall.common.persistence.Page;
+import com.fulltl.wemall.common.sms.sendmode.ccp.SMSVerify;
 import com.fulltl.wemall.common.utils.StringUtils;
 import com.fulltl.wemall.common.web.BaseController;
 import com.fulltl.wemall.modules.sys.entity.User;
+import com.fulltl.wemall.modules.sys.security.UsernamePasswordToken;
+import com.fulltl.wemall.modules.sys.service.SystemService;
 import com.fulltl.wemall.modules.sys.utils.UserUtils;
 import com.fulltl.wemall.modules.wx.entity.ConActivity;
 import com.fulltl.wemall.modules.wx.entity.ConUserActivity;
+import com.fulltl.wemall.modules.wx.entity.UserBehavior;
+import com.fulltl.wemall.modules.wx.entity.WxUserInfo;
 import com.fulltl.wemall.modules.wx.service.ConActivityService;
 import com.fulltl.wemall.modules.wx.service.ConUserActivityService;
-import com.fulltl.wemall.modules.wx.service.WxUserinfoService;
+import com.fulltl.wemall.modules.wx.service.WxUserInfoService;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.gson.Gson;
+
 @Controller
 @RequestMapping(value = "${frontPath}/wx/conActivity")
 public class ConActivityFrontController extends BaseController{
@@ -37,7 +44,9 @@ public class ConActivityFrontController extends BaseController{
 	@Autowired
 	private ConUserActivityService conUserActivityService;
 	@Autowired
-	private WxUserinfoService wxUserInfoService;
+	private SystemService systemService;
+	@Autowired
+	private WxUserInfoService wxUserInfoService;
 	
 	/**
 	 * 对openId和Service进行预处理
@@ -68,7 +77,6 @@ public class ConActivityFrontController extends BaseController{
 	 */
 	@RequestMapping(value = {"viewActivities"})
 	public String viewActivities(ConActivity conActivity, HttpServletRequest request, HttpServletResponse response, Model model) {
-		System.out.println("进跳转方法");
 		preHandleForWXOpenId(request, model);
 		return "sanlen_website/wx/news-index";
 	}
@@ -83,9 +91,6 @@ public class ConActivityFrontController extends BaseController{
 	@RequestMapping(value = {"listForAjax"})
 	@ResponseBody
 	public List<ConActivity> listForAjax(ConActivity conActivity, HttpServletRequest request, HttpServletResponse response, Model model) {
-		System.out.println("进查活动的方法");
-		
-		System.out.println("路径="+request.getContextPath());
 		Page<ConActivity> page = conActivityService.findPage(new Page<ConActivity>(request, response), conActivity); 
 		return page.getList();
 	}
@@ -118,8 +123,6 @@ public class ConActivityFrontController extends BaseController{
 	@RequestMapping(value = {"viewActivityInfo"})
 	@ResponseBody
 	public ConActivity viewActivityInfo(ConActivity conActivity, HttpServletRequest request, HttpServletResponse response, Model model) {
-		System.out.println("进查活动详情方法");
-		System.out.println("活动Id="+conActivity);
 		//Map<String, Object> retMap = new HashMap<String, Object>();
 		ConActivity conActivityRe=conActivityService.get(conActivity);
 		model.addAttribute("conActivityRe",conActivityRe);
@@ -142,7 +145,6 @@ public class ConActivityFrontController extends BaseController{
 	 */
 	@RequestMapping(value = {"viewCurActivity"})
 	public String viewCurActivity(HttpServletRequest request, HttpServletResponse response, Model model) {
-		System.out.println("进查当前活动详情方法");
 		ConActivity conActivityRe=conActivityService.findCurActivity();
 		model.addAttribute("activityID",conActivityRe.getId());
 		preHandleForWXOpenId(request, model);
@@ -163,27 +165,23 @@ public class ConActivityFrontController extends BaseController{
 	 */
 	@RequestMapping(value = {"userActivityStatus"})
 	@ResponseBody
-	public String  userActivityStatus(ConActivity conActivity, HttpServletRequest request, HttpServletResponse response, Model model) {
-		System.out.println("进入查询状态方法");
+	public String userActivityStatus(ConActivity conActivity, HttpServletRequest request, HttpServletResponse response, Model model) {
+		Map<String, String> map = Maps.newHashMap();
 		String status="";
 		User user = UserUtils.getUser();
 		if(StringUtils.isNotEmpty(user.getId())) {
-			System.out.println("StringUtils.isNotEmpty(user.getId())");
-			System.out.println("活动Id="+conActivity.getId());
 			ConUserActivity	conUserActivity2 = conUserActivityService.getByActUserId(conActivity.getId(), user.getId());
 			if(conUserActivity2 !=null && conUserActivity2.getStatus()!=null){
-				status = conUserActivity2.getStatus();
+				map.put("userActivityStatus", conUserActivity2.getStatus());
 			}else{
-				status = "没有数据";
+				map.put("errorStatus", "noUserActivity");
 			}
-			
 			//用户已登录，不为空
 		} else {
 			//用户未登录，为空
-			status = "没有用户";
-			System.out.println("用户为空");
+			map.put("errorStatus", "noUser");
 		}
-		return status;
+		return new Gson().toJson(map);
 	}
 	/**
 	 * 修改当前用户活动的状态
@@ -211,7 +209,7 @@ public class ConActivityFrontController extends BaseController{
 		if(EditType .equals("1") ){
 			//验证当前活动的状态是否为可签到
 			if(conActivityRe.getStatus().equals("3")){
-				if(new Date().getTime()<conActivityRe.getAttendanceEndtime().getTime()){
+				if(conActivityRe.getAttendanceEndtime() == null || new Date().getTime()<conActivityRe.getAttendanceEndtime().getTime()){
 					//设置需要修改的用户活动实体类
 					conUserActivity.setStatus("2");
 					conUserActivityService.save(conUserActivity);
@@ -240,8 +238,6 @@ public class ConActivityFrontController extends BaseController{
 	 */
 	@RequestMapping(value = {"joinPageJump"})
 	public String joinPageJump(ConActivity conActivity, HttpServletRequest request, HttpServletResponse response, Model model) {
-		System.out.println("进入");
-		System.out.println("活动Id="+conActivity.getId());
 		model.addAttribute("activityId",conActivity.getId());
 		model.addAttribute("serviceId", globalWxServiceId);
 		return "sanlen_website/wx/apply";
@@ -257,9 +253,12 @@ public class ConActivityFrontController extends BaseController{
 	@RequestMapping(value = {"addUserActivity"})
 	@ResponseBody
 	public String addUserActivity(ConUserActivity conUserActivity, HttpServletRequest request, HttpServletResponse response, Model model) {
-		System.out.println("进入到新增用户活动信息");
-		System.out.println("名字="+conUserActivity.getUserName());
-		System.out.println("信息="+conUserActivity.getInformation());
+		//绑定用户
+		Map<String, Object> retMap = Maps.newHashMap();
+		String mobile = WebUtils.getCleanParam(request, "mobile");
+		retMap = bingUser(request);
+		if(!"200".equals(retMap.get("ret"))) return new Gson().toJson(retMap);
+		
 		//返回变量
 		String isSuccess="";
 		User user = UserUtils.getUser();
@@ -269,7 +268,6 @@ public class ConActivityFrontController extends BaseController{
 		//查询该用户有没有该活动的数据
 		ConUserActivity  conUserActivitySelect=conUserActivityService.getByActUserId(conUserActivity.getActivityid()+"", user.getId());
 		if(conUserActivitySelect ==null){
-			System.out.println("为空");
 			//实例化一个活动类
 			ConActivity conActivity=new ConActivity();
 			//设置该类的主键Id
@@ -285,14 +283,9 @@ public class ConActivityFrontController extends BaseController{
 				e.printStackTrace();
 			}
 			//如果最大参加人数大于当前报名人数
-			System.out.println("最大人数="+maxpeoplenum);
-			System.out.println("当前人数="+currentpeoplenum);
 			if(maxpeoplenum>currentpeoplenum){
-				//获取当前时间
-				new Date().getTime();
 				//获取活动时间
-				
-				if(new Date().getTime()<conActivityRe.getRegistrationEndtime().getTime()){
+				if(conActivityRe.getRegistrationEndtime() == null || new Date().getTime()<conActivityRe.getRegistrationEndtime().getTime()){
 					//用户活动表新增一条用户活动信息
 					conUserActivityService.save(conUserActivity);
 					//声明一个当前参加人数加1的变量
@@ -301,22 +294,23 @@ public class ConActivityFrontController extends BaseController{
 					conActivityRe.setCurrentpeoplenum(nowBaom+"");
 					//调用修改方法
 					conActivityService.save(conActivityRe);
-					isSuccess="succeed";
+					retMap.put("ret","200");
+					retMap.put("retMsg","参加成功！");
 				}else{
-					System.out.println("时间已过");
-					isSuccess="timeOut";
+					retMap.put("ret","-1");
+					retMap.put("retMsg","当前时间已过报名时间，不能参加");
 				}
 				
-				
 			}else{
-				isSuccess="man";
+				retMap.put("ret","-1");
+				retMap.put("retMsg","抱歉，报名人数已满");
 			}
 			
 		}else{
-			System.out.println("不为空");
-			isSuccess="fail";
+			retMap.put("ret","-1");
+			retMap.put("retMsg","用户已参加该活动！");
 		}
-		return isSuccess;
+		return new Gson().toJson(retMap);
 	}
 	/**
 	 * 跳转至绑定页面
@@ -328,7 +322,6 @@ public class ConActivityFrontController extends BaseController{
 	 */
 	@RequestMapping(value = {"bindingPageJump"})
 	public String bindingPageJump(ConActivity conActivity, HttpServletRequest request, HttpServletResponse response, Model model) {
-		System.out.println("进入跳转绑定用户页面");
 		//model.addAttribute("activityId",conActivity.getId());
 		model.addAttribute("activityId", conActivity.getId());
 		preHandleForWXOpenId(request, model);
@@ -349,12 +342,15 @@ public class ConActivityFrontController extends BaseController{
 	 */
 	@RequestMapping(value = {"cjActivityList"})
 	public List<ConActivity> cjActivityList(ConActivity conActivity, HttpServletRequest request, HttpServletResponse response, Model model) {
-		System.out.println("进查活动的方法");
 		Page<ConActivity> page = conActivityService.findPage(new Page<ConActivity>(request, response), conActivity); 
 		return page.getList();
 	}
 	/**
 	 * 给用户添加奖品
+	 * 参数：userIdList=用户id列表
+	 * 		activityid=活动id
+	 * 		price=奖项
+	 * 		priceGoods=奖品
 	 * @param conActivity
 	 * @param request
 	 * @param response
@@ -363,24 +359,29 @@ public class ConActivityFrontController extends BaseController{
 	 */
 	@RequestMapping(value = {"addPrice"})
 	@ResponseBody
-	public String addPrice(ConUserActivity conUserActivity, HttpServletRequest request, HttpServletResponse response, Model model) {
-		System.out.println("进入抽奖");
+	public String addPrice(HttpServletRequest request, HttpServletResponse response, Model model) {
+		ConUserActivity conUserActivity = new ConUserActivity();
+		String userIdList = WebUtils.getCleanParam(request, "userIdList");
+		String activityid = WebUtils.getCleanParam(request, "activityid");
+		String price = WebUtils.getCleanParam(request, "price");
+		String priceGoods = WebUtils.getCleanParam(request, "priceGoods");
 		//定义回调函数值
-		String  isSuccess="成功";
-			System.out.println("手机="+conUserActivity.getMobile());
-			System.out.println("奖励="+conUserActivity.getPrice());
-			
-				
-				//根据用户手机查询该用户用户活动表的信息
-			ConUserActivity conUserActivitySelect=conUserActivityService.getByActUserPhone(conUserActivity.getMobile());
-			if(null!=conUserActivitySelect){	
-			//给用户活动表设奖品
-				conUserActivitySelect.setPrice(conUserActivity.getPrice());
-				conUserActivitySelect.setStatus("3");
-				//修改
-				conUserActivityService.save(conUserActivitySelect);
-			}
-		return isSuccess;
+		Map<String, Object> retMap = Maps.newHashMap();
+		if(StringUtils.isNotBlank(activityid) &&
+				StringUtils.isNotBlank(price) &&
+				StringUtils.isNotBlank(priceGoods)
+				) {
+			conUserActivity.setActivityid(Integer.parseInt(activityid));
+			conUserActivity.setPrice(price);
+			conUserActivity.setPriceGoods(priceGoods);
+			conUserActivity.setUserIdList(userIdList);
+			conUserActivity.setStatus("3");
+			//修改
+			conUserActivityService.updatePriceBy(conUserActivity);
+		}
+		retMap.put("ret", "0");
+		retMap.put("retMsg", "更新成功");
+		return new Gson().toJson(retMap);
 	}
 	/**
 	 * 根据用户状态与活动抽奖
@@ -393,22 +394,75 @@ public class ConActivityFrontController extends BaseController{
 	@RequestMapping(value = {"userActByPrice"})
 	@ResponseBody
 	public List<ConUserActivity> userActByPrice(ConActivity conActivity, HttpServletRequest request, HttpServletResponse response, Model model) {
-		System.out.println("进入查询可抽奖用户");
 		//定义回调函数值
-		
-			//根据用户手机查询该用户用户活动表的信息
-			List<ConUserActivity> conUserActivityList=conUserActivityService.getByActidStatu(conActivity.getId().toString(), "2");
-			List<ConUserActivity> deleteList = Lists.newArrayList();
-			for(ConUserActivity entity: conUserActivityList){
-				if(StringUtils.isNotBlank(entity.getPrice())){
-					deleteList.add(entity);
-				}
+		//根据用户手机查询该用户用户活动表的信息
+		List<ConUserActivity> conUserActivityList=conUserActivityService.getByActidStatu(conActivity.getId().toString(), "1");
+		List<ConUserActivity> deleteList = Lists.newArrayList();
+		for(ConUserActivity entity: conUserActivityList){
+			if(StringUtils.isNotBlank(entity.getPrice())){
+				deleteList.add(entity);
 			}
-			conUserActivityList.removeAll(deleteList);
-			for(ConUserActivity obj:conUserActivityList){
-				System.out.println("手机="+obj.getMobile());
-			}
-		
+		}
+		conUserActivityList.removeAll(deleteList);
+		for(ConUserActivity obj:conUserActivityList){
+		}
+	
 		return conUserActivityList;
+	}
+	
+	/**
+	 * 绑定用户
+	 * @param request 
+	 * @return
+	 */
+	private Map<String, Object> bingUser(HttpServletRequest request) {
+		String ret = "400";
+        String retMsg = "操作失败";
+		Map<String, Object> retMap = new HashMap<String, Object>();
+		/*String mobile = WebUtils.getCleanParam(request, "mobile");
+        String verifyServID = WebUtils.getCleanParam(request, "verifyServID");
+        String sms_code = WebUtils.getCleanParam(request, "sms_code");
+        String openId = WebUtils.getCleanParam(request, "openId");
+        String serviceId = WebUtils.getCleanParam(request, "serviceId");
+        
+        SMSVerify sms = new SMSVerify();
+        User user = null;
+        UsernamePasswordToken userToken = new UsernamePasswordToken();
+        try {
+        	//验证短信验证码
+            if (sms.checkVerifyCode(mobile, sms_code, verifyServID, false).equals("0")) {
+            	//短信验证码验证通过
+            	*//**
+            	 *  如果不允许多个微信号绑定同一个系统用户，则可以根据手机号查询微信绑定用户表，
+            	 *  看存在与否，不存在，则允许绑定，否则提示该手机已绑定过微信号。
+            	 *  现在，暂定允许多个微信号绑定同一个系统用户。
+            	 *//*
+                user = systemService.quickGetUserByMobileForWX(mobile);
+                // 自动登录
+                userToken.setUsername(user.getMobile());
+                userToken.setPassword("123456".toCharArray());
+                // 短信验证码登陆，跳过密码对比校验
+                userToken.setLogin_type("SMSCode");
+                UserUtils.getSubject().login(userToken);
+
+                //执行绑定用户
+                WxUserInfo curWxUserInfo = wxUserInfoService.getWxUserInfoBy(openId, serviceId);
+                wxUserInfoService.updateWXUserInfoBy(UserBehavior.BIND, curWxUserInfo, user);
+                
+                ret = "200";
+                retMsg = "操作成功";
+                retMap.put("loginname", user.getLoginName());
+                retMap.put("password", user.getPassword());
+            } else {
+                ret = "204";
+                retMsg = "短信验证码错误！请重试！";
+            }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        retMap.put("ret", ret);
+        retMap.put("retMsg", retMsg);*/
+		return retMap;
 	}
 }

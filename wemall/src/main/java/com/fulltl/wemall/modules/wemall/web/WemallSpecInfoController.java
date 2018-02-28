@@ -3,6 +3,8 @@
  */
 package com.fulltl.wemall.modules.wemall.web;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -13,12 +15,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fulltl.wemall.common.config.Global;
 import com.fulltl.wemall.common.persistence.Page;
 import com.fulltl.wemall.common.web.BaseController;
 import com.fulltl.wemall.common.utils.StringUtils;
+import com.fulltl.wemall.modules.wemall.entity.WemallSpec;
 import com.fulltl.wemall.modules.wemall.entity.WemallSpecInfo;
 import com.fulltl.wemall.modules.wemall.service.WemallSpecInfoService;
 
@@ -54,6 +58,13 @@ public class WemallSpecInfoController extends BaseController {
 		return "modules/wemall/wemallSpecInfoList";
 	}
 
+	@RequestMapping(value = {"wemallSpecInfoList"})
+	@ResponseBody
+	public List<WemallSpecInfo> wemallSpecInfoList(WemallSpecInfo wemallSpecInfo, Model model) {
+		List<WemallSpecInfo> list = wemallSpecInfoService.findList(wemallSpecInfo); 
+		return list;
+	}
+	
 	@RequiresPermissions("wemall:wemallSpecInfo:view")
 	@RequestMapping(value = "form")
 	public String form(WemallSpecInfo wemallSpecInfo, Model model) {

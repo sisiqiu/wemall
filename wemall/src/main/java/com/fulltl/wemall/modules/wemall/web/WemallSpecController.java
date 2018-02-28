@@ -63,6 +63,13 @@ public class WemallSpecController extends BaseController {
 		model.addAttribute("page", page);
 		return "modules/wemall/wemallSpecList";
 	}
+	
+	@RequestMapping(value = {"wemallSpecList"})
+	@ResponseBody
+	public List<WemallSpec> wemallSpecList(WemallSpec wemallSpec, Model model) {
+		List<WemallSpec> list = wemallSpecService.findList(wemallSpec); 
+		return list;
+	}
 
 	@RequiresPermissions("wemall:wemallSpec:view")
 	@RequestMapping(value = "form")
@@ -70,7 +77,7 @@ public class WemallSpecController extends BaseController {
 		model.addAttribute("wemallSpec", wemallSpec);
 		WemallSpecInfo wemallSpecInfo = new WemallSpecInfo();
 		if(StringUtils.isNotBlank(wemallSpec.getId())) {
-			wemallSpecInfo.setSpecId(Integer.parseInt(wemallSpec.getId()));
+			wemallSpecInfo.setSpecId(wemallSpec.getId());
 			List<WemallSpecInfo> specInfoList = wemallSpecInfoService.findList(wemallSpecInfo);
 			model.addAttribute("specInfoList", specInfoList);
 		}

@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fulltl.wemall.common.persistence.CrudDao;
 import com.fulltl.wemall.common.persistence.DataEntity;
 import com.fulltl.wemall.common.persistence.Page;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * Service基类
@@ -18,6 +20,8 @@ import com.fulltl.wemall.common.persistence.Page;
  */
 @Transactional(readOnly = true)
 public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>> extends BaseService {
+	
+	protected static Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
 	
 	/**
 	 * 持久层对象

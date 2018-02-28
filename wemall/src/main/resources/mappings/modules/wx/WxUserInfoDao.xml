@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fulltl.wemall.modules.wx.dao.WxUserInfoDao">
+    
+	<sql id="wxUserInfoColumns">
+		a.id AS "id",
+		a.user_id AS "user.id",
+		a.service_id AS "serviceId",
+		a.open_id AS "openId",
+		a.user_name AS "userName",
+		a.nick_name AS "nickName",
+		a.sex AS "sex",
+		a.country AS "country",
+		a.province AS "province",
+		a.city AS "city",
+		a.language AS "language",
+		a.head_img_url AS "headImgUrl",
+		a.mobile AS "mobile",
+		a.is_focus AS "isFocus",
+		a.is_get_user_info AS "isGetUserInfo",
+		a.is_change_pw AS "isChangePw",
+		a.is_bind_mobile AS "isBindMobile",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		u2.name AS "user.name"
+	</sql>
+	
+	<sql id="wxUserInfoJoins">
+		LEFT JOIN sys_user u2 ON u2.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="WxUserInfo">
+		SELECT 
+			<include refid="wxUserInfoColumns"/>
+		FROM wx_user_info a
+		<include refid="wxUserInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findByOpenId" resultType="WxUserInfo">
+		SELECT 
+			<include refid="wxUserInfoColumns"/>
+		FROM wx_user_info a
+		<include refid="wxUserInfoJoins"/>
+		WHERE a.open_id = #{openId}
+	</select>
+	
+	<select id="findList" resultType="WxUserInfo">
+		SELECT 
+			<include refid="wxUserInfoColumns"/>
+		FROM wx_user_info a
+		<include refid="wxUserInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="user != null and user.id != null and user.id != ''">
+				AND a.user_id = #{user.id}
+			</if>
+			<if test="serviceId != null and serviceId != ''">
+				AND a.service_id = #{serviceId}
+			</if>
+			<if test="openId != null and openId != ''">
+				AND a.open_id LIKE 
+					<if test="dbName == 'oracle'">'%'||#{openId}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{openId}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{openId},'%')</if>
+			</if>
+			<if test="userName != null and userName != ''">
+				AND a.user_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{userName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{userName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{userName},'%')</if>
+			</if>
+			<if test="nickName != null and nickName != ''">
+				AND a.nick_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{nickName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{nickName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{nickName},'%')</if>
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND a.mobile LIKE 
+					<if test="dbName == 'oracle'">'%'||#{mobile}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{mobile}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{mobile},'%')</if>
+			</if>
+			<if test="isFocus != null and isFocus != ''">
+				AND a.is_focus = #{isFocus}
+			</if>
+			<if test="isGetUserInfo != null and isGetUserInfo != ''">
+				AND a.is_get_user_info = #{isGetUserInfo}
+			</if>
+			<if test="isChangePw != null and isChangePw != ''">
+				AND a.is_change_pw = #{isChangePw}
+			</if>
+			<if test="isBindMobile != null and isBindMobile != ''">
+				AND a.is_bind_mobile = #{isBindMobile}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WxUserInfo">
+		SELECT 
+			<include refid="wxUserInfoColumns"/>
+		FROM wx_user_info a
+		<include refid="wxUserInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wx_user_info(
+			user_id,
+			service_id,
+			open_id,
+			user_name,
+			nick_name,
+			sex,
+			country,
+			province,
+			city,
+			language,
+			head_img_url,
+			mobile,
+			is_focus,
+			is_get_user_info,
+			is_change_pw,
+			is_bind_mobile,
+			create_date,
+			update_date,
+			del_flag
+		) VALUES (
+			#{user.id},
+			#{serviceId},
+			#{openId},
+			#{userName},
+			#{nickName},
+			#{sex},
+			#{country},
+			#{province},
+			#{city},
+			#{language},
+			#{headImgUrl},
+			#{mobile},
+			#{isFocus},
+			#{isGetUserInfo},
+			#{isChangePw},
+			#{isBindMobile},
+			#{createDate},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wx_user_info SET 	
+			user_id = #{user.id},
+			service_id = #{serviceId},
+			open_id = #{openId},
+			user_name = #{userName},
+			nick_name = #{nickName},
+			sex = #{sex},
+			country = #{country},
+			province = #{province},
+			city = #{city},
+			language = #{language},
+			head_img_url = #{headImgUrl},
+			mobile = #{mobile},
+			is_focus = #{isFocus},
+			is_get_user_info = #{isGetUserInfo},
+			is_change_pw = #{isChangePw},
+			is_bind_mobile = #{isBindMobile},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+
+	<update id="updateInfoByOpenId">
+		UPDATE wx_user_info SET 
+			<if test="user != null and user.id != null and user.id != ''">
+				user_id = #{user.id},
+			</if>
+			<if test="userName != null and userName != ''">
+				user_name = #{userName},
+			</if>
+			<if test="nickName != null and nickName != ''">
+				nick_name = #{nickName},
+			</if>
+			<if test="sex != null and sex != ''">
+				sex = #{sex},
+			</if>
+			<if test="country != null and country != ''">
+				country = #{country},
+			</if>
+			<if test="province != null and province != ''">
+				province = #{province},
+			</if>
+			<if test="city != null and city != ''">
+				city = #{city},
+			</if>
+			<if test="language != null and language != ''">
+				language = #{language},
+			</if>
+			<if test="headImgUrl != null and headImgUrl != ''">
+				head_img_url = #{headImgUrl},
+			</if>
+			<if test="mobile != null and mobile != ''">
+				mobile = #{mobile},
+			</if>
+			<if test="isFocus != null">
+				is_focus = #{isFocus},
+			</if>
+			<if test="isGetUserInfo != null">
+				is_get_user_info = #{isGetUserInfo},
+			</if>
+			<if test="isChangePw != null">
+				is_change_pw = #{isChangePw},
+			</if>
+			<if test="isBindMobile != null">
+				is_bind_mobile = #{isBindMobile},
+			</if>
+			update_date = #{updateDate}
+		WHERE open_id = #{openId}
+	</update>
+	
+	<update id="delete">
+		UPDATE wx_user_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

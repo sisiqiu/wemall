@@ -51,6 +51,9 @@
 			<if test="beginPrice != null and endPrice != null and beginPrice != '' and endPrice != ''">
 				AND a.price BETWEEN #{beginPrice} AND #{endPrice}
 			</if>
+			<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+				AND a.create_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -79,6 +82,9 @@
 	</select>
 	
 	<insert id="insert">
+	    <selectKey resultType="java.lang.String" order="AFTER" keyProperty="id">
+          SELECT LAST_INSERT_ID()
+		</selectKey>
 		INSERT INTO wemall_bounty_info(
 			user_id,
 			from_type,

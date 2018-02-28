@@ -3,9 +3,11 @@
 <mapper namespace="com.fulltl.wemall.modules.wemall.dao.WemallItemSpecDao">
     
 	<sql id="wemallItemSpecColumns">
+		a.id AS "id",
 		a.item_id AS "itemId",
-		a.spec_id AS "specId",
-		a.spec_info_id AS "specInfoId",
+		a.spec_name AS "specName",
+		a.spec_info_name AS "specInfoName",
+		a.sort AS "sort",
 		a.price AS "price",
 		a.team_price AS "teamPrice",
 		a.storage AS "storage"
@@ -19,7 +21,7 @@
 			<include refid="wemallItemSpecColumns"/>
 		FROM wemall_item_spec a
 		<include refid="wemallItemSpecJoins"/>
-		WHERE a.item_id = #{itemId} AND a.spec_id = #{specId}
+		WHERE a.id = #{id}
 	</select>
 	
 	<select id="findList" resultType="WemallItemSpec">
@@ -29,23 +31,23 @@
 		<include refid="wemallItemSpecJoins"/>
 		<where>
 			
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
 			<if test="itemId != null and itemId != ''">
 				AND a.item_id = #{itemId}
 			</if>
-			<if test="specId != null and specId != ''">
-				AND a.spec_id = #{specId}
+			<if test="specName != null and specName != ''">
+				AND a.spec_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{specName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{specName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{specName},'%')</if>
 			</if>
-			<if test="specInfoId != null and specInfoId != ''">
-				AND a.spec_info_id = #{specInfoId}
-			</if>
-			<if test="beginPrice != null and endPrice != null and beginPrice != '' and endPrice != ''">
-				AND a.price BETWEEN #{beginPrice} AND #{endPrice}
-			</if>
-			<if test="beginTeamPrice != null and endTeamPrice != null and beginTeamPrice != '' and endTeamPrice != ''">
-				AND a.team_price BETWEEN #{beginTeamPrice} AND #{endTeamPrice}
-			</if>
-			<if test="beginStorage != null and endStorage != null and beginStorage != '' and endStorage != ''">
-				AND a.storage BETWEEN #{beginStorage} AND #{endStorage}
+			<if test="specInfoName != null and specInfoName != ''">
+				AND a.spec_info_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{specInfoName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{specInfoName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{specInfoName},'%')</if>
 			</if>
 		</where>
 		<choose>
@@ -53,6 +55,7 @@
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
+			    ORDER BY a.sort asc
 			</otherwise>
 		</choose>
 	</select>
@@ -70,39 +73,90 @@
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
+			    ORDER BY a.sort asc
 			</otherwise>
 		</choose>
 	</select>
 	
 	<insert id="insert">
+	    <selectKey resultType="java.lang.String" order="AFTER" keyProperty="id">
+          SELECT LAST_INSERT_ID()
+		</selectKey>
 		INSERT INTO wemall_item_spec(
 			item_id,
-			spec_id,
-			spec_info_id,
+			spec_name,
+			spec_info_name,
+			sort,
 			price,
 			team_price,
 			storage
 		) VALUES (
 			#{itemId},
-			#{specId},
-			#{specInfoId},
+			#{specName},
+			#{specInfoName},
+			#{sort},
 			#{price},
-			#{teamPrice},
+			<if test="teamPrice != null and teamPrice != ''">
+				#{teamPrice},
+			</if>
+			<if test="teamPrice == null or teamPrice == ''">
+				null,
+			</if>
 			#{storage}
 		)
 	</insert>
 	
+	<insert id="insertAll">
+		INSERT INTO wemall_item_spec(
+			item_id,
+			spec_name,
+			spec_info_name,
+			sort,
+			price,
+			team_price,
+			storage
+		) VALUES 
+		<foreach collection="list" index="index" item="item" separator="," >  
+	        (
+				#{item.itemId},
+				#{item.specName},
+				#{item.specInfoName},
+				#{item.sort},
+				#{item.price},
+				<if test="item.teamPrice != null and item.teamPrice != ''">
+					#{item.teamPrice},
+				</if>
+				<if test="item.teamPrice == null or item.teamPrice == ''">
+					null,
+				</if>
+				#{item.storage}
+			)
+	    </foreach>  
+	</insert>
+	
 	<update id="update">
 		UPDATE wemall_item_spec SET 	
+			item_id = #{itemId},
+			spec_name = #{specName},
+			spec_info_name = #{specInfoName},
+			sort = #{sort},
 			price = #{price},
 			team_price = #{teamPrice},
 			storage = #{storage}
-		WHERE item_id = #{itemId} AND spec_id = #{specId}
+		WHERE id = #{id}
 	</update>
 	
 	<update id="delete">
 		DELETE FROM wemall_item_spec
-		WHERE item_id = #{itemId} AND spec_id = #{specId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="removeAll">
+		DELETE FROM wemall_item_spec
+		WHERE id in
+		<foreach collection="list" index="index" item="item" open="(" separator="," close=")">  
+	        #{item.id}
+	    </foreach> 
 	</update>
 	
 </mapper>

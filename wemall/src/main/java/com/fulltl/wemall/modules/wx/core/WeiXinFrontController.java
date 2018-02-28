@@ -4,15 +4,12 @@
 package com.fulltl.wemall.modules.wx.core;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.web.util.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,33 +20,21 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Maps;
-import com.google.gson.Gson;
 import com.fulltl.wemall.common.config.Global;
-import com.fulltl.wemall.common.utils.CacheUtils;
 import com.fulltl.wemall.common.utils.StringUtils;
 import com.fulltl.wemall.common.web.BaseController;
-import com.fulltl.wemall.modules.wx.core.pojo.AccessToken;
-import com.fulltl.wemall.modules.wx.core.pojo.Button;
-import com.fulltl.wemall.modules.wx.core.pojo.FirstLevelButton;
-import com.fulltl.wemall.modules.wx.core.pojo.Menu;
 import com.fulltl.wemall.modules.wx.core.pojo.OAuth2AccessToken;
-import com.fulltl.wemall.modules.wx.core.pojo.SecondLevelButton;
 import com.fulltl.wemall.modules.wx.core.pojo.WXOAuthUserInfo;
 import com.fulltl.wemall.modules.wx.core.utils.SignUtil;
 import com.fulltl.wemall.modules.wx.core.utils.accessToken.ObtainAccessTokenScheduler;
 import com.fulltl.wemall.modules.wx.core.utils.accessToken.WXOAuth2AuthorizeUtil;
-import com.fulltl.wemall.modules.wx.core.utils.accessToken.WXUtil;
 import com.fulltl.wemall.modules.wx.entity.UserBehavior;
-import com.fulltl.wemall.modules.wx.entity.WxServiceaccount;
-import com.fulltl.wemall.modules.wx.entity.WxSubscriber;
-import com.fulltl.wemall.modules.wx.entity.WxWechatMenu;
+import com.fulltl.wemall.modules.wx.entity.WxUserInfo;
 import com.fulltl.wemall.modules.wx.service.WxServiceaccountService;
-import com.fulltl.wemall.modules.wx.service.WxSubscriberService;
+import com.fulltl.wemall.modules.wx.service.WxUserInfoService;
 import com.fulltl.wemall.modules.wx.service.WxWechatMenuService;
+import com.google.gson.Gson;
 
 /**
  * 微信前台控制器。包含微信核心相关与公众号通讯的接口，以及用户可见的部分接口。
@@ -71,7 +56,7 @@ public class WeiXinFrontController extends BaseController {
 	@Autowired
 	private ObtainAccessTokenScheduler obtainAccessTokenScheduler;
 	@Autowired
-	private WxSubscriberService wxSubscriberService;
+	private WxUserInfoService wxUserInfoService;
 
 	/**
 	 * 服务端接入微信初始握手认证接口
@@ -186,10 +171,10 @@ public class WeiXinFrontController extends BaseController {
 				//将用户信息写入数据库或放入model中
 				//根据openId查询关注用户表，若查到了，则更新其中的信息字段后执行关注行为。若没有查到，新建一个，执行关注行为
 				//serviceId根据之前取appId时取的那个服务号的serviceId。暂时写死为1
-				WxSubscriber curSubscriber = wxSubscriberService.getWxSubscriberBy(openId, serviceId);
-				curSubscriber.initByOAuthUserInfo(userInfo);
+				WxUserInfo curWxUserInfo = wxUserInfoService.getWxUserInfoBy(openId, serviceId);
+				curWxUserInfo.initByOAuthUserInfo(userInfo);
 				//更新微信用户对应的 关注表
-				wxSubscriberService.updateWXUserBy(UserBehavior.FOCUS_ON, curSubscriber, null);
+				wxUserInfoService.updateWXUserInfoBy(UserBehavior.FOCUS_ON, curWxUserInfo);
 				
 				model.addAttribute("userInfo", userInfo);
 			} else {
@@ -227,6 +212,17 @@ public class WeiXinFrontController extends BaseController {
 			//获取openId和accessToken
 			oauth2AccessToken = WXOAuth2AuthorizeUtil.getOpenIdAndAccessToken(Global.getConfig("weixin.appId"), Global.getConfig("weixin.secret"), code);
 			openId = oauth2AccessToken.getOpenid();
+			
+			WxUserInfo curWxUserInfo = wxUserInfoService.getWxUserInfoBy(openId, serviceId);
+			//获取用户信息
+			WXOAuthUserInfo userInfo = WXOAuth2AuthorizeUtil.getUserInfo(oauth2AccessToken.getAccess_token(), oauth2AccessToken.getOpenid());
+			//根据openId查询关注用户表，若查到了，则更新其中的信息字段后执行授权行为。若没有查到，新建一个，执行关注行为
+			curWxUserInfo.initByOAuthUserInfo(userInfo);
+			curWxUserInfo.setOpenId(openId);
+			//更新微信用户的基础信息
+			wxUserInfoService.updateInfoAndLoginByOpenId(curWxUserInfo);
+			
+			model.addAttribute("userInfo", userInfo);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -237,7 +233,13 @@ public class WeiXinFrontController extends BaseController {
 			//retMap.put("ret", "200");
 			//retMap.put("retMsg", "获取成功！");
 			retMap.put("openId", openId);
-			String redirectUrl = Global.getConfig("weixin.appUrl") + redirect;
+			
+			String redirectUrl = StringUtils.EMPTY;
+			if(redirect.contains("http://")) {
+				redirectUrl = redirect;
+			} else {
+				redirectUrl = Global.getConfig("weixin.appUrl") + redirect;
+			}
 			//System.err.println(redirectUrl);
 			try {
 				if(redirectUrl.contains("?")) {
@@ -271,7 +273,7 @@ public class WeiXinFrontController extends BaseController {
 		//System.err.println("+================getOpenId" + serviceId);
 		if(StringUtils.isNotEmpty(serviceId)) {
 			//获取snsapi_userinfo方式回调授权页面的url，用于重定向到微信授权。
-			String url = WXOAuth2AuthorizeUtil.getBaseAuthorizeUrl(Global.getConfig("weixin.appId"), 
+			String url = WXOAuth2AuthorizeUtil.getUserInfoAuthorizeUrl(Global.getConfig("weixin.appId"), 
 					Global.getConfig("weixin.appUrl") + "/" + frontPath + "/wx/core/obtainCodeForOpenId?redirect=" + redirect, /////////////
 					serviceId);
 			try {

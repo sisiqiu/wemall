@@ -43,6 +43,13 @@
 			</div>
 		</c:if>
 		<div class="control-group">
+			<label class="control-label">订单号：</label>
+			<div class="controls">
+				<form:input path="orderNo" htmlEscape="false" maxlength="64" readonly="readonly" class="input-xlarge"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">用户id：</label>
 			<div class="controls">
 				<sys:treeselect id="user" name="user.id" value="${wemallRefund.user.id}" labelName="user.name" labelValue="${wemallRefund.user.name}"

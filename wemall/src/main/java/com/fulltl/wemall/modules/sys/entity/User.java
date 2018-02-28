@@ -534,6 +534,14 @@ public class User extends DataEntity<User> {
 		this.setRoleIdList(roleIdList);
 		this.mobile = "";
 		this.remarks = remarks;
+		
+		this.curBountyNum = "0"; //用户当前可用奖励金
+		this.totalBountyNum = "0"; //用户累计获得奖励金（累加）
+		this.curScoreNum = "0"; //用户当前积分
+		this.totalScoreNum = "0"; //用户累计积分（累加）
+		this.totalOrderNum = "0"; //用户累计订单数
+		this.totalConsumeNum = "0"; //用户累计消费额
+		
 		if(roleIdStrs != null) {
 			List<String> roleList = Arrays.asList(roleIdStrs);
 			this.setRoleIdList(roleList);

@@ -36,7 +36,7 @@ public class WemallOrderItemController extends BaseController {
 	
 	@ModelAttribute
 	public WemallOrderItem get(@RequestParam(required=false, value="orderNo") String orderNo,
-			@RequestParam(required=false, value="itemId") Integer itemId) {
+			@RequestParam(required=false, value="itemId") String itemId) {
 		WemallOrderItem entity = null;
 		if (StringUtils.isNotBlank(orderNo) && itemId != null){
 			entity = wemallOrderItemService.get(orderNo, itemId);

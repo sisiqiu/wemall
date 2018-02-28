@@ -78,5 +78,4 @@
 		DELETE FROM wemall_item_activity
 		WHERE item_id = #{itemId} and activity_id = #{activityId}
 	</update>
-	
 </mapper>

@@ -6,11 +6,10 @@ package com.fulltl.wemall.modules.wx.entity;
 import org.hibernate.validator.constraints.Length;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fulltl.wemall.common.persistence.DataEntity;
-import com.fulltl.wemall.common.utils.RegExpValidatorUtil;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+
+import com.fulltl.wemall.common.persistence.DataEntity;
 
 /**
  * 活动表Entity
@@ -40,6 +39,7 @@ public class ConActivity extends DataEntity<ConActivity> {
 	private String currentpeoplenum;		// 当前已报名人数
 	private String status;		// 状态
 	private String prize;		// 奖项json
+	private String liveUrl;		// 直播间地址
 	private Date beginFromdate;		// 开始 活动开始时间
 	private Date endFromdate;		// 结束 活动开始时间
 	private Date beginEnddate;		// 开始 活动结束时间
@@ -90,7 +90,7 @@ public class ConActivity extends DataEntity<ConActivity> {
 	}
 	
 	@Length(min=1, max=20, message="经度长度必须介于 1 和 20 之间")
-	@Pattern(regexp=RegExpValidatorUtil.REGEX_LNG, 
+	@Pattern(regexp="^(((\\d|[1-9]\\d|1[1-7]\\d|0)\\.\\d{0,8})|(\\d|[1-9]\\d|1[1-7]\\d|0{1,3})|180\\.0{0,4}|180)$", 
 			message="经度整数部分为0-180小数部分为0到8位")
 	public String getLng() {
 		return lng;
@@ -101,7 +101,7 @@ public class ConActivity extends DataEntity<ConActivity> {
 	}
 	
 	@Length(min=1, max=20, message="纬度长度必须介于 1 和 20 之间")
-	@Pattern(regexp=RegExpValidatorUtil.REGEX_LAT, 
+	@Pattern(regexp="^([0-8]?\\d{1}\\.\\d{0,8}|90\\.0{0,4}|[0-8]?\\d{1}|90)$", 
 			message="纬度整数部分为0-90小数部分为0到8位")
 	public String getLat() {
 		return lat;
@@ -270,6 +270,14 @@ public class ConActivity extends DataEntity<ConActivity> {
 
 	public void setEndEnddate(Date endEnddate) {
 		this.endEnddate = endEnddate;
+	}
+
+	public String getLiveUrl() {
+		return liveUrl;
+	}
+
+	public void setLiveUrl(String liveUrl) {
+		this.liveUrl = liveUrl;
 	}
 	
 }

@@ -43,5 +43,10 @@ public class WemallShopCarService extends CrudService<WemallShopCarDao, WemallSh
 	public void delete(WemallShopCar wemallShopCar) {
 		super.delete(wemallShopCar);
 	}
+
+	@Transactional(readOnly = false)
+	public void delete(List<String> ids) {
+		dao.deleteByIds(ids);
+	}
 	
 }

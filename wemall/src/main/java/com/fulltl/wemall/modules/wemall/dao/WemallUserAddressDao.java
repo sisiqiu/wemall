@@ -3,6 +3,8 @@
  */
 package com.fulltl.wemall.modules.wemall.dao;
 
+import java.util.List;
+
 import com.fulltl.wemall.common.persistence.CrudDao;
 import com.fulltl.wemall.common.persistence.annotation.MyBatisDao;
 import com.fulltl.wemall.modules.wemall.entity.WemallUserAddress;
@@ -14,5 +16,11 @@ import com.fulltl.wemall.modules.wemall.entity.WemallUserAddress;
  */
 @MyBatisDao
 public interface WemallUserAddressDao extends CrudDao<WemallUserAddress> {
+
+	public void deleteByIds(List<String> ids);
+
+	public void setNotDefaultUserAddr(String userId);
+
+	public void setDefaultUserAddr(String id);
 	
 }

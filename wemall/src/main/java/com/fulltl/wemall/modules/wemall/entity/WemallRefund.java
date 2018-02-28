@@ -190,5 +190,10 @@ public class WemallRefund extends DataEntity<WemallRefund> {
 	public void setEndRefundDate(Date endRefundDate) {
 		this.endRefundDate = endRefundDate;
 	}
+	
+	@Override
+	public boolean getIsNewRecord() {
+		 return isNewRecord;
+	}
 		
 }

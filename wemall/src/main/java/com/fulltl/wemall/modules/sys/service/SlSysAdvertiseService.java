@@ -35,11 +35,7 @@ public class SlSysAdvertiseService extends CrudService<SlSysAdvertiseDao, SlSysA
 	public void initAppUrlConfig() {
 		SlSysAdvertise slSysAdvertise = this.get(DataStorageUtil.GLOBAL_HISUSER_URL_CONFIG_ADVERTISEID);
 		Map addMap = new Gson().fromJson(slSysAdvertise.getAdBody(), Map.class);
-		Global.putAllToHisUserMap(addMap);
-		
-		SlSysAdvertise slSysAdvertise1 = this.get(DataStorageUtil.GLOBAL_HISDOCTOR_URL_CONFIG_ADVERTISEID);
-		Map addMap1 = new Gson().fromJson(slSysAdvertise1.getAdBody(), Map.class);
-		Global.putAllToHisDoctorMap(addMap1);
+		Global.putAllToWemallMap(addMap);
 	}
 	
 	public SlSysAdvertise get(String id) {
@@ -57,8 +53,7 @@ public class SlSysAdvertiseService extends CrudService<SlSysAdvertiseDao, SlSysA
 	@Transactional(readOnly = false)
 	public void save(SlSysAdvertise slSysAdvertise) {
 		super.save(slSysAdvertise);
-		if(DataStorageUtil.GLOBAL_HISUSER_URL_CONFIG_ADVERTISEID.equals(slSysAdvertise.getId()) || 
-				DataStorageUtil.GLOBAL_HISDOCTOR_URL_CONFIG_ADVERTISEID.equals(slSysAdvertise.getId())) {
+		if(DataStorageUtil.GLOBAL_HISUSER_URL_CONFIG_ADVERTISEID.equals(slSysAdvertise.getId())) {
 			//若更新的广告为是全局用户端或医生端url配置的项，更新缓存
 			initAppUrlConfig();
 		}

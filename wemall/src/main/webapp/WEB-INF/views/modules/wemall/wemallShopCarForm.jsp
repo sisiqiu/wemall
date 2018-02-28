@@ -44,7 +44,9 @@
 		<div class="control-group">
 			<label class="control-label">商品id：</label>
 			<div class="controls">
-				<form:input path="itemId" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
+				<sys:treeselect id="itemId" name="itemId" value="${wemallShopCar.itemId}" labelName="item.name" labelValue="${wemallShopCar.item.name}"
+						title="商品名称" url="/wemall/wemallItem/treeData" extId="${wemallShopCar.itemId}" cssClass="required"/>
+				<%-- <form:input path="itemId" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/> --%>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
@@ -60,6 +62,12 @@
 			<div class="controls">
 				<form:radiobuttons path="status" items="${fns:getDictList('usable')}" itemLabel="label" itemValue="value" htmlEscape="false" class="required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">商品属性id列表：</label>
+			<div class="controls">
+				<form:input path="itemSpecIds" htmlEscape="false" maxlength="200" class="input-xlarge"/>
 			</div>
 		</div>
 		<div class="form-actions">

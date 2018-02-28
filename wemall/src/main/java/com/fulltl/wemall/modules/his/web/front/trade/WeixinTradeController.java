@@ -13,9 +13,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.google.gson.Gson;
 import com.fulltl.wemall.common.web.BaseController;
 import com.fulltl.wemall.modules.his.service.front.trade.WeixinTradeService;
+import com.google.gson.Gson;
 
 
 /**
@@ -51,7 +51,7 @@ public class WeixinTradeController extends BaseController {
 	 * 用于app端调用生成订单的接口
 	 * url：http://ldkadmin.viphk.ngrok.org/f/interface/his/weixin/core/trade/generateOrder
 	 * 参数：orderPrice（*）;		// 订单价格，单位为元，精确到小数点后两位
-	 *		regId（*）;		//预约id
+	 *		id（*）;		//预约id
 	 *
 	 *	例：{
 	 *		orderPrice=88.88
@@ -75,7 +75,7 @@ public class WeixinTradeController extends BaseController {
 	@RequestMapping(value = "generateOrder")
 	@ResponseBody
 	public String generateOrder(HttpServletRequest request, HttpServletResponse response) {
-		Map<String, Object> retMap=weixinTradeService.generateOrder(request);
+		Map<String, Object> retMap=weixinTradeService.generateOrderByReg(request);
  		return new Gson().toJson(formatReturnMsg(retMap));
 	}
 	

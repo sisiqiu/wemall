@@ -38,10 +38,19 @@ public class WemallRefundService extends CrudService<WemallRefundDao, WemallRefu
 	
 	@Transactional(readOnly = false)
 	public void save(WemallRefund wemallRefund) {
-		if(StringUtils.isBlank(wemallRefund.getRefundId())) {
-			wemallRefund.setRefundId(IdGen.uuid());
+		if (wemallRefund.getIsNewRecord()){
+			wemallRefund.preInsert();
+			dao.insert(wemallRefund);
+		}else{
+			if(StringUtils.isBlank(wemallRefund.getRefundId())) {
+				wemallRefund.setRefundId(IdGen.uuid());
+				wemallRefund.preInsert();
+				dao.insert(wemallRefund);
+			} else {
+				wemallRefund.preUpdate();
+				dao.update(wemallRefund);
+			}
 		}
-		super.save(wemallRefund);
 	}
 	
 	@Transactional(readOnly = false)

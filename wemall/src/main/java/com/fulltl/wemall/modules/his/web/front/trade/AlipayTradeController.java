@@ -29,11 +29,11 @@ import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.alipay.api.request.AlipayTradeQueryRequest;
 import com.alipay.api.request.AlipayTradeRefundRequest;
 import com.alipay.api.response.AlipayDataDataserviceBillDownloadurlQueryResponse;
-import com.google.gson.Gson;
 import com.fulltl.wemall.common.web.BaseController;
 import com.fulltl.wemall.modules.alipay.core.AlipayConfig;
 import com.fulltl.wemall.modules.alipay.core.pojo.AlipayTradeAllEntity;
 import com.fulltl.wemall.modules.his.service.front.trade.AlipayTradeService;
+import com.google.gson.Gson;
 
 
 /**
@@ -76,7 +76,7 @@ public class AlipayTradeController extends BaseController {
 	 * 用于app端调用生成订单的接口
 	 * url：http://ldkadmin.viphk.ngrok.org/f/interface/his/alipay/core/trade/generateOrder
 	 * 参数：orderPrice（*）;		// 订单价格，单位为元，精确到小数点后两位
-	 *		regId（*）;		//预约id
+	 *		id（*）;		//预约id
 	 *
 	 *	例：{
 	 *		orderPrice=88.88
@@ -102,7 +102,7 @@ public class AlipayTradeController extends BaseController {
 	@RequestMapping(value = "generateOrder")
 	@ResponseBody
 	public String generateOrder(HttpServletRequest request, HttpServletResponse response) {
-		Map<String, Object> retMap=alipayTradeService.generateOrder(request);
+		Map<String, Object> retMap=alipayTradeService.generateOrderByReg(request);
  		return new Gson().toJson(formatReturnMsg(retMap));
 	}
 	

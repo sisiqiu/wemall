@@ -41,6 +41,20 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">商品id：</label>
+			<div class="controls">
+				<form:input path="itemId" htmlEscape="false" maxlength="64" class="input-xlarge required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">用户id：</label>
+			<div class="controls">
+				<form:input path="userId" htmlEscape="false" maxlength="64" class="input-xlarge required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">商品数量：</label>
 			<div class="controls">
 				<form:input path="itemNum" htmlEscape="false" maxlength="6" class="input-xlarge required digits"/>
@@ -57,7 +71,8 @@
 		<div class="control-group">
 			<label class="control-label">商品缩略图：</label>
 			<div class="controls">
-				<form:input path="photo" htmlEscape="false" maxlength="200" class="input-xlarge required"/>
+				<input type="hidden" id="photo" name="photo" value="${wemallOrderItem.photo}" />
+				<sys:ckfinder input="photo" type="thumb" uploadPath="/wemall" selectMultiple="false"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
@@ -69,45 +84,70 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">状态：</label>
+			<div class="controls">
+				<form:select path="status" class="input-xlarge required">
+					<form:option value="" label=""/>
+					<form:options items="${fns:getDictList('order_status')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">商品规格说明：</label>
 			<div class="controls">
-				<form:textarea path="itemsData" htmlEscape="false" rows="4" maxlength="200" class="input-xxlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:textarea path="itemsData" htmlEscape="false" rows="4" maxlength="200" class="input-xxlarge"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">物流名称：</label>
 			<div class="controls">
-				<form:input path="freightName" htmlEscape="false" maxlength="50" class="input-xlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:input path="freightName" htmlEscape="false" maxlength="50" class="input-xlarge"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">物流单号：</label>
 			<div class="controls">
-				<form:input path="freightNo" htmlEscape="false" maxlength="64" class="input-xlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:input path="freightNo" htmlEscape="false" maxlength="64" class="input-xlarge"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">买家留言：</label>
 			<div class="controls">
-				<form:input path="buyerMessage" htmlEscape="false" maxlength="200" class="input-xlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:input path="buyerMessage" htmlEscape="false" maxlength="200" class="input-xlarge"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">买家昵称：</label>
 			<div class="controls">
-				<form:input path="buyerNick" htmlEscape="false" maxlength="50" class="input-xlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:input path="buyerNick" htmlEscape="false" maxlength="50" class="input-xlarge"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">买家头像：</label>
+			<div class="controls">
+				<input type="hidden" id="buyerPhoto" name="buyerPhoto" value="${wemallOrderItem.buyerPhoto}" />
+				<sys:ckfinder input="buyerPhoto" type="thumb" uploadPath="/wemall" selectMultiple="false"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">买家评分：</label>
+			<div class="controls">
+				<form:input path="buyerScore" htmlEscape="false" maxlength="1" class="input-xlarge"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">买家是否已评价：</label>
 			<div class="controls">
-				<form:radiobuttons path="buyerComment" items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false" class="required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:radiobuttons path="buyerComment" items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false" />
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">评价时间：</label>
+			<div class="controls">
+				<input name="commentTime" type="text" maxlength="20" class="input-medium Wdate "
+					value="<fmt:formatDate value="${wemallOrderItem.commentTime}" pattern="yyyy-MM-dd HH:mm:ss"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
 			</div>
 		</div>
 		<div class="form-actions">

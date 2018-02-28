@@ -4,9 +4,13 @@
 package com.fulltl.wemall.modules.wemall.entity;
 
 import com.fulltl.wemall.modules.sys.entity.User;
+import com.fulltl.wemall.modules.sys.utils.DictUtils;
+import com.google.common.collect.Maps;
+
 import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 import java.util.Date;
+import java.util.Map;
 
 import com.fulltl.wemall.common.persistence.DataEntity;
 
@@ -101,6 +105,22 @@ public class WemallScoreInfo extends DataEntity<WemallScoreInfo> {
 
 	public void setEndCreateDate(Date endCreateDate) {
 		this.endCreateDate = endCreateDate;
+	}
+
+	/**
+	 * 获取列表接口展示使用的小型数据map
+	 * @return
+	 */
+	public Map<String, Object> getSmallEntityMap() {
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("id", this.getId());
+		map.put("userId", this.getUser().getId());
+		map.put("fromType", DictUtils.getDictLabel(this.getFromType(), "score_fromType", ""));
+		map.put("type", this.getType());
+		map.put("score", this.getScore());
+		map.put("createDate", this.getCreateDate());
+		super.formatEmptyString(map);
+		return map;
 	}
 		
 }

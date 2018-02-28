@@ -100,6 +100,7 @@ public class WXOAuthUserInfo implements CanFormatToSysUser {
 	public void setFromPlatForm(String fromPlatForm) {
 		this.fromPlatForm = fromPlatForm;
 	}
+	
 	/**
 	 * 根据微信用户对象转系统用户对象。
 	 * @return
