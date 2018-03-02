@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50520
 File Encoding         : 65001
 
-Date: 2018-02-25 11:52:11
+Date: 2018-03-02 11:38:08
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -2155,8 +2155,9 @@ CREATE TABLE `sl_sys_order` (
   `ordertype` varchar(10) NOT NULL COMMENT '订单类别',
   `orderprice` decimal(14,2) NOT NULL COMMENT '订单价格',
   `actualpayment` decimal(14,2) NOT NULL COMMENT '实际支付价格',
-  `paymethod` varchar(10) NOT NULL COMMENT '付款方式',
+  `paymethod` varchar(10) DEFAULT NULL COMMENT '付款方式',
   `freightfee` decimal(14,2) DEFAULT NULL COMMENT '运费',
+  `totalRefundFee` decimal(14,2) DEFAULT '0.00' COMMENT '总退款金额',
   `usedpoints` bigint(10) DEFAULT NULL COMMENT '使用积分数',
   `status` varchar(10) NOT NULL COMMENT '订单状态',
   `paystate` char(1) NOT NULL COMMENT '支付状态',
@@ -2166,6 +2167,7 @@ CREATE TABLE `sl_sys_order` (
   `redevpuseamount` decimal(14,2) DEFAULT NULL COMMENT '使用红包金额',
   `coupuseamount` decimal(14,2) DEFAULT NULL COMMENT '使用优惠券金额',
   `office_id` varchar(64) DEFAULT NULL COMMENT '单位ID',
+  `prepay_id` varchar(2000) DEFAULT NULL COMMENT '订单付款的预备码',
   `create_by` varchar(64) DEFAULT NULL COMMENT '创建者',
   `create_date` datetime DEFAULT NULL COMMENT '创建时间',
   `update_by` varchar(64) DEFAULT NULL COMMENT '更新者',
@@ -7313,6 +7315,7 @@ CREATE TABLE `wemall_order` (
   `bounty_usage_num` int(11) NOT NULL COMMENT '使用奖励金数',
   `coupon_usage_num` int(11) NOT NULL COMMENT '使用优惠券数',
   `vip_card_id` int(6) NOT NULL COMMENT '使用会员卡id',
+  `prepay_id` varchar(2000) DEFAULT NULL COMMENT '订单付款的预备码',
   `remarks` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '备注信息',
   `del_flag` char(1) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '0' COMMENT '删除标记',
   PRIMARY KEY (`order_no`)

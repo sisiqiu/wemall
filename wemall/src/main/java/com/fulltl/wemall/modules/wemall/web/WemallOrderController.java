@@ -3,22 +3,27 @@
  */
 package com.fulltl.wemall.modules.wemall.web;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fulltl.wemall.common.config.Global;
 import com.fulltl.wemall.common.persistence.Page;
 import com.fulltl.wemall.common.web.BaseController;
 import com.fulltl.wemall.common.utils.StringUtils;
+import com.fulltl.wemall.modules.sys.service.SlSysOrderMgrService;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrder;
 import com.fulltl.wemall.modules.wemall.service.WemallOrderService;
 
@@ -33,6 +38,8 @@ public class WemallOrderController extends BaseController {
 
 	@Autowired
 	private WemallOrderService wemallOrderService;
+	@Autowired
+	private SlSysOrderMgrService slSysOrderMgrService;
 	
 	@ModelAttribute
 	public WemallOrder get(@RequestParam(required=false) String id) {
@@ -80,4 +87,45 @@ public class WemallOrderController extends BaseController {
 		return "redirect:"+Global.getAdminPath()+"/wemall/wemallOrder/?repage";
 	}
 
+	@RequiresPermissions("sys:slSysOrder:refund")
+	@RequestMapping(value = "refund")
+	public String refund(HttpServletRequest request, RedirectAttributes redirectAttributes) {
+		String refundFee = WebUtils.getCleanParam(request, "refundFee");
+		String orderNo = WebUtils.getCleanParam(request, "id");
+		Map<String, Object> retMap = slSysOrderMgrService.refund(orderNo, refundFee, "");
+		if(!"0".equals(retMap.get("ret"))) {
+			addMessage(redirectAttributes, "退款失败!");
+		} else {
+			addMessage(redirectAttributes, "退款成功!");
+		}
+		return "redirect:"+Global.getAdminPath()+"/sys/slSysOrder/?repage";
+	}
+	
+	@RequiresPermissions("sys:slSysOrder:view")
+	@RequestMapping(value = "orderQuery")
+	@ResponseBody
+	public String orderQuery(HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
+		return slSysOrderMgrService.orderQuery(request, response);
+	}
+	
+	@RequiresPermissions("sys:slSysOrder:view")
+	@RequestMapping(value = "refundQuery")
+	@ResponseBody
+	public String refundQuery(HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
+		return slSysOrderMgrService.refundQuery(request, response);
+	}
+	
+	@RequiresPermissions("sys:slSysOrder:downloadBill")
+	@RequestMapping(value = "downloadBill")
+	@ResponseBody
+	public Map<String, Object> downloadBill(HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
+		Map<String, Object> retMap = slSysOrderMgrService.downloadBill(request, response);
+		
+		if(!"0".equals(retMap.get("ret"))) {
+			retMap.put("retMsg", "下载对账单失败!失败原因：" + retMap.get("retMsg"));
+		} else {
+			retMap.put("retMsg",retMap.get("retMsg"));
+		}
+		return retMap;
+	}
 }

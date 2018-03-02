@@ -166,27 +166,65 @@
 	</insert>
 	
 	<update id="update">
-		UPDATE wemall_order SET 	
-			user_id = #{user.id},
-			platform_order_no = #{platformOrderNo},
-			order_price = #{orderPrice},
-			payment = #{payment},
-			payment_type = #{paymentType},
-			total_refund_fee = #{totalRefundFee},
-			title = #{title},
-			body = #{body},
-			status = #{status},
-			update_date = #{updateDate},
-			payment_date = #{paymentDate},
-			consign_date = #{consignDate},
-			end_date = #{endDate},
-			close_date = #{closeDate},
-			type = #{type},
-			score_usage_num = #{scoreUsageNum},
-			bounty_usage_num = #{bountyUsageNum},
-			coupon_usage_num = #{couponUsageNum},
-			vip_card_id = #{vipCardId},
-			remarks = #{remarks}
+		UPDATE wemall_order SET 
+			<if test="user != null and user.id != null and user.id != ''">
+				user_id = #{user.id},
+			</if>
+			<if test="platformOrderNo != null and platformOrderNo != ''">
+			    platform_order_no = #{platformOrderNo},
+			</if>
+			<if test="orderPrice != null and orderPrice != ''">
+			   	order_price = #{orderPrice},
+			</if>
+			<if test="payment != null and payment != ''">
+			    payment = #{payment},
+			</if>
+			<if test="paymentType != null and paymentType != ''">
+			    payment_type = #{paymentType},
+			</if>
+			<if test="totalRefundFee != null and totalRefundFee != ''">
+			    total_refund_fee = #{totalRefundFee},
+			</if>
+			<if test="title != null and title != ''">
+			    title = #{title},
+			</if>
+			<if test="body != null and body != ''">
+			    body = #{body},
+			</if>
+			<if test="status != null and status != ''">
+			    status = #{status},
+			</if>
+			<if test="paymentDate != null and paymentDate != ''">
+			    payment_date = #{paymentDate},
+			</if>
+			<if test="consignDate != null and consignDate != ''">
+			    consign_date = #{consignDate},
+			</if>
+			<if test="endDate != null and endDate != ''">
+			    end_date = #{endDate},
+			</if>
+			<if test="closeDate != null and closeDate != ''">
+			    close_date = #{closeDate},
+			</if>
+			<if test="type != null and type != ''">
+			    type = #{type},
+			</if>
+			<if test="scoreUsageNum != null and scoreUsageNum != ''">
+			    score_usage_num = #{scoreUsageNum},
+			</if>
+			<if test="bountyUsageNum != null and bountyUsageNum != ''">
+			    bounty_usage_num = #{bountyUsageNum},
+			</if>
+			<if test="couponUsageNum != null and couponUsageNum != ''">
+			    coupon_usage_num = #{couponUsageNum},
+			</if>
+			<if test="vipCardId != null and vipCardId != ''">
+			    vip_card_id = #{vipCardId},
+			</if>
+			<if test="remarks != null and remarks != ''">
+			    remarks = #{remarks},
+			</if>
+			update_date = #{updateDate}
 		WHERE order_no = #{orderNo}
 	</update>
 	
@@ -196,4 +234,21 @@
 		WHERE order_no = #{orderNo}
 	</update>
 	
+	<update id="updateTotalRefundFee">
+		UPDATE wemall_order SET 
+			total_refund_fee = #{totalRefundFee}
+		WHERE order_no = #{orderNo}
+	</update>
+	
+	<update id="updatePrepayIdAndPayMethod">
+		UPDATE wemall_order SET 
+			<if test="paymentType != null and paymentType != ''">
+			  payment_type = #{paymentType},
+			</if>
+			<if test="prepayId != null and prepayId != ''">
+			  prepay_id = #{prepayId},
+			</if>
+			update_date = #{updateDate}
+		WHERE order_no = #{orderNo}
+	</update>
 </mapper>

@@ -2,7 +2,6 @@ package com.fulltl.wemall.modules.his.service.front.trade;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -31,13 +30,12 @@ import com.fulltl.wemall.common.service.BaseService;
 import com.fulltl.wemall.common.utils.IdGen;
 import com.fulltl.wemall.modules.alipay.core.AlipayConfig;
 import com.fulltl.wemall.modules.alipay.core.pojo.AlipayTradeAllEntity;
-import com.fulltl.wemall.modules.sys.entity.SlSysOrder;
 import com.fulltl.wemall.modules.sys.entity.SlSysOrder.AppoTypeEnum;
-import com.fulltl.wemall.modules.sys.entity.SlSysOrder.OrderTypeEnum;
-import com.fulltl.wemall.modules.sys.entity.SlSysOrder.PayMethod;
-import com.fulltl.wemall.modules.sys.service.SlSysOrderService;
 import com.fulltl.wemall.modules.sys.utils.UserUtils;
+import com.fulltl.wemall.modules.wemall.entity.WemallOrder;
+import com.fulltl.wemall.modules.wemall.entity.WemallOrder.PayMethod;
 import com.fulltl.wemall.modules.wemall.entity.WemallRefund;
+import com.fulltl.wemall.modules.wemall.service.WemallOrderService;
 import com.fulltl.wemall.modules.wemall.service.WemallRefundService;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
@@ -51,7 +49,7 @@ import com.google.gson.Gson;
 @Transactional(readOnly = true)
 public class AlipayTradeService extends BaseService {
 	@Autowired 
-	private SlSysOrderService slSysOrderService;
+	private WemallOrderService wemallOrderService;
 	@Autowired 
 	private WemallRefundService wemallRefundService;
 	
@@ -74,8 +72,8 @@ public class AlipayTradeService extends BaseService {
 		*/
 		if(signVerified) {//验证成功
 			//验证支付宝通知有效性的方法。并填充传入的订单对象。
-			SlSysOrder slSysOrder = checkNotifyVerified(alipayTradeAllEntity);
-			if(slSysOrder == null) return "fail";
+			WemallOrder wemallOrder = checkNotifyVerified(alipayTradeAllEntity);
+			if(wemallOrder == null) return "fail";
 			
 			//商户订单号
 			String out_trade_no = alipayTradeAllEntity.getOut_trade_no();
@@ -83,36 +81,34 @@ public class AlipayTradeService extends BaseService {
 			String trade_no = alipayTradeAllEntity.getTrade_no();
 			//交易状态
 			String trade_status = alipayTradeAllEntity.getTrade_status();
-			//交易退款时间
-			Date gmt_refund = alipayTradeAllEntity.getGmt_refund();
+			//总退款金额
+			BigDecimal refund_fee = alipayTradeAllEntity.getRefund_fee();
 			logger.info("接收到支付宝付款成功异步通知，商户订单号：" + out_trade_no);
 			System.err.println(trade_status);
 			if(trade_status.equals("TRADE_FINISHED") || trade_status.equals("TRADE_CLOSED")) {
 				//注意：
 				//退款日期超过可退款期限后（如三个月可退款），支付宝系统发送该交易状态通知
 				//交易结束，执行交易关闭更新逻辑
-				slSysOrder.setPayState("4");	//交易结束
-				slSysOrder.setStatus("6");		//交易关闭
-				slSysOrderService.save(slSysOrder);
+				wemallOrder.setStatus(7);		//交易关闭
+				wemallOrderService.save(wemallOrder);
 			} else if (trade_status.equals("TRADE_SUCCESS")) {
 				
 				//注意：
 				//付款完成后，支付宝系统发送该交易状态通知
-				if(gmt_refund != null) {
+				if(refund_fee != null) {
 					//说明是退款成功，执行退款记录验证逻辑，若有匹配的记录，略过，若没有，执行添加。
 					//商户业务号
 					String out_biz_no = alipayTradeAllEntity.getOut_biz_no();
-					//总退款金额
-					BigDecimal refund_fee = alipayTradeAllEntity.getRefund_fee();
 					
 					//执行退款记录添加逻辑
 				} else {
 					//是付款成功，更新订单状态和预约状态
-					if(OrderTypeEnum.careAppo.getValue().equals(slSysOrder.getOrderType())) {
-						slSysOrderService.updateOrderAndUpdateCareAppoStatus(slSysOrder);
+					wemallOrder.setPayment(alipayTradeAllEntity.getTotal_amount().movePointRight(2).intValue());
+					wemallOrderService.updateOrderAndUpdateCareAppoStatus(wemallOrder);
+					/*if(OrderTypeEnum.careAppo.getValue().equals(slSysOrder.getOrderType())) {
 					} else {
 						slSysOrderService.updateOrderAndUpdateRegStatus(slSysOrder);
-					}
+					}*/
 					
 				}
 			}
@@ -151,43 +147,87 @@ public class AlipayTradeService extends BaseService {
 	@Transactional(readOnly = false)
 	public Map<String, Object> generateOrderByType(Map<String, String> params, HttpServletRequest request, AppoTypeEnum type) {
 		Map<String, Object> retMap = new HashMap<String, Object>();
-		String basePath = getBasePath(request);
-		SlSysOrder slSysOrder = null;
+		WemallOrder wemallOrder = null;
 		String id = params.get("id"); //预约id
 		String orderPrice = params.get("orderPrice"); //订单价格
 		//构造订单对象
 		Map<String, Object> resultMap = Maps.newHashMap();
-		switch(type) {
+		resultMap = wemallOrderService.generateOrderByCareAppo(id, orderPrice, PayMethod.alipay.toString());
+		/*switch(type) {
 		case reg:
 			resultMap = slSysOrderService.generateOrderBy(id, orderPrice, PayMethod.alipay.toString());
 			break;
 		case careAppo:
 			resultMap = slSysOrderService.generateOrderByCareAppo(id, orderPrice, PayMethod.alipay.toString());
 			break;
-		}
+		}*/
 		
 		if(!"0".equals(resultMap.get("ret"))) return resultMap;
-		else slSysOrder = (SlSysOrder)resultMap.get("slSysOrder");
+		else wemallOrder = (WemallOrder)resultMap.get("wemallOrder");
+		
+		//支付宝创建订单成功，向数据库中插入新创建订单信息，并将对应预约中的订单字段更新为订单号
+		wemallOrderService.saveOrderAndUpdateCareAppo(wemallOrder, id);
+    	/*switch(type) {
+		case reg:
+			slSysOrderService.saveOrderAndUpdateReg(wemallOrder, id);
+			break;
+		case careAppo:
+			slSysOrderService.saveOrderAndUpdateCareAppo(wemallOrder, id);
+			break;
+		}*/
+		
+		retMap = generatePrepareIdByOrder(id, wemallOrder, request);
+		return retMap;
+	}
+	
+	/**
+	 * app调用根据订单号生成预付款id的方法
+	 * @param params
+	 * @param request
+	 * @param careappo
+	 * @return
+	 */
+	@Transactional(readOnly = false)
+	public Map<String, Object> generatePrepareIdByType(Map<String, String> params, HttpServletRequest request, AppoTypeEnum type) {
+		Map<String, Object> retMap = new HashMap<String, Object>();
+		String id = params.get("id"); //预约id
+		String orderNo = params.get("orderNo"); //订单号
+		WemallOrder wemallOrder = wemallOrderService.get(orderNo);
+		if(wemallOrder == null) {
+			retMap.put("ret", "-1");
+        	retMap.put("retMsg", "订单不存在。");
+        	return retMap;
+		}
+		retMap = generatePrepareIdByOrder(id, wemallOrder, request);
+		return retMap;
+	}
+	
+	/**
+	 * app调用根据订单对象生成预付款id的方法
+	 * @param params
+	 * @param request
+	 * @param careappo
+	 * @return
+	 */
+	@Transactional(readOnly = false)
+	private Map<String, Object> generatePrepareIdByOrder(String id, WemallOrder wemallOrder, HttpServletRequest request) {
+		Map<String, Object> retMap = new HashMap<String, Object>();
+		String basePath = getBasePath(request);
 		
 		//实例化客户端
 		AlipayClient alipayClient = AlipayConfig.getAlipayClient();
-		AlipayTradeAppPayRequest appPayRequest = generateAppPayRequestByOrder(slSysOrder, basePath);
+		AlipayTradeAppPayRequest appPayRequest = generateAppPayRequestByOrder(wemallOrder, basePath);
 		try {
 	        //这里和普通的接口调用不同，使用的是sdkExecute
 	        AlipayTradeAppPayResponse appPayResponse = alipayClient.sdkExecute(appPayRequest);
 	        //System.out.println(appPayResponse.getBody());//就是orderString 可以直接给客户端请求，无需再做处理。
-        	slSysOrder.setPrepayId(appPayResponse.getBody());
-        	//支付宝创建订单成功，向数据库中插入新创建订单信息，并将对应预约中的订单字段更新为订单号
-        	switch(type) {
-    		case reg:
-    			slSysOrderService.saveOrderAndUpdateReg(slSysOrder, id);
-    			break;
-    		case careAppo:
-    			slSysOrderService.saveOrderAndUpdateCareAppo(slSysOrder, id);
-    			break;
-    		}
+	        wemallOrder.setPrepayId(appPayResponse.getBody());
+	        wemallOrder.setPaymentType(PayMethod.alipay.toString());
         	
-        	logger.info("为用户'" + UserUtils.getUser().getLoginName() + "'生成订单，订单号为：" + slSysOrder.getOrderNo());
+        	//更新预付款id和付款方式到订单中
+	        wemallOrderService.updatePrepayIdAndPayMethod(wemallOrder);
+        	
+        	logger.info("为用户'" + UserUtils.getUser().getLoginName() + "'生成订单，订单号为：" + wemallOrder.getOrderNo());
         	retMap.put("ret", "0");
         	retMap.put("retMsg", "订单生成成功");
         	retMap.put("prepay_id", appPayResponse.getBody());
@@ -204,10 +244,10 @@ public class AlipayTradeService extends BaseService {
 	 * @param params 要有参数orderNo，refundFee，refundDesc
 	 * @param slSysOrder 传入对应的订单对象，如果为空，则会根据参数中的orderNo查询，如果不为空，省略查询
 	 * @return
-	 * @throws AlipayApiException
+	 * @throws Exception 
 	 */
 	@Transactional(readOnly = false)
-	public Map<String, Object> refund(Map<String, String> params, SlSysOrder slSysOrder) throws AlipayApiException {
+	public Map<String, Object> refund(Map<String, String> params, WemallOrder wemallOrder) throws Exception {
 		Map<String, Object> retMap = Maps.newHashMap();
 		
 		//获得初始化的AlipayClient
@@ -226,16 +266,16 @@ public class AlipayTradeService extends BaseService {
 		String refundId = IdGen.generateRefundId();
 		
 		//查询订单
-		if(slSysOrder == null) {
-			slSysOrder = slSysOrderService.get(orderNo);
+		if(wemallOrder == null) {
+			wemallOrder = wemallOrderService.get(orderNo);
 		}
-		if(slSysOrder == null) {
+		if(wemallOrder == null) {
 			retMap.put("ret", "-1");
 			retMap.put("retMsg", "没有对应订单");
 			return retMap;
 		}
 		BigDecimal refundFeeDecimal = new BigDecimal(refundFee);
-		BigDecimal actualPayment = new BigDecimal(slSysOrder.getActualPayment());
+		BigDecimal actualPayment = new BigDecimal(wemallOrder.getPayment());
 		if(refundFeeDecimal.compareTo(actualPayment) == 1) {
 			retMap.put("ret", "-1");
 			retMap.put("retMsg", "退款金额不能大于订单实际支付金额");
@@ -249,6 +289,24 @@ public class AlipayTradeService extends BaseService {
 				+ "\"out_request_no\":\""+ refundId +"\"}";
 		alipayRequest.setBizContent(bizContent);
 		
+		//先执行更新，防止之后支付宝通知的数据库操作在本数据库更新操作的顺序混乱
+		//添加退款记录信息
+		WemallRefund refund = new WemallRefund();
+		/*refund.setOrderNo(orderNo);
+		refund.setUser(slSysOrder.getUser());
+		refund.setOrderPrice(slSysOrder.getOrderPrice());
+		refund.setPayment(slSysOrder.getActualPayment());
+		refund.setRefundFee(refundFee);
+		refund.setRefundDesc(refundDesc);
+		refund.setRefundId(refundId);
+		refund.setRefundStatus("1");  //退款状态（0--未成功，1--已退款）
+		refund.setRefundDate(new Date());//退款时间
+		refund.setPayMethod(PayMethod.alipay.toString());
+		refund.setIsNewRecord(true);*/
+		wemallRefundService.save(refund);
+		//更新订单退款金额
+		wemallOrderService.updateOrderRefundFee(wemallOrder, refundFee);
+		
 		//请求
 		String result = alipayClient.execute(alipayRequest).getBody();
 		
@@ -256,27 +314,8 @@ public class AlipayTradeService extends BaseService {
 		Map<String, Object> resultMap = (Map<String, Object>)responseMap.get("alipay_trade_refund_response");
 		if("10000".equals(resultMap.get("code"))) {
 			//退款成功
-			//添加退款记录信息
-			WemallRefund refund = new WemallRefund();
-			/*refund.setOrderNo(orderNo);
-			refund.setUser(slSysOrder.getUser());
-			refund.setOrderPrice(slSysOrder.getOrderPrice());
-			refund.setPayment(slSysOrder.getActualPayment());
-			refund.setRefundFee(refundFee);
-			refund.setRefundDesc(refundDesc);
-			refund.setRefundId(refundId);
-			refund.setRefundStatus("1");  //退款状态（0--未成功，1--已退款）
-			refund.setRefundDate(new Date());//退款时间
-			refund.setPayMethod(PayMethod.alipay.toString());*/
-			refund.setIsNewRecord(true);
-			wemallRefundService.save(refund);
-			
-			//更新订单退款金额
-			slSysOrderService.updateOrderRefundFee(slSysOrder, refundFee);
 		} else {
-			retMap.put("ret", "-1");
-			retMap.put("retMsg", "退款失败，支付宝错误码：" + resultMap.get("code"));
-			return retMap;
+			throw new Exception("退款失败，支付宝错误码：" + resultMap.get("code"));
 		}
 		
 		//输出
@@ -397,16 +436,17 @@ public class AlipayTradeService extends BaseService {
 	 * @param basePath
 	 * @return
 	 */
-	private AlipayTradeAppPayRequest generateAppPayRequestByOrder(SlSysOrder slSysOrder, String basePath) {
+	private AlipayTradeAppPayRequest generateAppPayRequestByOrder(WemallOrder wemallOrder, String basePath) {
 		//实例化具体API对应的request类,类名称和接口名称对应,当前调用接口名称：alipay.trade.app.pay
 		AlipayTradeAppPayRequest appPayRequest = new AlipayTradeAppPayRequest();
 		//SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
 		AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
-		model.setBody(slSysOrder.getDescription());	//订单描述
-		model.setSubject(slSysOrder.getSubject());	//订单标题
-		model.setOutTradeNo(slSysOrder.getOrderNo());	//订单号
+		model.setBody(wemallOrder.getBody());	//订单描述
+		model.setSubject(wemallOrder.getTitle());	//订单标题
+		model.setOutTradeNo(wemallOrder.getOrderNo());	//订单号
 		model.setTimeoutExpress(AlipayConfig.timeoutExpress);
-		model.setTotalAmount(slSysOrder.getActualPayment());	//订单总金额，单位为元，精确到小数点后两位
+		//model.setTotalAmount(slSysOrder.getActualPayment());	//订单总金额，单位为元，精确到小数点后两位
+		model.setTotalAmount(wemallOrder.getOrderPrice());	//订单总金额，单位为元，精确到小数点后两位
 		model.setProductCode("QUICK_MSECURITY_PAY");
 		appPayRequest.setBizModel(model);
 		appPayRequest.setNotifyUrl(basePath + AlipayConfig.notify_url);
@@ -448,18 +488,20 @@ public class AlipayTradeService extends BaseService {
 	 * @param alipayTradeAllEntity
 	 * @return 若为null，则验证未通过，若不为空，验证通过
 	 */
-	private SlSysOrder checkNotifyVerified(AlipayTradeAllEntity alipayTradeAllEntity) {
+	private WemallOrder checkNotifyVerified(AlipayTradeAllEntity alipayTradeAllEntity) {
 		//根据订单号查询订单，若没有，忽略通知
 		String out_trade_no = alipayTradeAllEntity.getOut_trade_no(); //商户订单号
-		SlSysOrder slSysOrder = slSysOrderService.get(out_trade_no);
-		if(slSysOrder == null) return null;
+		WemallOrder wemallOrder = wemallOrderService.get(out_trade_no);
+		if(wemallOrder == null) return null;
 		//若查到的订单对象中实际付款金额与total_amount不等，忽略通知
 		BigDecimal total_amount = alipayTradeAllEntity.getTotal_amount();
-		if(!total_amount.toString().equals(slSysOrder.getActualPayment())) return null;
+		//if(!total_amount.toString().equals(slSysOrder.getActualPayment())) return null;
+		if(!total_amount.toString().equals(wemallOrder.getOrderPrice())) return null;
 		//验证app_id是否为该商户本身。
 		if(!AlipayConfig.app_id.equals(alipayTradeAllEntity.getApp_id())) return null;
 		//校验通知中的seller_id（或者seller_email) 是否为out_trade_no这笔单据的对应的操作方（有的时候，一个商户可能有多个seller_id/seller_email
 		
-		return slSysOrder;
+		return wemallOrder;
 	}
+
 }
