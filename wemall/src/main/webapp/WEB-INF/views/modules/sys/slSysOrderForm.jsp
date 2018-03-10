@@ -101,8 +101,7 @@
 		<div class="control-group">
 			<label class="control-label">付款方式：</label>
 			<div class="controls">
-				<form:radiobuttons path="payMethod" items="${fns:getDictList('pay_method')}" itemLabel="label" itemValue="value" htmlEscape="false" class="required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:radiobuttons path="payMethod" items="${fns:getDictList('pay_method')}" itemLabel="label" itemValue="value" htmlEscape="false" />
 			</div>
 		</div>
 		<div class="control-group">

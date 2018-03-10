@@ -1,6 +1,9 @@
 package com.fulltl.wemall.modules.wemall.web.front;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -8,6 +11,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -41,7 +45,7 @@ public class WemallProxyFrontServletFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
     	//统一跨域处理
-    	allowOrigin((HttpServletResponse)response);
+    	allowOrigin((HttpServletRequest)request, (HttpServletResponse)response);
     	chain.doFilter(request, response);
     }
     
@@ -49,10 +53,18 @@ public class WemallProxyFrontServletFilter implements Filter {
 	 * 统一处理跨域请求
 	 * @param response
 	 */
-	protected void allowOrigin(HttpServletResponse response) {
+	protected void allowOrigin(HttpServletRequest request, HttpServletResponse response) {
 		response.setHeader("Access-Control-Allow-Credentials", "true");
-		response.setHeader("Access-Control-Allow-Origin", Global.getConfig("AccessControlAllowOrigin")); //允许哪些url可以跨域请求到本域
 		response.setContentType("text/plain;charset=UTF-8");
+		
+        String []  allowDomain= Global.getConfig("AccessControlAllowOrigin").split(",");  
+        Set allowedOrigins= new HashSet(Arrays.asList(allowDomain));  
+        String originHeader = request.getHeader("Origin");  
+        if (allowedOrigins.contains(originHeader)){  
+        	response.setHeader("Access-Control-Allow-Origin", originHeader);  
+        }  
+		
+		//response.setHeader("Access-Control-Allow-Origin", ); //允许哪些url可以跨域请求到本域
 	}
     
     @Override
