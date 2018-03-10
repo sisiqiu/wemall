@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.fulltl.wemall.modules.sys.dao.SlSysOrderDao">
+<mapper namespace="com.sanlen.hospital.modules.sys.dao.SlSysOrderDao">
     
 	<sql id="slSysOrderColumns">
 		a.orderno AS "orderNo",
@@ -11,6 +11,7 @@
 		a.actualpayment AS "actualPayment",
 		a.paymethod AS "payMethod",
 		a.freightfee AS "freightFee",
+		a.totalRefundFee AS "totalRefundFee",
 		a.usedpoints AS "usedPoints",
 		a.status AS "status",
 		a.paystate AS "payState",
@@ -20,6 +21,7 @@
 		a.redevpuseamount AS "redEvpUseAmount",
 		a.coupuseamount AS "coupUseAmount",
 		a.office_id AS "office.id",
+		a.prepay_id AS "prepayId",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -124,6 +126,7 @@
 			actualpayment,
 			paymethod,
 			freightfee,
+			totalRefundFee,
 			usedpoints,
 			status,
 			paystate,
@@ -133,6 +136,7 @@
 			redevpuseamount,
 			coupuseamount,
 			office_id,
+			prepay_id,
 			create_by,
 			create_date,
 			update_by,
@@ -148,6 +152,7 @@
 			#{actualPayment},
 			#{payMethod},
 			#{freightFee},
+			#{totalRefundFee},
 			#{usedPoints},
 			#{status},
 			#{payState},
@@ -157,6 +162,7 @@
 			#{redEvpUseAmount},
 			#{coupUseAmount},
 			#{office.id},
+			#{prepayId},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -168,31 +174,90 @@
 	
 	<update id="update">
 		UPDATE sl_sys_order SET 	
-			userid = #{user.id},
-			subject = #{subject},
-			ordertype = #{orderType},
-			orderprice = #{orderPrice},
-			actualpayment = #{actualPayment},
-			paymethod = #{payMethod},
-			freightfee = #{freightFee},
-			usedpoints = #{usedPoints},
-			status = #{status},
-			paystate = #{payState},
-			orderdate = #{orderDate},
-			mobile = #{mobile},
-			description = #{description},
-			redevpuseamount = #{redEvpUseAmount},
-			coupuseamount = #{coupUseAmount},
-			office_id = #{office.id},
+			<if test="user != null and user.id != null and user.id != ''">
+				userid = #{user.id},
+			</if>
+			<if test="subject != null and subject != ''">
+			    subject = #{subject},
+			</if>
+			<if test="orderType != null and orderType != ''">
+			   ordertype = #{orderType},
+			</if>
+			<if test="orderPrice != null and orderPrice != ''">
+			  orderprice = #{orderPrice},
+			</if>
+			<if test="actualPayment != null and actualPayment != ''">
+			  actualpayment = #{actualPayment},
+			</if>
+			<if test="payMethod != null and payMethod != ''">
+			  paymethod = #{payMethod},
+			</if>
+			<if test="freightFee != null and freightFee != ''">
+			  freightfee = #{freightFee},
+			</if>
+			<if test="totalRefundFee != null and totalRefundFee != '0.00'">
+			  totalRefundFee = #{totalRefundFee},
+			</if>
+			<if test="usedPoints != null and usedPoints != ''">
+			  usedpoints = #{usedPoints},
+			</if>
+			<if test="status != null and status != ''">
+			  status = #{status},
+			</if>
+			<if test="payState != null and payState != ''">
+			  paystate = #{payState},
+			</if>
+			<if test="orderDate != null and orderDate != ''">
+			  orderdate = #{orderDate},
+			</if>
+			<if test="mobile != null and mobile != ''">
+			  mobile = #{mobile},
+			</if>
+			<if test="description != null and description != ''">
+			  description = #{description},
+			</if>
+			<if test="redEvpUseAmount != null and redEvpUseAmount != ''">
+			  redevpuseamount = #{redEvpUseAmount},
+			</if>
+			<if test="coupUseAmount != null and coupUseAmount != ''">
+			  coupuseamount = #{coupUseAmount},
+			</if>
+			<if test="office != null and office.id != null and office.id != ''">
+			  office_id = #{office.id},
+			</if>
+			<if test="prepayId != null and prepayId != ''">
+			  prepay_id = #{prepayId},
+			</if>
+			<if test="remarks != null and remarks != ''">
+			 remarks = #{remarks},
+			</if>
 			update_by = #{updateBy.id},
-			update_date = #{updateDate},
-			remarks = #{remarks}
+			update_date = #{updateDate}
 		WHERE orderno = #{orderNo}
 	</update>
 	
 	<update id="delete">
 		UPDATE sl_sys_order SET 
 			del_flag = #{DEL_FLAG_DELETE}
+		WHERE orderno = #{orderNo}
+	</update>
+	
+	<update id="updateTotalRefundFee">
+		UPDATE sl_sys_order SET 
+			totalRefundFee = #{totalRefundFee}
+		WHERE orderno = #{orderNo}
+	</update>
+	
+	<update id="updatePrepayIdAndPayMethod">
+		UPDATE sl_sys_order SET 
+			<if test="payMethod != null and payMethod != ''">
+			  paymethod = #{payMethod},
+			</if>
+			<if test="prepayId != null and prepayId != ''">
+			  prepay_id = #{prepayId},
+			</if>
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
 		WHERE orderno = #{orderNo}
 	</update>
 	

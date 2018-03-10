@@ -14,5 +14,9 @@ import com.fulltl.wemall.modules.sys.entity.SlSysOrder;
  */
 @MyBatisDao
 public interface SlSysOrderDao extends CrudDao<SlSysOrder> {
+
+	public void updateTotalRefundFee(SlSysOrder slSysOrder);
+
+	public void updatePrepayIdAndPayMethod(SlSysOrder slSysOrder);
 	
 }

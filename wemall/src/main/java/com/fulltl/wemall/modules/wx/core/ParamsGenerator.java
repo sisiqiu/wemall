@@ -1,6 +1,5 @@
 package com.fulltl.wemall.modules.wx.core;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
 
@@ -14,7 +13,7 @@ import com.fulltl.wemall.common.service.BaseService;
 import com.fulltl.wemall.common.utils.DateUtils;
 import com.fulltl.wemall.common.utils.IdGen;
 import com.fulltl.wemall.common.utils.RequestUtil;
-import com.fulltl.wemall.modules.sys.entity.SlSysOrder;
+import com.fulltl.wemall.modules.wemall.entity.WemallOrder;
 import com.fulltl.wemall.modules.wemall.entity.WemallRefund;
 import com.fulltl.wemall.modules.wx.core.utils.WeixinTradeSignature;
 import com.google.common.collect.Maps;
@@ -32,13 +31,13 @@ public class ParamsGenerator {
 	 * 为调用微信接口统一下单构建参数map
 	 * @return
 	 */
-	public static Map<String,String> generateParamsForUnifiedOrder(SlSysOrder slSysOrder, HttpServletRequest request) {
+	public static Map<String,String> generateParamsForUnifiedOrder(WemallOrder wemallOrder, HttpServletRequest request) {
 		String basePath = BaseService.getBasePath(request);
 		Map<String, String> paramsMap = generateCommonParams();
 		
-		paramsMap.put("body", slSysOrder.getDescription());
-		paramsMap.put("out_trade_no", slSysOrder.getOrderNo());
-		paramsMap.put("total_fee", new BigDecimal(slSysOrder.getActualPayment()).movePointRight(2).toString());//订单总金额，单位为分
+		paramsMap.put("body", wemallOrder.getBody());
+		paramsMap.put("out_trade_no", wemallOrder.getOrderNo());
+		paramsMap.put("total_fee", wemallOrder.getOrderPrice().toString());//订单总金额，单位为分
 		logger.debug("请求微信下单的用户ip为：" + RequestUtil.getIpAddress(request));
 		logger.debug("请求微信下单的用户ip为：" + RequestUtil.getIP(request));
 		paramsMap.put("spbill_create_ip", RequestUtil.getIpAddress(request));//用户端实际ip
@@ -67,8 +66,8 @@ public class ParamsGenerator {
 		
 		paramsMap.put("out_refund_no", wemallRefund.getRefundId());
 		paramsMap.put("out_trade_no", wemallRefund.getOrderNo());
-		paramsMap.put("total_fee", new BigDecimal(wemallRefund.getOrderPrice()).movePointRight(2).toString());//订单总金额，单位为分
-		paramsMap.put("refund_fee", new BigDecimal(wemallRefund.getRefundFee()).movePointRight(2).toString());//订单总金额，单位为分
+		paramsMap.put("total_fee", wemallRefund.getOrderPrice().toString());//订单总金额，单位为分
+		paramsMap.put("refund_fee", wemallRefund.getRefundFee().toString());//退款金额，单位为分
 		paramsMap.put("refund_desc", wemallRefund.getRefundDesc());
 		
 		//最后根据参数map生成签名

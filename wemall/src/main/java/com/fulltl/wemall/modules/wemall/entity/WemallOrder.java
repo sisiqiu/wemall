@@ -3,13 +3,17 @@
  */
 package com.fulltl.wemall.modules.wemall.entity;
 
-import org.hibernate.validator.constraints.Length;
-import com.fulltl.wemall.modules.sys.entity.User;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.Length;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fulltl.wemall.common.persistence.DataEntity;
+import com.fulltl.wemall.common.utils.IdGen;
+import com.fulltl.wemall.modules.sys.entity.User;
+import com.fulltl.wemall.modules.sys.utils.UserUtils;
 
 /**
  * 订单管理Entity
@@ -38,6 +42,7 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 	private Integer bountyUsageNum;		// 使用奖励金数
 	private Integer couponUsageNum;		// 使用优惠券数
 	private Integer vipCardId;		// 使用会员卡id
+	private String prepayId;		// 预付款id
 	private Integer beginOrderPrice;		// 开始 订单金额
 	private Integer endOrderPrice;		// 结束 订单金额
 	private Integer beginPayment;		// 开始 实付金额
@@ -46,6 +51,23 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 	private Integer endTotalRefundFee;		// 结束 总退款金额
 	private Date beginPaymentDate;		// 开始 付款时间
 	private Date endPaymentDate;		// 结束 付款时间
+	
+	/**
+	 * 付款方式
+	 * @author Administrator
+	 *
+	 */
+	public enum PayMethod {
+		/**
+		 * 支付宝
+		 */
+		alipay, 
+		/**
+		 * 微信支付
+		 */
+		weixin
+		;
+	}
 	
 	public WemallOrder() {
 		super();
@@ -293,5 +315,32 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 	public void setEndPaymentDate(Date endPaymentDate) {
 		this.endPaymentDate = endPaymentDate;
 	}
-		
+
+	public String getPrepayId() {
+		return prepayId;
+	}
+
+	public void setPrepayId(String prepayId) {
+		this.prepayId = prepayId;
+	}
+
+	@Override
+	public boolean getIsNewRecord() {
+		return isNewRecord;
+	}
+	
+	/**
+	 * 初始化新建订单对象，
+	 * 生成订单号、匹配当前用户id、订单状态、支付状态、下单日期
+	 * @param payMethod
+	 */
+	public void init() {
+		String outTradeNo = IdGen.generateOrderNo();
+		this.setOrderNo(outTradeNo);		//订单号
+		User user = UserUtils.getUser();
+		this.setUser(user);	//用户id
+		this.setStatus(1);	//订单状态；1--未付款
+		this.setCreateDate(new Date());	//下单日期
+		this.setTotalRefundFee(0);	//总退款金额
+	}
 }
