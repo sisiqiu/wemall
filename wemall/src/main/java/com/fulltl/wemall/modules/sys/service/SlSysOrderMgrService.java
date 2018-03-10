@@ -17,12 +17,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alipay.api.AlipayApiException;
-import com.fulltl.wemall.common.service.CrudService;
+import com.fulltl.wemall.common.service.BaseService;
 import com.fulltl.wemall.modules.his.service.front.trade.AlipayTradeService;
 import com.fulltl.wemall.modules.his.service.front.trade.WeixinTradeService;
-import com.fulltl.wemall.modules.sys.dao.SlSysOrderDao;
-import com.fulltl.wemall.modules.sys.entity.SlSysOrder;
-import com.fulltl.wemall.modules.sys.entity.SlSysOrder.PayMethod;
+import com.fulltl.wemall.modules.sys.entity.SlSysOrder.AppoTypeEnum;
+import com.fulltl.wemall.modules.wemall.entity.WemallOrder;
+import com.fulltl.wemall.modules.wemall.entity.WemallOrder.PayMethod;
+import com.fulltl.wemall.modules.wemall.service.WemallOrderService;
 import com.google.common.collect.Maps;
 
 /**
@@ -32,13 +33,37 @@ import com.google.common.collect.Maps;
  */
 @Service
 @Transactional(readOnly = true)
-public class SlSysOrderMgrService extends CrudService<SlSysOrderDao, SlSysOrder> {
+public class SlSysOrderMgrService extends BaseService {
 	@Autowired 
-	private SlSysOrderService slSysOrderService;
+	private WemallOrderService wemallOrderService;
 	@Autowired 
 	private AlipayTradeService alipayTradeService;
 	@Autowired 
 	private WeixinTradeService weixinTradeService;
+	
+	/**
+	 * app调用生成订单的方法
+	 * @param params 必须参数id，orderPrice
+	 * @param type
+	 * @return key值为slSysOrder的value为订单对象
+	 */
+	@Transactional(readOnly = false)
+	public Map<String, Object> generateOrderByType(Map<String, String> params, AppoTypeEnum type) {
+		//构造订单对象
+		Map<String, Object> resultMap = Maps.newHashMap();
+		String id = params.get("id"); //预约id
+		String orderPrice = params.get("orderPrice"); //订单价格
+		resultMap = wemallOrderService.generateOrderByCareAppo(id, orderPrice, null);
+		/*switch(type) {
+		case reg:
+			resultMap = wemallOrderService.generateOrderBy(id, orderPrice, null);
+			break;
+		case careAppo:
+			resultMap = wemallOrderService.generateOrderByCareAppo(id, orderPrice, null);
+			break;
+		}*/
+		return resultMap;
+	}
 	
 	/**
 	 * 根据订单号，退款金额，退款描述，执行退款逻辑
@@ -55,16 +80,24 @@ public class SlSysOrderMgrService extends CrudService<SlSysOrderDao, SlSysOrder>
 		params.put("refundFee", refundFee); //退款金额
 		params.put("refundDesc", refundDesc); //退款原因
 		
-		SlSysOrder slSysOrder = slSysOrderService.get(orderNo);
-		if(PayMethod.alipay.toString().equals(slSysOrder.getPayMethod())) {
+		WemallOrder wemallOrder = wemallOrderService.get(orderNo);
+		if(PayMethod.alipay.toString().equals(wemallOrder.getPaymentType())) {
 			try {
-				retMap = alipayTradeService.refund(params, slSysOrder);
+				retMap = alipayTradeService.refund(params, wemallOrder);
 			} catch (AlipayApiException e) {
-				logger.error("支付宝支付取消预约退款失败！对应用户：" + slSysOrder.getUser().getId() + "。", e);
+				logger.error("支付宝支付取消预约退款失败！对应用户：" + wemallOrder.getUser().getId() + "。", e);
+				throw new RuntimeException();
+			} catch (Exception e) {
+				logger.error("支付宝支付取消预约退款失败！对应用户：" + wemallOrder.getUser().getId() + "。", e);
 				throw new RuntimeException();
 			}
-		} else if(PayMethod.weixin.toString().equals(slSysOrder.getPayMethod())) {
-			retMap = weixinTradeService.refund(params, slSysOrder);
+		} else if(PayMethod.weixin.toString().equals(wemallOrder.getPaymentType())) {
+			try {
+				retMap = weixinTradeService.refund(params, wemallOrder);
+			} catch (Exception e) {
+				logger.error("微信支付取消预约退款失败！对应用户：" + wemallOrder.getUser().getId() + "。", e);
+				throw new RuntimeException();
+			}
 		}
 		
 		return retMap;

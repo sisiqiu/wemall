@@ -3,26 +3,18 @@
  */
 package com.fulltl.wemall.modules.sys.service;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fulltl.wemall.common.persistence.Page;
 import com.fulltl.wemall.common.service.CrudService;
-import com.fulltl.wemall.common.utils.DateUtils;
 import com.fulltl.wemall.modules.sys.dao.SlSysOrderDao;
 import com.fulltl.wemall.modules.sys.entity.SlSysOrder;
-import com.fulltl.wemall.modules.sys.entity.SlSysOrder.OrderTypeEnum;
-import com.fulltl.wemall.modules.sys.entity.User;
-import com.fulltl.wemall.modules.sys.utils.UserUtils;
-import com.google.common.base.Objects;
 
 /**
  * 订单管理Service
@@ -128,7 +120,8 @@ public class SlSysOrderService extends CrudService<SlSysOrderDao, SlSysOrder> {
         slSysOrder.setSubject(subject);
         //slSysOrder.setDescription(subject);
         slSysOrder.setOrderPrice(orderPrice);	//订单价格
-        slSysOrder.setActualPayment(orderPrice);	//实际支付价格
+        //slSysOrder.setActualPayment(orderPrice);	//实际支付价格
+        slSysOrder.setActualPayment("0");	//实际支付价格
         slSysOrder.setOrderType(slHisRegbooking.getRegType());
         slSysOrder.setMobile(user.getMobile());
         slSysOrder.setPayMethod(payMethod);	//付款方式；alipay--支付宝；weixin--微信支付
@@ -216,7 +209,8 @@ public class SlSysOrderService extends CrudService<SlSysOrderDao, SlSysOrder> {
         slSysOrder.setSubject(subject);
         //slSysOrder.setDescription(subject);
         slSysOrder.setOrderPrice(orderPrice);	//订单价格
-        slSysOrder.setActualPayment(orderPrice);	//实际支付价格
+        //slSysOrder.setActualPayment(orderPrice);	//实际支付价格
+        slSysOrder.setActualPayment("0");	//实际支付价格
         slSysOrder.setOrderType(OrderTypeEnum.careAppo.getValue());
         slSysOrder.setMobile(user.getMobile());
         slSysOrder.setPayMethod(payMethod);	//付款方式；alipay--支付宝；weixin--微信支付
@@ -279,8 +273,18 @@ public class SlSysOrderService extends CrudService<SlSysOrderDao, SlSysOrder> {
 	 */
 	@Transactional(readOnly = false)
 	public void updateOrderRefundFee(SlSysOrder slSysOrder, String refundFee) {
-		slSysOrder.setTotalRefundFee(new BigDecimal(slSysOrder.getTotalRefundFee()).add(new BigDecimal(refundFee)).toString());
-		this.save(slSysOrder);
+		/*slSysOrder.setTotalRefundFee(new BigDecimal(slSysOrder.getTotalRefundFee()).add(new BigDecimal(refundFee)).toString());
+		dao.updateTotalRefundFee(slSysOrder);*/
+	}
+
+	/**
+	 * 更新预付款id和付款方式
+	 * @param slSysOrder
+	 */
+	@Transactional(readOnly = false)
+	public void updatePrepayIdAndPayMethod(SlSysOrder slSysOrder) {
+		/*slSysOrder.preUpdate();
+		dao.updatePrepayIdAndPayMethod(slSysOrder);*/
 	}
 
 }
