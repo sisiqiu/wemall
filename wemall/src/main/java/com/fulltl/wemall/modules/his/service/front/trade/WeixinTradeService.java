@@ -19,6 +19,7 @@ import com.fulltl.wemall.common.utils.BeanToMapUtils;
 import com.fulltl.wemall.common.utils.CallServletUtil;
 import com.fulltl.wemall.common.utils.IdGen;
 import com.fulltl.wemall.common.utils.XMLUtils;
+import com.fulltl.wemall.modules.sys.entity.SlSysOrder.AppoTypeEnum;
 import com.fulltl.wemall.modules.sys.utils.UserUtils;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrder;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrder.PayMethod;
@@ -126,7 +127,8 @@ public class WeixinTradeService extends BaseService {
 		Map<String, String> params = Maps.newHashMap();
 		params.put("id",WebUtils.getCleanParam(request, "id")); //预约id
 		params.put("orderPrice",WebUtils.getCleanParam(request, "orderPrice")); //订单价格
-		return generateOrderByType(params, request, AppoTypeEnum.reg);
+		//return generateOrderByType(params, request, AppoTypeEnum.reg);
+		return null;
 	}
 	
 	@Transactional(readOnly = false)
@@ -134,7 +136,8 @@ public class WeixinTradeService extends BaseService {
 		Map<String, String> params = Maps.newHashMap();
 		params.put("id",WebUtils.getCleanParam(request, "id")); //预约id
 		params.put("orderPrice",WebUtils.getCleanParam(request, "orderPrice")); //订单价格
-		return generateOrderByType(params, request, AppoTypeEnum.careAppo);
+		//return generateOrderByType(params, request, AppoTypeEnum.careAppo);
+		return null;
 	}
 
 	/**
@@ -232,7 +235,7 @@ public class WeixinTradeService extends BaseService {
 			if(!"0".equals(retMap.get("ret"))) return retMap;
 			
 			wemallOrder.setPrepayId(weixinTradeAllEntity.getPrepay_id());
-			wemallOrder.setPayment(PayMethod.weixin.toString());
+			//wemallOrder.setPayment(PayMethod.weixin.toString());
         	
         	//更新预付款id和付款方式到订单中
 			wemallOrderService.updatePrepayIdAndPayMethod(wemallOrder);

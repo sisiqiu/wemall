@@ -222,7 +222,7 @@ public class AlipayTradeService extends BaseService {
 	        AlipayTradeAppPayResponse appPayResponse = alipayClient.sdkExecute(appPayRequest);
 	        //System.out.println(appPayResponse.getBody());//就是orderString 可以直接给客户端请求，无需再做处理。
 	        wemallOrder.setPrepayId(appPayResponse.getBody());
-	        wemallOrder.setPaymentType(PayMethod.alipay.toString());
+	        //wemallOrder.setPaymentType(PayMethod.alipay.toString());
         	
         	//更新预付款id和付款方式到订单中
 	        wemallOrderService.updatePrepayIdAndPayMethod(wemallOrder);
@@ -446,7 +446,7 @@ public class AlipayTradeService extends BaseService {
 		model.setOutTradeNo(wemallOrder.getOrderNo());	//订单号
 		model.setTimeoutExpress(AlipayConfig.timeoutExpress);
 		//model.setTotalAmount(slSysOrder.getActualPayment());	//订单总金额，单位为元，精确到小数点后两位
-		model.setTotalAmount(wemallOrder.getOrderPrice());	//订单总金额，单位为元，精确到小数点后两位
+		//model.setTotalAmount(wemallOrder.getOrderPrice());	//订单总金额，单位为元，精确到小数点后两位
 		model.setProductCode("QUICK_MSECURITY_PAY");
 		appPayRequest.setBizModel(model);
 		appPayRequest.setNotifyUrl(basePath + AlipayConfig.notify_url);
