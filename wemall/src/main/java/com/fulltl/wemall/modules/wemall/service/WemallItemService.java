@@ -29,6 +29,9 @@ public class WemallItemService extends CrudService<WemallItemDao, WemallItem> {
 	@Autowired
 	private WemallItemSpecService wemallItemSpecService;
 	
+	@Autowired
+	private WemallItemActivityService wemallItemActivityService;
+	
 	public WemallItem get(WemallItem entity) {
 		WemallItem wemallItem = super.get(entity);
 		//获取商品属性列表
@@ -74,5 +77,5 @@ public class WemallItemService extends CrudService<WemallItemDao, WemallItem> {
 	public void delete(WemallItem wemallItem) {
 		super.delete(wemallItem);
 	}
-	
+
 }

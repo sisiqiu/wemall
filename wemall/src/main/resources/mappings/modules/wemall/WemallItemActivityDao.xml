@@ -57,6 +57,11 @@
 		</choose>
 	</select>
 	
+	<select id="findItemsByActId" resultType="java.lang.String">
+		SELECT GROUP_CONCAT(item_id) as itemIds FROM wemall_item_activity WHERE activity_id = #{id};
+	</select>
+	
+	
 	<insert id="insert">
 		INSERT INTO wemall_item_activity(
 			item_id,
