@@ -3,15 +3,22 @@
  */
 package com.fulltl.wemall.modules.wemall.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fulltl.wemall.common.persistence.Page;
 import com.fulltl.wemall.common.service.CrudService;
+import com.fulltl.wemall.modules.wemall.entity.WemallItem;
 import com.fulltl.wemall.modules.wemall.entity.WemallItemActivity;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrderItem;
+import com.mysql.fabric.xmlrpc.base.Array;
+
+import cn.jiguang.common.utils.StringUtils;
+
 import com.fulltl.wemall.modules.wemall.dao.WemallItemActivityDao;
 
 /**
@@ -21,8 +28,11 @@ import com.fulltl.wemall.modules.wemall.dao.WemallItemActivityDao;
  */
 @Service
 @Transactional(readOnly = true)
-public class WemallItemActivityService extends CrudService<WemallItemActivityDao, WemallItemActivity> {
 
+public class WemallItemActivityService extends CrudService<WemallItemActivityDao, WemallItemActivity> {
+	@Autowired
+	private WemallItemService wemallItemcService;
+	
 	public WemallItemActivity get(Integer itemId, Integer activityId) {
 		WemallItemActivity wemallItemActivity = new WemallItemActivity();
 		wemallItemActivity.setItemId(itemId);;
@@ -46,6 +56,25 @@ public class WemallItemActivityService extends CrudService<WemallItemActivityDao
 	@Transactional(readOnly = false)
 	public void delete(WemallItemActivity wemallItemActivity) {
 		super.delete(wemallItemActivity);
+	}
+
+	public List<WemallItem> findItemsByActId(String id) {
+		// TODO Auto-generated method stub
+		String itemIds = dao.findItemsByActId(id);
+		List<WemallItem> actItems = new ArrayList<>();
+		if(StringUtils.isNotEmpty(itemIds)){
+			String idArr [] = itemIds.split(",");
+			if(idArr.length>0){
+				for(int i =0;i<idArr.length;i++){
+					WemallItem w = new WemallItem();
+					w.setId(idArr[i]);
+					WemallItem we = wemallItemcService.get(w);
+					actItems.add(we);
+				}
+			}
+		}
+		return actItems;
+		
 	}
 	
 }

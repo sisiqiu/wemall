@@ -9,10 +9,20 @@
 	var currentArr = [];
 	var checkedTr = {};
 		$(document).ready(function() {
+			initCheckBox();
 			//$("#name").focus();
 			$("#inputForm").validate({
 				submitHandler: function(form){
 					loading('正在提交，请稍等...');
+					var str = "";
+					for(var i=0; i<itemArr.length; i++) {
+					    var itemId = itemArr[i];
+					    if(itemId) {
+						    str += itemId+",";
+					    }
+					}
+					alert(str)
+					$("#itemIds").val(str);
 					form.submit();
 				},
 				errorContainer: "#messageBox",
@@ -120,6 +130,18 @@
 			});
 			console.log(itemArr);
 		}
+		
+		function initCheckBox() {
+			var actIds = "${actIds}";
+			var actIdArr = actIds.split(",");
+			if(actIdArr && actIdArr.length > 0) {
+				for(var i=0; i<actIdArr.length; i++) {
+					var obj = $(".allChild[value='" + actIdArr[i] + "']");
+					itemArr.push($(obj).val());
+					checkedTr[$(obj).val()] = $(obj).parent().parent();
+				}
+			}
+		}
 	</script>
 </head>
 <body>
@@ -199,6 +221,7 @@
 			<shiro:hasPermission name="wemall:wemallCashbackDiscount:edit"><input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="returnList()"/>
 		</div>
+		<input type="hidden" name="itemIds" id="itemIds" value="${actIds}">
 	</form:form>
 	<ul class="nav nav-tabs discountTab">
 		<li class="active"><a onclick="showDiv(1)">第一步：选择商品</a></li>
@@ -233,10 +256,21 @@
 		<tbody>
 		<c:forEach items="${page.list}" var="wemallItem">
 			<tr>
-				<td class="checkboxTd">
-					<input name="itemId" class="allChild" onchange="allChildChange(this)" type="checkbox" value="${wemallItem.id}">
-				</td>
-				<td>
+			<c:set var="selectAllIds" value="${actIds}"/>
+			<c:set var="wemallItemId" value=",${wemallItem.id},"/>
+			<c:choose>
+				<c:when test="${fn:contains(selectAllIds, wemallItemId)}">  
+				  	<td class="checkboxTd">
+				    	<input name="itemId" class="allChild" onchange="allChildChange(this)" type="checkbox" checked value="${wemallItem.id}">
+				 	 </td>
+				</c:when>
+		   		<c:otherwise>
+				   	<td class="checkboxTd">
+				   		<input name="itemId" class="allChild" onchange="allChildChange(this)" type="checkbox" value="${wemallItem.id}">
+				   	</td>
+			   </c:otherwise>
+			</c:choose>
+				<td itemId="${wemallItem.id}">
 					<img  src="${wemallItem.photo}" width="40px" height="40px">${wemallItem.name}
 				</td>
 				<td>
@@ -268,6 +302,28 @@
 				<th>商品库存</th>
 				<th>操作</th>
 			</tr>
+			<%-- <c:forEach items="${actItems}" var="wemallItem">
+			<tr>
+				<td itemId="${wemallItem.id}">
+					<img  src="${wemallItem.photo}" width="40px" height="40px">${wemallItem.name}
+				</td>
+				<td>
+					${wemallItem.sortId}
+				</td>
+				<td>
+					${wemallItem.originalPrice}
+				</td>
+				<td>
+					${wemallItem.currentPrice}
+				</td>
+				<td>
+					${wemallItem.storage}
+				</td>
+				<td>
+					<input type="button" class="btn btn-primary" value="取 消" onclick="cancle(${wemallItem.id},this)">
+				</td>
+			</tr>
+		</c:forEach> --%>
 		</thead>
 		<tbody>
 		
