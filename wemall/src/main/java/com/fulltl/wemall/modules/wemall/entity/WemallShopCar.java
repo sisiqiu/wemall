@@ -4,6 +4,9 @@
 package com.fulltl.wemall.modules.wemall.entity;
 
 import com.fulltl.wemall.modules.sys.entity.User;
+
+import java.util.List;
+
 import javax.validation.constraints.NotNull;
 
 import com.fulltl.wemall.common.persistence.DataEntity;
@@ -23,6 +26,8 @@ public class WemallShopCar extends DataEntity<WemallShopCar> {
 	private Integer status;		// 状态（0--禁用；1--可用）
 	
 	private WemallItem item;		// 商品
+	
+	private List<WemallItemSpec> itemSpecs;
 	
 	public WemallShopCar() {
 		super();
@@ -83,5 +88,15 @@ public class WemallShopCar extends DataEntity<WemallShopCar> {
 	public void setItemSpecIds(String itemSpecIds) {
 		this.itemSpecIds = itemSpecIds;
 	}
+
+	public List<WemallItemSpec> getItemSpecs() {
+		return itemSpecs;
+	}
+
+	public void setItemSpecs(List<WemallItemSpec> itemSpecs) {
+		this.itemSpecs = itemSpecs;
+	}
+	
+	
 
 }

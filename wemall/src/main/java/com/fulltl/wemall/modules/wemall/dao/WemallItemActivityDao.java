@@ -15,6 +15,6 @@ import com.fulltl.wemall.modules.wemall.entity.WemallItemActivity;
 @MyBatisDao
 public interface WemallItemActivityDao extends CrudDao<WemallItemActivity> {
 
-	String findItemsByActId(String id);
+	String findItemsByActId(String id,int activityType);
 	
 }

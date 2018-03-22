@@ -74,7 +74,7 @@ public class WemallCashbackDiscountController extends BaseController {
 	@RequestMapping(value = "form")
 	public String form(WemallCashbackDiscount wemallCashbackDiscount, Model model,HttpServletRequest request, HttpServletResponse response) {
 		Page<WemallItem> page = wemallItemService.findPage(new Page<WemallItem>(request, response), new WemallItem()); 
-		List<WemallItem> actItems = wemallItemActivityService.findItemsByActId(wemallCashbackDiscount.getId());
+		List<WemallItem> actItems = wemallItemActivityService.findItemsByActId(wemallCashbackDiscount.getId(),1);
 		String actIds = ",";
 		if(actItems.size()>0){
 			for(WemallItem w :actItems){
@@ -117,7 +117,7 @@ public class WemallCashbackDiscountController extends BaseController {
 			retainList = Lists.newArrayList();
 			retainList.addAll(newIdList);
 		}
-		List<WemallItem> actItems = wemallItemActivityService.findItemsByActId(actId);
+		List<WemallItem> actItems = wemallItemActivityService.findItemsByActId(actId,1);
 		List<String> oldIdList = Lists.newArrayList();
 		if(actItems.size()>0){
 			for(WemallItem w :actItems){
@@ -140,6 +140,7 @@ public class WemallCashbackDiscountController extends BaseController {
 				WemallItemActivity wemallItemActivity = new WemallItemActivity();
 				wemallItemActivity.setActivityId(Integer.valueOf(actId));
 				wemallItemActivity.setItemId(Integer.valueOf(addIdList.get(i)));
+				wemallItemActivity.setActivityType(1);
 				wemallItemActivityService.save(wemallItemActivity );
 			}
 		}
@@ -148,6 +149,7 @@ public class WemallCashbackDiscountController extends BaseController {
 				WemallItemActivity wemallItemActivity = new WemallItemActivity();
 				wemallItemActivity.setActivityId(Integer.valueOf(actId));
 				wemallItemActivity.setItemId(Integer.valueOf(removeIdList.get(i)));
+				wemallItemActivity.setActivityType(1);
 				wemallItemActivityService.delete(wemallItemActivity);
 			}
 		}

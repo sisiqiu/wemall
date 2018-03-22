@@ -1,6 +1,7 @@
 package com.fulltl.wemall.modules.wemall.service.front;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -20,11 +21,13 @@ import com.fulltl.wemall.modules.sys.entity.User;
 import com.fulltl.wemall.modules.sys.service.SystemService;
 import com.fulltl.wemall.modules.sys.utils.UserUtils;
 import com.fulltl.wemall.modules.wemall.entity.WemallBountyInfo;
+import com.fulltl.wemall.modules.wemall.entity.WemallItemSpec;
 import com.fulltl.wemall.modules.wemall.entity.WemallScoreInfo;
 import com.fulltl.wemall.modules.wemall.entity.WemallShopCar;
 import com.fulltl.wemall.modules.wemall.entity.WemallUserAddress;
 import com.fulltl.wemall.modules.wemall.entity.WemallVipCard;
 import com.fulltl.wemall.modules.wemall.service.WemallBountyInfoService;
+import com.fulltl.wemall.modules.wemall.service.WemallItemSpecService;
 import com.fulltl.wemall.modules.wemall.service.WemallScoreInfoService;
 import com.fulltl.wemall.modules.wemall.service.WemallShopCarService;
 import com.fulltl.wemall.modules.wemall.service.WemallUserAddressService;
@@ -51,6 +54,8 @@ public class WemallUserRelatedFrontService extends BaseService {
 	private WemallUserAddressService wemallUserAddressService;
 	@Autowired
 	private SystemService systemService;
+	@Autowired
+	private WemallItemSpecService wemallItemSpecService;
 	
 	/**
 	 * 获取购物车列表信息
@@ -82,7 +87,21 @@ public class WemallUserRelatedFrontService extends BaseService {
 		for(WemallItem entity : page.getList()) {
 			dataList.add(entity.getSmallEntityMap());
 		}*/
-		map.put("list", page.getList());
+		List<WemallShopCar> shopCarList = page.getList();
+		for(WemallShopCar w :shopCarList){
+			if(StringUtils.isNotBlank(w.getItemSpecIds())){
+				String [] specIds = w.getItemSpecIds().split(",");
+				List<WemallItemSpec> itemSpecs = new ArrayList<>();
+				if(specIds.length>0){
+					WemallItemSpec itemSpec = wemallItemSpecService.get(specIds[0]);
+					if(itemSpec!=null){
+						itemSpecs.add(itemSpec);
+					}
+				}
+				w.setItemSpecs(itemSpecs);;
+			}
+		}
+		map.put("list",shopCarList);
 		map.put("count", page.getCount());
 		map.put("ret", "0");
 		map.put("retMsg", "获取成功");
