@@ -5,6 +5,7 @@
 	<sql id="wemallItemActivityColumns">
 		a.item_id AS "itemId",
 		a.activity_id AS "activityId"
+		a.activity_type AS "activityType"
 	</sql>
 	
 	<sql id="wemallItemActivityJoins">
@@ -16,6 +17,7 @@
 		FROM wemall_item_activity a
 		<include refid="wemallItemActivityJoins"/>
 		WHERE a.item_id = #{itemId} and a.activity_id = #{activityId}
+		and a.activity_type = #{activityType}
 	</select>
 	
 	<select id="findList" resultType="WemallItemActivity">
@@ -47,6 +49,9 @@
 			<if test="activityId != null and activityId != ''">
 				AND a.activity_id = #{activityId}
 			</if>
+			<if test="activityType != null and activityType != ''">
+				AND a.activity_type = #{activityType}
+			</if>
 		</where>		
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -58,29 +63,34 @@
 	</select>
 	
 	<select id="findItemsByActId" resultType="java.lang.String">
-		SELECT GROUP_CONCAT(item_id) as itemIds FROM wemall_item_activity WHERE activity_id = #{id};
+		SELECT GROUP_CONCAT(item_id) as itemIds FROM wemall_item_activity WHERE activity_id = #{0} AND activity_type = #{1};
 	</select>
 	
 	
 	<insert id="insert">
 		INSERT INTO wemall_item_activity(
 			item_id,
-			activity_id
+			activity_id,
+			activity_type
 		) VALUES (
 			#{itemId},
-			#{activityId}
+			#{activityId},
+			#{activityType}
 		)
 	</insert>
 	
 	<update id="update">
 		UPDATE wemall_item_activity SET 	
 			item_id = #{itemId},
-			activity_id = #{activityId}
+			activity_id = #{activityId},
+			activity_type = #{activityType}
 		WHERE item_id = #{itemId} and activity_id = #{activityId}
+		AND activity_type = #{activityType}
 	</update>
 	
 	<update id="delete">
 		DELETE FROM wemall_item_activity
 		WHERE item_id = #{itemId} and activity_id = #{activityId}
+		AND activity_type = #{activityType}
 	</update>
 </mapper>

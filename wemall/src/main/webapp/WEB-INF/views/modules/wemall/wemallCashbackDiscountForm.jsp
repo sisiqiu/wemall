@@ -9,8 +9,8 @@
 	var currentArr = [];
 	var checkedTr = {};
 		$(document).ready(function() {
-			initCheckBox();
-			//$("#name").focus();
+			var actIds = "${actIds}";
+			initCheckBox(actIds);
 			$("#inputForm").validate({
 				submitHandler: function(form){
 					loading('正在提交，请稍等...');
@@ -21,7 +21,6 @@
 						    str += itemId+",";
 					    }
 					}
-					alert(str)
 					$("#itemIds").val(str);
 					form.submit();
 				},
@@ -36,112 +35,8 @@
 				}
 			});
 		});
-		function page(n,s){
-			var url = window.location.href;
-			var id = jsUrlHelper.getUrlParam(url, "id");
-			$.ajax({
-	            type: "POST",
-	            url: "${ctx}/wemall/wemallCashbackDiscount/pageData",
-	            data: {id: id, pageNo:n?n:$(".serverPageNo").val(), pageSize:s?s:$(".serverPageSize").val(),name:$("#itemName").val()},
-	            dataType: "json",
-	            success: function(data){
-					$(".pagination").html(data.page);
-					$("#firstTable tbody").empty();
-					$.each(data.list, function(index, wemallItem) {
-						var tbodyTrHtml = "<tr>" +
-							"<td class=\"checkboxTd\"><input name=\"itemId\" class=\"allChild\" onchange=\"allChildChange(this)\" type=\"checkbox\" value=\"" + wemallItem.id + "\"></td>" +
-							"<td><img src=\"" + wemallItem.photo + "\" width=\"40px\" height=\"40px\">" + wemallItem.name + "</td>" +
-							"<td>" + wemallItem.sortId + "</td>" +
-							"<td>" + wemallItem.originalPrice + "</td>" +
-							"<td>" + wemallItem.currentPrice + "</td>" +
-							"<td>" + wemallItem.storage + "</td>" +
-						"</tr>";
-						$("#firstTable tbody").append(tbodyTrHtml);
-					});
-					fillCheckBox();
-	            }
-			});
-        }
-		
-		function returnList(){
-			document.getElementById("firstDis").click();
-		}
-		
-		function allChange() {
-			if ($(".all").attr("checked")=="checked") {
-				$(".allChild").attr("checked","checked");
-				$.each($(".allChild"), function(index, item) {
-					itemArr.push($(item).val());
-					checkedTr[$(item).val()] = $(item).parent().parent();
-				});
-				//$("td").remove(".checkboxTd");
-			} else {
-				$(".allChild").removeAttr("checked");
-				$.each($(".allChild"), function(index, item) {
-					itemArr.removeByValue($(item).val());
-					delete checkedTr[$(item).val()];
-				});
-			}
-			console.log(checkedTr);
-		}
-		
-		function allChildChange(obj) {
-			if ($(obj).attr("checked")=="checked") {
-				itemArr.push($(obj).val());
-				checkedTr[$(obj).val()] = $(obj).parent().parent();
-			} else {
-				itemArr.removeByValue($(obj).val());
-				delete checkedTr[$(obj).val()];
-			}
-			console.log(checkedTr);
-		}
-		
-		function showDiv(num){
-			$(".discountTab li").removeClass("active");
-			$(".discountTab li").eq(num-1).addClass("active");
-			$(".tabsDiv").hide();
-			$(".tabsDiv").eq(num-1).show();
-			if(num==2){
-				$("#secondTable tbody").empty();
-				for(var k in checkedTr){
-					var useObj = checkedTr[k].clone();
-					var txt3=document.createElement("td");  // 以 DOM 创建新元素
-					txt3.innerHTML="<input type=\"button\" class=\"btn btn-primary\" value=\"取 消\" onclick=\"cancle('"+k+"',this)\">";
-					useObj.append(txt3);
-					$("#secondTable tbody").append(useObj);
-				}
-				$("#secondTable td").remove(".checkboxTd");
-			} else {
-				fillCheckBox();
-			}
-		}
-		function cancle(k,obj){
-			itemArr.removeByValue(k);
-			delete checkedTr[k];
-			$(obj).parent().parent().remove();
-		}
-		
-		function fillCheckBox() {
-			$("#firstTable .allChild").removeAttr("checked");
-			$.each($("#firstTable .allChild"), function(index, item) {
-				if(itemArr.indexOf($(item).val()) != -1) {
-					$(item).attr("checked","checked");
-				}
-			});
-			console.log(itemArr);
-		}
-		
-		function initCheckBox() {
-			var actIds = "${actIds}";
-			var actIdArr = actIds.split(",");
-			if(actIdArr && actIdArr.length > 0) {
-				for(var i=0; i<actIdArr.length; i++) {
-					var obj = $(".allChild[value='" + actIdArr[i] + "']");
-					itemArr.push($(obj).val());
-					checkedTr[$(obj).val()] = $(obj).parent().parent();
-				}
-			}
-		}
+
+
 	</script>
 </head>
 <body>
@@ -302,28 +197,6 @@
 				<th>商品库存</th>
 				<th>操作</th>
 			</tr>
-			<%-- <c:forEach items="${actItems}" var="wemallItem">
-			<tr>
-				<td itemId="${wemallItem.id}">
-					<img  src="${wemallItem.photo}" width="40px" height="40px">${wemallItem.name}
-				</td>
-				<td>
-					${wemallItem.sortId}
-				</td>
-				<td>
-					${wemallItem.originalPrice}
-				</td>
-				<td>
-					${wemallItem.currentPrice}
-				</td>
-				<td>
-					${wemallItem.storage}
-				</td>
-				<td>
-					<input type="button" class="btn btn-primary" value="取 消" onclick="cancle(${wemallItem.id},this)">
-				</td>
-			</tr>
-		</c:forEach> --%>
 		</thead>
 		<tbody>
 		

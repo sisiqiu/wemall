@@ -20,6 +20,7 @@ import com.mysql.fabric.xmlrpc.base.Array;
 import cn.jiguang.common.utils.StringUtils;
 
 import com.fulltl.wemall.modules.wemall.dao.WemallItemActivityDao;
+import com.fulltl.wemall.modules.wemall.dao.WemallItemDao;
 
 /**
  * 商品活动中间表管理Service
@@ -31,7 +32,7 @@ import com.fulltl.wemall.modules.wemall.dao.WemallItemActivityDao;
 
 public class WemallItemActivityService extends CrudService<WemallItemActivityDao, WemallItemActivity> {
 	@Autowired
-	private WemallItemService wemallItemcService;
+	private WemallItemDao wemallItemDao;
 	
 	public WemallItemActivity get(Integer itemId, Integer activityId) {
 		WemallItemActivity wemallItemActivity = new WemallItemActivity();
@@ -58,9 +59,9 @@ public class WemallItemActivityService extends CrudService<WemallItemActivityDao
 		super.delete(wemallItemActivity);
 	}
 
-	public List<WemallItem> findItemsByActId(String id) {
+	public List<WemallItem> findItemsByActId(String id,int activityType) {
 		// TODO Auto-generated method stub
-		String itemIds = dao.findItemsByActId(id);
+		String itemIds = dao.findItemsByActId(id,activityType);
 		List<WemallItem> actItems = new ArrayList<>();
 		if(StringUtils.isNotEmpty(itemIds)){
 			String idArr [] = itemIds.split(",");
@@ -68,7 +69,7 @@ public class WemallItemActivityService extends CrudService<WemallItemActivityDao
 				for(int i =0;i<idArr.length;i++){
 					WemallItem w = new WemallItem();
 					w.setId(idArr[i]);
-					WemallItem we = wemallItemcService.get(w);
+					WemallItem we = wemallItemDao.get(w);
 					actItems.add(we);
 				}
 			}

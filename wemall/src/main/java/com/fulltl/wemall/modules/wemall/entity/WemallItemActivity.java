@@ -17,7 +17,7 @@ public class WemallItemActivity extends DataEntity<WemallItemActivity> {
 	private static final long serialVersionUID = 1L;
 	private Integer itemId;		// 商品id
 	private Integer activityId;		// 活动id
-	
+	private Integer activityType;		// 对应活动类型 1-限时返现 2-满减送 3-限时折扣 4-限时团购'
 	public WemallItemActivity() {
 		super();
 	}
@@ -43,5 +43,17 @@ public class WemallItemActivity extends DataEntity<WemallItemActivity> {
 	public void setActivityId(Integer activityId) {
 		this.activityId = activityId;
 	}
+	
+	@NotNull(message="活动类型id不能为空")
+	public Integer getActivityType() {
+		return activityType;
+	}
+
+	public void setActivityType(Integer activityType) {
+		this.activityType = activityType;
+	}
+	
+	
+
 	
 }
