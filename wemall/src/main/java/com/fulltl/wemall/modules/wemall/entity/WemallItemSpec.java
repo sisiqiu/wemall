@@ -5,6 +5,7 @@ package com.fulltl.wemall.modules.wemall.entity;
 
 import org.hibernate.validator.constraints.Length;
 
+import com.drew.lang.annotations.NotNull;
 import com.fulltl.wemall.common.persistence.DataEntity;
 import com.google.common.base.Objects;
 
@@ -20,7 +21,7 @@ public class WemallItemSpec extends DataEntity<WemallItemSpec> {
 	private String specName;		// 属性类别名
 	private String specInfoName;		// 属性值名称
 	private String sort;		// 排序
-	private String price;		// 价格
+	private Integer price;		// 价格
 	private String teamPrice;		// 拼团价
 	private String storage;		// 库存量
 	
@@ -68,12 +69,12 @@ public class WemallItemSpec extends DataEntity<WemallItemSpec> {
 		this.sort = sort;
 	}
 	
-	@Length(min=1, max=11, message="价格长度必须介于 1 和 11 之间")
-	public String getPrice() {
+	@NotNull
+	public Integer getPrice() {
 		return price;
 	}
 
-	public void setPrice(String price) {
+	public void setPrice(Integer price) {
 		this.price = price;
 	}
 	

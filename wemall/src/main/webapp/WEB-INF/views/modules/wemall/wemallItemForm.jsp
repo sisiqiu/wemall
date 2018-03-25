@@ -350,8 +350,8 @@
 							<th>属性类别名称</th>
 							<th>属性值名称</th>
 							<th>排序</th>
-							<th>价格</th>
-							<th>拼团价</th>
+							<th>价格（单位:分）</th>
+							<th>拼团价（单位:分）</th>
 							<th>库存量</th>
 							<th>操作<a style="cursor:pointer;" onclick="addOne(this)">  向下添加</a></th>
 						</tr>

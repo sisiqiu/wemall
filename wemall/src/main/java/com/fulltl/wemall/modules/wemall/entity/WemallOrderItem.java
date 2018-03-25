@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
 
 import com.fulltl.wemall.common.persistence.DataEntity;
@@ -29,7 +30,7 @@ public class WemallOrderItem extends DataEntity<WemallOrderItem> {
 	private String photo;		// 商品缩略图
 	private Integer totalFee;		// 商品总金额
 	private String itemsData;		// 商品规格说明，[{&quot;k&quot;:属性类别,&quot;v&quot;:属性名}]
-	private String status;		// 状态（1、未付款，2、已付款，3、未发货，4、已发货，5、交易成功，6、交易退货，7、交易关闭）
+	private Integer status;		// 状态（1、未付款，2、已付款，3、已发货，4、已收货，5、已评论，6、交易退货，7、交易关闭，8、已取消）
 	private String freightName;		// 物流名称
 	private String freightNo;		// 物流单号
 	private String buyerMessage;		// 买家留言
@@ -172,11 +173,11 @@ public class WemallOrderItem extends DataEntity<WemallOrderItem> {
 		this.endTotalFee = endTotalFee;
 	}
 		
-	public String getStatus() {
+	public Integer getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(Integer status) {
 		this.status = status;
 	}
 
@@ -216,6 +217,23 @@ public class WemallOrderItem extends DataEntity<WemallOrderItem> {
 	@Override
 	public boolean getIsNewRecord() {
 		return isNewRecord;
+	}
+	
+	public void initBy(WemallShopCar wemallShopCar, String orderNo, Integer orderPrice) {
+		this.setOrderNo(orderNo);
+		this.setItemId(wemallShopCar.getItemId().toString());
+		this.setItemNum(wemallShopCar.getItemNum());
+		this.setTitle(wemallShopCar.getItem().getName());
+		this.setPhoto(wemallShopCar.getItem().getPhoto());
+		this.setTotalFee(orderPrice);
+		String itemsData = StringUtils.EMPTY;
+		if(wemallShopCar.getItemSpecs() != null) {
+			for(WemallItemSpec itemSpec : wemallShopCar.getItemSpecs()) {
+				itemsData = itemsData + itemSpec.getSpecName() + "：" + itemSpec.getSpecInfoName() + ";";
+			}
+		}
+		this.setItemsData(itemsData);//设置规格信息
+		this.setStatus(1);//未付款
 	}
 
 	/**

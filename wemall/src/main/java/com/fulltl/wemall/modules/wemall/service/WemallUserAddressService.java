@@ -58,4 +58,5 @@ public class WemallUserAddressService extends CrudService<WemallUserAddressDao, 
 	public void setDefaultUserAddr(String id) {
 		dao.setDefaultUserAddr(id);
 	}
+	
 }

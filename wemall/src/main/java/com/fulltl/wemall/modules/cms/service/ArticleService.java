@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.Lists;
 import com.fulltl.wemall.common.config.Global;
 import com.fulltl.wemall.common.persistence.Page;
 import com.fulltl.wemall.common.service.CrudService;
@@ -26,8 +25,8 @@ import com.fulltl.wemall.modules.cms.dao.CategoryDao;
 import com.fulltl.wemall.modules.cms.entity.Article;
 import com.fulltl.wemall.modules.cms.entity.ArticleData;
 import com.fulltl.wemall.modules.cms.entity.Category;
-import com.fulltl.wemall.modules.his.util.DataStorageUtil;
 import com.fulltl.wemall.modules.sys.utils.UserUtils;
+import com.google.common.collect.Lists;
 
 /**
  * 文章Service

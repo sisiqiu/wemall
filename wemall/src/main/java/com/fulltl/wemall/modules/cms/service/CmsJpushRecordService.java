@@ -4,7 +4,6 @@
 package com.fulltl.wemall.modules.cms.service;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,9 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.fulltl.wemall.common.persistence.Page;
 import com.fulltl.wemall.common.service.CrudService;
 import com.fulltl.wemall.common.utils.DateUtils;
@@ -24,9 +20,12 @@ import com.fulltl.wemall.modules.cms.dao.CmsJpushRecordDao;
 import com.fulltl.wemall.modules.cms.entity.CmsJpushRecord;
 import com.fulltl.wemall.modules.cms.entity.CmsPushTag;
 import com.fulltl.wemall.modules.cms.entity.CmsUserRegid;
-import com.fulltl.wemall.modules.his.util.jpush.JPush;
-import com.fulltl.wemall.modules.his.util.jpush.JPushHelper;
+import com.fulltl.wemall.modules.pay.util.jpush.JPush;
+import com.fulltl.wemall.modules.pay.util.jpush.JPushHelper;
 import com.fulltl.wemall.modules.sys.service.SystemService;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 /**
  * 极光推送历史记录管理Service

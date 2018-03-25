@@ -1,4 +1,4 @@
-package com.fulltl.wemall.modules.his.util;
+package com.fulltl.wemall.modules.pay.util;
 
 /**
  * 基础信息存储类

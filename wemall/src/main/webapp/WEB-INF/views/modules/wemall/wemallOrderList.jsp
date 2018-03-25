@@ -6,7 +6,10 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			
+			//重置选中
+			$("#btn_reset").click(function(){
+				 location.replace(location.href);
+			});
 		});
 		function page(n,s){
 			$("#pageNo").val(n);
@@ -14,6 +17,97 @@
 			$("#searchForm").submit();
         	return false;
         }
+		
+		function refund(href) {
+			href = href + "&refundFee=";
+			promptx("填写退款金额", "退款金额", href, null);
+		}
+		
+		function downloadBill() {
+			var href = "${ctx}/wemall/wemallOrder/downloadBill";
+			mypromptx("下载对账单", href, null);
+		}
+		
+		function mypromptx(title, href, closed){
+			top.$.jBox("<div class='form-search' style='padding:20px;text-align:center;'>" + 
+						"第三方类型：<select id='payMethod1' name='payMethod1'>" +
+									"<option value=''>请选择</option>" +
+									"<option value='1'>支付宝</option>" +
+									"<option value='0'>微信</option>" +
+								"</select></div>" +
+						"<div class='form-search' style='padding:20px;text-align:center;'>" + 
+						"账单类型：<select id='bill_type' name='bill_type'>" +
+									"<option value=''>请选择</option>" +
+								"</select></div>" +
+						"<div class='form-search' style='padding:20px;text-align:center;'>" + 
+						"日期：<input type='text' id='bill_date' name='bill_date' /></div>"
+						, {
+					title: title, submit: function (v, h, f){
+			    if (f.payMethod1 == '') {
+			        top.$.jBox.tip("请选择第三方类型。", 'error');
+			        return false;
+			    }
+			    if (f.bill_type == '') {
+			        top.$.jBox.tip("请选择账单类型。", 'error');
+			        return false;
+			    }
+			    if (f.bill_date == '') {
+			        top.$.jBox.tip("请输入日期。", 'error');
+			        return false;
+			    }
+				if (typeof href == 'function') {
+					href();
+				}else{
+					resetTip(); //loading();
+					
+					var url = href + 
+							"?paymentType=" + encodeURIComponent(f.payMethod1) +
+							"&bill_type=" + encodeURIComponent(f.bill_type) +
+							"&bill_date=" + encodeURIComponent(f.bill_date);
+					$.ajax({
+			             type: "GET",
+			             url: url,
+			             data: {},
+			             dataType: "json",
+			             success: function(data){
+			            	 if(data.ret != '0') {
+			            		 top.$.jBox.tip(data.retMsg, 'error');
+			            	 } else {
+			            		 top.$.jBox.close(true);
+			            		 location = data.retMsg;
+			            	 }
+			             },
+			             error: function(data){
+			            	 top.$.jBox.tip("下载错误", 'error');
+			             }
+			        });
+					return false;
+				}
+			},closed:function(){
+				if (typeof closed == 'function') {
+					closed();
+				}
+			},loaded: function (h) {
+				h.find("#payMethod1").change(function() {
+					h.find("#bill_date").attr("placeholder", "");
+					h.find("#bill_type").empty();
+					if($(this).val() == "1") {
+						h.find("#bill_date").attr("placeholder", "格式为yyyy-MM-dd或者yyyy-MM");
+						h.find("#bill_type").append("<option value=''>请选择</option>" +
+								"<option value='trade'>trade</option>" +
+								"<option value='signcustomer'>signcustomer</option>");
+					} else if($(this).val() == "0") {
+						h.find("#bill_date").attr("placeholder", "格式为yyyyMMdd");
+						h.find("#bill_type").append("<option value=''>请选择</option>" +
+								"<option value='ALL'>ALL</option>" +
+								"<option value='SUCCESS'>SUCCESS</option>" +
+								"<option value='REFUND'>REFUND</option>" +
+								"<option value='RECHARGE_REFUND'>RECHARGE_REFUND</option>");
+					}
+				});
+			}});
+			return false;
+		}
 	</script>
 </head>
 <body>
@@ -72,7 +166,11 @@
 			<li><label>会员卡id：</label>
 				<form:input path="vipCardId" htmlEscape="false" maxlength="6" class="input-medium"/>
 			</li>
-			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
+			<li class="btns">
+				<input id="btn_reset" class="btn btn-primary" type="button" value="重置"/>
+				<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
+				<input id="btn_downloadBill" class="btn btn-primary" type="button" value="下载对账单" onclick="downloadBill()"/>
+			</li>
 			<li class="clearfix"></li>
 		</ul>
 	</form:form>
@@ -122,10 +220,22 @@
 				<td>
 					${fns:getDictLabel(wemallOrder.type, 'order_type', '')}
 				</td>
+				<%-- <shiro:hasPermission name="wemall:wemallOrder:edit"><td>
+    				<a href="${ctx}/wemall/wemallOrder/form?orderNo=${wemallOrder.orderNo}">修改</a>
+					<a href="${ctx}/wemall/wemallOrder/delete?orderNo=${wemallOrder.orderNo}" onclick="return confirmx('确认要删除该订单吗？', this.href)">删除</a>
+				</td></shiro:hasPermission> --%>
 				<shiro:hasPermission name="wemall:wemallOrder:edit"><td>
     				<a href="${ctx}/wemall/wemallOrder/form?orderNo=${wemallOrder.orderNo}">修改</a>
 					<a href="${ctx}/wemall/wemallOrder/delete?orderNo=${wemallOrder.orderNo}" onclick="return confirmx('确认要删除该订单吗？', this.href)">删除</a>
 				</td></shiro:hasPermission>
+				<shiro:hasPermission name="wemall:wemallOrder:refund"><td>
+					<a onclick="return refund('${ctx}/wemall/wemallOrder/refund?orderNo=${wemallOrder.orderNo}')" >退款</a>
+				</td></shiro:hasPermission>
+				<c:if test="${wemallOrder.status} == '2'">
+					<shiro:hasPermission name="wemall:wemallOrder:alreadyShipped"><td>
+						<a href="${ctx}/wemall/wemallOrder/alreadyShipped?orderNo=${wemallOrder.orderNo}" onclick="return confirmx('确认对该订单执行发货吗？', this.href)" >发货</a>
+					</td></shiro:hasPermission>
+				</c:if>
 			</tr>
 		</c:forEach>
 		</tbody>

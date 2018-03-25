@@ -251,4 +251,13 @@
 			update_date = #{updateDate}
 		WHERE order_no = #{orderNo}
 	</update>
+	
+	<update id="updateStatusByOrderNo">
+		UPDATE wemall_order SET 
+			<if test="payment != null and payment != ''">
+			    payment = #{payment},
+			</if>
+			status = #{status}
+		WHERE order_no = #{orderNo}
+	</update>
 </mapper>

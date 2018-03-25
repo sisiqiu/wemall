@@ -170,6 +170,9 @@
 	
 	<update id="saveBuyerEvaluate">
 		UPDATE wemall_order_item SET 	
+			<if test="status != null and status != ''">
+			  status = #{status},
+			</if>
 			buyer_message = #{buyerMessage},
 			buyer_nick = #{buyerNick},
 			buyer_photo = #{buyerPhoto},
@@ -183,6 +186,12 @@
 		UPDATE wemall_order_item SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE order_no = #{orderNo} AND item_id = #{itemId}
+	</update>
+	
+	<update id="updateStatusByOrderNo">
+		UPDATE wemall_order_item SET 
+			status = #{status}
+		WHERE order_no = #{orderNo}
 	</update>
 	
 </mapper>

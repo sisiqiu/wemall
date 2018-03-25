@@ -1,4 +1,4 @@
-package com.fulltl.wemall.modules.his.util.jpush;
+package com.fulltl.wemall.modules.pay.util.jpush;
 
 import java.util.Map;
 import java.util.Set;

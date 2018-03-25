@@ -50,6 +50,19 @@
 		WHERE a.id = #{id}
 	</select>
 	
+	<select id="findByIds" resultType="WemallShopCar">
+		SELECT 
+			<include refid="wemallShopCarColumns"/>
+		FROM wemall_shop_car a
+		<include refid="wemallShopCarJoins"/>
+		<where>
+			a.id IN  
+		    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">  
+		        #{item}  
+		    </foreach>  
+		</where>
+	</select>
+	
 	<select id="findList" resultType="WemallShopCar">
 		SELECT 
 			<include refid="wemallShopCarColumns"/>

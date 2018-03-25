@@ -1,4 +1,4 @@
-package com.fulltl.wemall.modules.his.web.front.trade;
+package com.fulltl.wemall.modules.pay.web;
 
 import java.util.Map;
 
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fulltl.wemall.common.web.BaseController;
-import com.fulltl.wemall.modules.his.service.front.trade.WeixinTradeService;
+import com.fulltl.wemall.modules.pay.service.WeixinTradeService;
 import com.google.gson.Gson;
 
 
@@ -72,11 +72,11 @@ public class WeixinTradeController extends BaseController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = "generateOrder")
+	/*@RequestMapping(value = "generateOrder")
 	@ResponseBody
 	public String generateOrder(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> retMap=weixinTradeService.generateOrderByReg(request);
  		return new Gson().toJson(formatReturnMsg(retMap));
-	}
+	}*/
 	
 }

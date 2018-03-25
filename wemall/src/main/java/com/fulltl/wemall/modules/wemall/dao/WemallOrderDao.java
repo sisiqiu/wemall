@@ -18,4 +18,6 @@ public interface WemallOrderDao extends CrudDao<WemallOrder> {
 	public void updateTotalRefundFee(WemallOrder wemallOrder);
 
 	public void updatePrepayIdAndPayMethod(WemallOrder wemallOrder);
+
+	public void updateStatusByOrderNo(WemallOrder wemallOrder);
 }

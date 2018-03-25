@@ -124,4 +124,22 @@ public class WemallOrderAddress extends DataEntity<WemallOrderAddress> {
 		this.receiverPhone = receiverPhone;
 	}
 	
+	@Override
+	public boolean getIsNewRecord() {
+		return isNewRecord;
+	}
+	
+	public void initBy(WemallUserAddress wemallUserAddress, String orderNo) {
+		this.orderNo = orderNo;		// 订单号
+		this.receiverCountry = wemallUserAddress.getReceiverCountry();		// 国家
+		this.receiverProvince = wemallUserAddress.getReceiverProvince();		// 省份
+		this.receiverCity = wemallUserAddress.getReceiverCity();		// 城市
+		this.receiverDistrict = wemallUserAddress.getReceiverDistrict();		// 区县
+		this.receiverAddress = wemallUserAddress.getReceiverAddress();		// 收货地址
+		this.receiverZip = wemallUserAddress.getReceiverZip();		// 邮政编码
+		this.receiverName = wemallUserAddress.getReceiverName();		// 收货人姓名
+		this.receiverMobile = wemallUserAddress.getReceiverMobile();		// 收货人手机
+		this.receiverPhone = wemallUserAddress.getReceiverPhone();		// 收货人电话
+	}
+	
 }

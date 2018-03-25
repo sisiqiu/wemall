@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fulltl.wemall.modules.sys.dao.SlSysRefundDao">
+    
+	<sql id="slSysRefundColumns">
+		a.refund_id AS "refundId",
+		a.order_no AS "orderNo",
+		a.user_id AS "user.id",
+		a.order_price AS "orderPrice",
+		a.pay_method AS "payMethod",
+		a.payment AS "payment",
+		a.refund_fee AS "refundFee",
+		a.refund_desc AS "refundDesc",
+		a.refund_status AS "refundStatus",
+		a.refund_date AS "refundDate",
+		a.create_date AS "createDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		u3.name AS "user.name"
+	</sql>
+	
+	<sql id="slSysRefundJoins">
+		LEFT JOIN sys_user u3 ON u3.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="SlSysRefund">
+		SELECT 
+			<include refid="slSysRefundColumns"/>
+		FROM sl_sys_refund a
+		<include refid="slSysRefundJoins"/>
+		WHERE a.refund_id = #{refundId}
+	</select>
+	
+	<select id="findList" resultType="SlSysRefund">
+		SELECT 
+			<include refid="slSysRefundColumns"/>
+		FROM sl_sys_refund a
+		<include refid="slSysRefundJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="refundId != null and refundId != ''">
+				AND a.refund_id LIKE 
+					<if test="dbName == 'oracle'">'%'||#{refundId}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{refundId}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{refundId},'%')</if>
+			</if>
+			<if test="orderNo != null and orderNo != ''">
+				AND a.order_no LIKE 
+					<if test="dbName == 'oracle'">'%'||#{orderNo}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{orderNo}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{orderNo},'%')</if>
+			</if>
+			<if test="refundStatus != null and refundStatus != ''">
+				AND a.refund_status = #{refundStatus}
+			</if>
+			<if test="payMethod != null and payMethod != ''">
+				AND a.pay_method = #{payMethod}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			    ORDER BY a.refund_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SlSysRefund">
+		SELECT 
+			<include refid="slSysRefundColumns"/>
+		FROM sl_sys_refund a
+		<include refid="slSysRefundJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sl_sys_refund(
+			refund_id,
+			order_no,
+			user_id,
+			order_price,
+			pay_method,
+			payment,
+			refund_fee,
+			refund_desc,
+			refund_status,
+			refund_date,
+			create_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{refundId},
+			#{orderNo},
+			#{user.id},
+			#{orderPrice},
+			#{payMethod},
+			#{payment},
+			#{refundFee},
+			#{refundDesc},
+			#{refundStatus},
+			#{refundDate},
+			#{createDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sl_sys_refund SET 	
+			order_no = #{orderNo},
+			user_id = #{user.id},
+			order_price = #{orderPrice},
+			pay_method = #{payMethod},
+			payment = #{payment},
+			refund_fee = #{refundFee},
+			refund_desc = #{refundDesc},
+			refund_status = #{refundStatus},
+			refund_date = #{refundDate},
+			remarks = #{remarks}
+		WHERE refund_id = #{refundId}
+	</update>
+	
+	<update id="delete">
+		UPDATE sl_sys_refund SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE refund_id = #{refundId}
+	</update>
+	
+</mapper>

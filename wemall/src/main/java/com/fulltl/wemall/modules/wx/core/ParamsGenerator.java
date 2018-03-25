@@ -1,5 +1,6 @@
 package com.fulltl.wemall.modules.wx.core;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
@@ -161,6 +162,29 @@ public class ParamsGenerator {
 		} else if("HMAC-SHA256".equals(WeixinTradeConfig.sign_type)) {
 			paramsMap.put("sign", WeixinTradeSignature.getSignStrByHMACSHA256(WeixinTradeConfig.key, paramsMap));
 		}
+	}
+	
+	
+	/**
+	 * 根据预付款id获取调取微信支付签名
+	 * @return
+	 */
+	public static Map<String, String> generateParamsByPrepayId(String prepayId) {
+		Map<String, String> paramsMap = Maps.newHashMap();
+		paramsMap.put("appId", WeixinTradeConfig.appid);
+		Calendar calendar = Calendar.getInstance();
+		paramsMap.put("timeStamp", Integer.toString(calendar.get(Calendar.SECOND)));
+		paramsMap.put("nonceStr", IdGen.randomBase62(15));
+		paramsMap.put("package", "prepay_id=" + prepayId);
+		paramsMap.put("nonceStr", IdGen.randomBase62(15));
+		paramsMap.put("signType", WeixinTradeConfig.sign_type);
+
+		if("MD5".equals(WeixinTradeConfig.sign_type)) {
+			paramsMap.put("paySign", WeixinTradeSignature.getSignStrByMD5(WeixinTradeConfig.key, paramsMap));
+		} else if("HMAC-SHA256".equals(WeixinTradeConfig.sign_type)) {
+			paramsMap.put("paySign", WeixinTradeSignature.getSignStrByHMACSHA256(WeixinTradeConfig.key, paramsMap));
+		}
+		return paramsMap;
 	}
 
 }

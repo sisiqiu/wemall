@@ -52,5 +52,13 @@ public class WemallOrderItemService extends CrudService<WemallOrderItemDao, Wema
 	public void saveBuyerEvaluate(WemallOrderItem wemallOrderItem) {
 		dao.saveBuyerEvaluate(wemallOrderItem);
 	}
+
+	@Transactional(readOnly = false)
+	public void updateStatusByOrderNo(String orderNo, Integer status) {
+		WemallOrderItem wemallOrderItem = new WemallOrderItem();
+		wemallOrderItem.setOrderNo(orderNo);
+		wemallOrderItem.setStatus(status);
+		dao.updateStatusByOrderNo(wemallOrderItem);
+	}
 	
 }

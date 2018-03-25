@@ -1,4 +1,4 @@
-package com.fulltl.wemall.modules.his.web.front.trade;
+package com.fulltl.wemall.modules.pay.web;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -32,7 +32,7 @@ import com.alipay.api.response.AlipayDataDataserviceBillDownloadurlQueryResponse
 import com.fulltl.wemall.common.web.BaseController;
 import com.fulltl.wemall.modules.alipay.core.AlipayConfig;
 import com.fulltl.wemall.modules.alipay.core.pojo.AlipayTradeAllEntity;
-import com.fulltl.wemall.modules.his.service.front.trade.AlipayTradeService;
+import com.fulltl.wemall.modules.pay.service.AlipayTradeService;
 import com.google.gson.Gson;
 
 
@@ -99,12 +99,12 @@ public class AlipayTradeController extends BaseController {
 	 * @throws UnsupportedEncodingException
 	 * @throws AlipayApiException
 	 */
-	@RequestMapping(value = "generateOrder")
+	/*@RequestMapping(value = "generateOrder")
 	@ResponseBody
 	public String generateOrder(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> retMap=alipayTradeService.generateOrderByReg(request);
  		return new Gson().toJson(formatReturnMsg(retMap));
-	}
+	}*/
 	
 	//////////////////////////////////////////////////////////////////////////////////////////
 	//----------------------------------------分割线------------------------------------------//
