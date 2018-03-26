@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fulltl.wemall.common.web.BaseController;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrder.OrderStatus;
+import com.fulltl.wemall.modules.wemall.entity.WemallOrder;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrderItem;
 import com.fulltl.wemall.modules.wemall.entity.WemallShopCar;
 import com.fulltl.wemall.modules.wemall.service.front.WemallOrderFrontService;
@@ -32,6 +33,54 @@ public class WemallOrderFrontController extends BaseController {
 
 	@Autowired
 	private WemallOrderFrontService slHisOrderFrontService;
+	
+	/**
+	 * 根据订单号获取订单详情的接口。
+	 * 
+	 * 测试用例：
+	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/order/getOrderDetail
+	 *	参数：
+	 *		orderNo=订单号
+	 * 	例：
+	 * 
+	 * 结果示例：{"ret":"0","data":{},"retMsg":"获取成功！"}
+	 * 		或
+	 * 		{"ret":"-1","data":{},"retMsg":"订单号不能为空！"}
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = {"getOrderDetail"})
+	@ResponseBody
+	public String getOrderDetail(HttpServletRequest request, HttpServletResponse response, Model model) {
+		Map<String, Object> map = slHisOrderFrontService.getOrderDetail(request);
+		return gson.toJson(formatReturnMsg(map));
+	}
+	
+	/**
+	 * 获取订单列表的接口。
+	 * 
+	 * 测试用例：
+	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/order/getOrderList
+	 *	参数：
+	 *
+	 * 	例：
+	 * 
+	 * 结果示例：{"ret":"0","data":{"list":[{},{}],"count":3},"retMsg":"获取成功！"}
+	 * 		或
+	 * 		{"ret":"-1","data":{},"retMsg":"用户未登录！"}
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = {"getOrderList"})
+	@ResponseBody
+	public String getOrderList(WemallOrder wemallOrder, HttpServletRequest request, HttpServletResponse response, Model model) {
+		Map<String, Object> map = slHisOrderFrontService.getOrderList(wemallOrder, request);
+		return gson.toJson(formatReturnMsg(map));
+	}
 	
 	/**
 	 * 获取订单商品列表的接口。

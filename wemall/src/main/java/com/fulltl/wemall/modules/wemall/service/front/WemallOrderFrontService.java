@@ -300,6 +300,7 @@ public class WemallOrderFrontService extends BaseService {
 		
 		map.put("ret", "0");
 		map.put("retMsg", "生成成功！");
+		map.put("orderNo", wemallOrder.getOrderNo());
 		return map;
 	}
 
@@ -355,6 +356,7 @@ public class WemallOrderFrontService extends BaseService {
 		
 		map.put("ret", "0");
 		map.put("retMsg", "生成成功！");
+		map.put("orderNo", wemallOrder.getOrderNo());
 		return map;
 	}
 	
@@ -520,4 +522,77 @@ public class WemallOrderFrontService extends BaseService {
 		map.put("retMsg", "生成成功！");
 		return map;
 	}
+
+	/**
+	 * 根据订单号获取订单详情的接口
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> getOrderDetail(HttpServletRequest request) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		//要获取订单信息，订单收货地址信息，订单商品信息
+		String orderNo = WebUtils.getCleanParam(request, "orderNo");
+		
+		// 校验当前用户是否已登录
+		User user = UserUtils.getUser();
+		map = systemService.checkCurrentUser(user);
+		if(!"0".equals(map.get("ret"))) return map;
+		if(StringUtils.isBlank(orderNo)) {
+			map.put("ret", "-1");
+			map.put("retMsg", "订单号不能为空！");
+			return map;
+		}
+		//订单信息
+		WemallOrder wemallOrder = wemallOrderMgrService.get(orderNo);
+		//订单收货地址信息
+		WemallOrderAddress wemallOrderAddress = wemallOrderAddressService.get(orderNo);
+		//订单商品信息
+		WemallOrderItem query = new WemallOrderItem();
+		query.setOrderNo(orderNo);
+		List<WemallOrderItem> orderItemList = wemallOrderItemService.findList(query);
+		
+		map.put("ret", "0");
+		map.put("retMsg", "获取成功！");
+		map.put("wemallOrder", wemallOrder);
+		map.put("wemallOrderAddress", wemallOrderAddress);
+		map.put("orderItemList", orderItemList);
+		return map;
+	}
+
+	/**
+	 * 获取订单列表的接口
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> getOrderList(WemallOrder wemallOrder, HttpServletRequest request) {
+		Integer pageNo = null;
+		Integer pageSize  = null;
+		Map<String ,Object> map=new HashMap<String, Object>();
+		try {
+			pageNo = Integer.parseInt(request.getParameter("pageNo"));
+			pageSize = Integer.parseInt(request.getParameter("pageSize"));
+		} catch (NumberFormatException e) {
+			map.put("ret", "-1");
+			map.put("retMsg", "缺少页码和每页条数！");
+			return map;
+		}
+		// 校验当前用户是否已登录
+		User user = UserUtils.getUser();
+		map = systemService.checkCurrentUser(user);
+		if(!"0".equals(map.get("ret"))) return map;
+		
+		wemallOrder.setUser(user);
+		Page<WemallOrder> page = wemallOrderMgrService.findPage(new Page<WemallOrder>(pageNo, pageSize), wemallOrder);
+		/*List<Map<String, Object>> dataList = Lists.newArrayList();
+		for(WemallOrderItem entity : page.getList()) {
+			dataList.add(entity.getSmallEntityMap());
+		}*/
+		map.put("list", page.getList());
+		map.put("count", page.getCount());
+		map.put("ret", "0");
+		map.put("retMsg", "获取成功");
+		return map;
+	}
+	
+	
 }

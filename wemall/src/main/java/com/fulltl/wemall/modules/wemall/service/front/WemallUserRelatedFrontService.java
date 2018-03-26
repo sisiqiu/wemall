@@ -238,6 +238,7 @@ public class WemallUserRelatedFrontService extends BaseService {
 		
 		map.put("ret", "0");
 		map.put("retMsg", "添加成功");
+		map.put("id", wemallUserAddress.getId());
 		return map;
 	}
 

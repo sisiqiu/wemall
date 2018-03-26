@@ -79,8 +79,7 @@
 		<div class="control-group">
 			<label class="control-label">邮政编码：</label>
 			<div class="controls">
-				<form:input path="receiverZip" htmlEscape="false" maxlength="10" class="input-xlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:input path="receiverZip" htmlEscape="false" maxlength="10" class="input-xlarge"/>
 			</div>
 		</div>
 		<div class="control-group">
@@ -100,8 +99,7 @@
 		<div class="control-group">
 			<label class="control-label">收货人电话：</label>
 			<div class="controls">
-				<form:input path="receiverPhone" htmlEscape="false" maxlength="20" class="input-xlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:input path="receiverPhone" htmlEscape="false" maxlength="20" class="input-xlarge"/>
 			</div>
 		</div>
 		<div class="control-group">

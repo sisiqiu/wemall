@@ -259,7 +259,7 @@ public class WemallUserRelatedFrontController extends BaseController {
 	 * 测试用例：
 	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/userRelated/deleteUserAddress
 	 *	参数：
-	 *		id（*）=主键id
+	 *		ids（*）=主键id列表
 	 *
 	 * 	例：
 	 * 
