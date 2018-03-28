@@ -89,17 +89,7 @@ public class WemallUserRelatedFrontService extends BaseService {
 		}*/
 		List<WemallShopCar> shopCarList = page.getList();
 		for(WemallShopCar w :shopCarList){
-			if(StringUtils.isNotBlank(w.getItemSpecIds())){
-				String [] specIds = w.getItemSpecIds().split(",");
-				List<WemallItemSpec> itemSpecs = new ArrayList<>();
-				if(specIds.length>0){
-					WemallItemSpec itemSpec = wemallItemSpecService.get(specIds[0]);
-					if(itemSpec!=null){
-						itemSpecs.add(itemSpec);
-					}
-				}
-				w.setItemSpecs(itemSpecs);;
-			}
+			wemallShopCarService.fillItemSpecs(w);
 		}
 		map.put("list",shopCarList);
 		map.put("count", page.getCount());
@@ -232,7 +222,7 @@ public class WemallUserRelatedFrontService extends BaseService {
 		map = systemService.checkCurrentUser(user);
 		if(!"0".equals(map.get("ret"))) return map;
 		wemallUserAddress.setUser(user);
-		wemallUserAddress.setIsDefault(0);	//初始添加设定为非默认选中项
+		//wemallUserAddress.setIsDefault(0);	//初始添加设定为非默认选中项
 		
 		//验证数据
 		map = super.beanValidator(wemallUserAddress);
@@ -241,8 +231,14 @@ public class WemallUserRelatedFrontService extends BaseService {
 		//执行添加
 		wemallUserAddressService.save(wemallUserAddress);
 		
+		if(wemallUserAddress.getIsDefault().equals(1)) {
+			//如果添加的是选中项
+			this.setDefaultUserAddr(wemallUserAddress, request);
+		}
+		
 		map.put("ret", "0");
 		map.put("retMsg", "添加成功");
+		map.put("id", wemallUserAddress.getId());
 		return map;
 	}
 
@@ -302,8 +298,13 @@ public class WemallUserRelatedFrontService extends BaseService {
 		map = super.beanValidator(wemallUserAddress);
 		if(!"0".equals(map.get("ret"))) return map;
 		
-		//执行添加
+		//执行更新
 		wemallUserAddressService.save(wemallUserAddress);
+		
+		if(wemallUserAddress.getIsDefault().equals(1)) {
+			//如果添加的是选中项
+			this.setDefaultUserAddr(wemallUserAddress, request);
+		}
 		
 		map.put("ret", "0");
 		map.put("retMsg", "更新成功");

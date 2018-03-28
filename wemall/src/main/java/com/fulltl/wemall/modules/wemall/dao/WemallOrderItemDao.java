@@ -16,5 +16,7 @@ import com.fulltl.wemall.modules.wemall.entity.WemallOrderItem;
 public interface WemallOrderItemDao extends CrudDao<WemallOrderItem> {
 
 	public void saveBuyerEvaluate(WemallOrderItem wemallOrderItem);
+
+	public void updateStatusByOrderNo(WemallOrderItem wemallOrderItem);
 	
 }

@@ -32,7 +32,7 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 	private Integer totalRefundFee;		// 总退款金额
 	private String title;		// 订单名称
 	private String body;		// 订单描述
-	private Integer status;		// 状态（1、未付款，2、已付款，3、未发货，4、已发货，5、交易成功，6、交易退货，7、交易关闭）
+	private Integer status;		// 状态（1、未付款，2、已付款，3、已发货，4、已收货，5、已评论，6、交易退货，7、交易关闭，8、已取消）
 	private Date paymentDate;		// 付款时间
 	private Date consignDate;		// 发货时间
 	private Date endDate;		// 交易完成时间
@@ -57,16 +57,82 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 	 * @author Administrator
 	 *
 	 */
-	public enum PayMethod {
-		/**
-		 * 支付宝
-		 */
-		alipay, 
+	public enum PaymentType {
 		/**
 		 * 微信支付
 		 */
-		weixin
+		weixin(0),
+		/**
+		 * 支付宝
+		 */
+		alipay(1), 
+		/**
+		 * 货到付款
+		 */
+		cashOnDelivery(2)
 		;
+		
+		private Integer value;
+		
+		private PaymentType(Integer value) {
+			this.value = value;
+		}
+		
+		public Integer getValue() {
+			return value;
+		}
+	}
+
+	/**
+	 * 付款方式
+	 * 1、未付款，2、已付款，3、已发货，4、已收货，5、已评论，6、交易退货，7、交易关闭，8、已取消
+	 * @author Administrator
+	 *
+	 */
+	public enum OrderStatus {
+		/**
+		 * 未付款
+		 */
+		unPaid(1),
+		/**
+		 * 已付款
+		 */
+		alreadyPaid(2), 
+		/**
+		 * 已发货
+		 */
+		alreadyShipped(3),
+		/**
+		 * 已收货
+		 */
+		alreadyReceived(4),
+		/**
+		 * 已评论
+		 */
+		alreadyCommented(5),
+		/**
+		 * 交易退货
+		 */
+		alreadyRejected(6),
+		/**
+		 * 交易关闭
+		 */
+		alreadyClosed(7),
+		/**
+		 * 已取消
+		 */
+		alreadyCancelled(8)
+		;
+		
+		private Integer value;
+		
+		private OrderStatus(Integer value) {
+			this.value = value;
+		}
+		
+		public Integer getValue() {
+			return value;
+		}
 	}
 	
 	public WemallOrder() {
@@ -342,5 +408,6 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 		this.setStatus(1);	//订单状态；1--未付款
 		this.setCreateDate(new Date());	//下单日期
 		this.setTotalRefundFee(0);	//总退款金额
+		this.setPayment(0);	//实付金额
 	}
 }

@@ -91,7 +91,7 @@ public class WemallUserAddress extends DataEntity<WemallUserAddress> {
 		this.receiverAddress = receiverAddress;
 	}
 	
-	@Length(min=1, max=10, message="邮政编码长度必须介于 1 和 10 之间")
+	@Length(min=0, max=10, message="邮政编码长度必须介于 0 和 10 之间")
 	public String getReceiverZip() {
 		return receiverZip;
 	}
@@ -118,7 +118,7 @@ public class WemallUserAddress extends DataEntity<WemallUserAddress> {
 		this.receiverMobile = receiverMobile;
 	}
 	
-	@Length(min=1, max=20, message="收货人电话长度必须介于 1 和 20 之间")
+	@Length(min=0, max=20, message="收货人电话长度必须介于 0 和 20 之间")
 	public String getReceiverPhone() {
 		return receiverPhone;
 	}

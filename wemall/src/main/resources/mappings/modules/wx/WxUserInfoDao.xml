@@ -38,6 +38,14 @@
 		WHERE a.id = #{id}
 	</select>
 	
+	<select id="getByUserId" resultType="WxUserInfo">
+		SELECT 
+			<include refid="wxUserInfoColumns"/>
+		FROM wx_user_info a
+		<include refid="wxUserInfoJoins"/>
+		WHERE a.user_id = #{userId}
+	</select>
+	
 	<select id="findByOpenId" resultType="WxUserInfo">
 		SELECT 
 			<include refid="wxUserInfoColumns"/>

@@ -189,7 +189,7 @@ public class SlSysOrder extends DataEntity<SlSysOrder> {
 		this.actualPayment = actualPayment;
 	}
 	
-	@NotNull(message="付款方式不能为空！")
+	//@NotNull(message="付款方式不能为空！")
 	@Length(min=0, max=10, message="付款方式长度必须介于 0 和 10 之间")
 	public String getPayMethod() {
 		return payMethod;

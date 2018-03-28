@@ -1,4 +1,4 @@
-package com.fulltl.wemall.modules.his.service.front.trade;
+package com.fulltl.wemall.modules.pay.service;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -33,7 +33,7 @@ import com.fulltl.wemall.modules.alipay.core.pojo.AlipayTradeAllEntity;
 import com.fulltl.wemall.modules.sys.entity.SlSysOrder.AppoTypeEnum;
 import com.fulltl.wemall.modules.sys.utils.UserUtils;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrder;
-import com.fulltl.wemall.modules.wemall.entity.WemallOrder.PayMethod;
+import com.fulltl.wemall.modules.wemall.entity.WemallOrder.PaymentType;
 import com.fulltl.wemall.modules.wemall.entity.WemallRefund;
 import com.fulltl.wemall.modules.wemall.service.WemallOrderService;
 import com.fulltl.wemall.modules.wemall.service.WemallRefundService;
@@ -122,7 +122,7 @@ public class AlipayTradeService extends BaseService {
 		}
 	}
 
-	@Transactional(readOnly = false)
+	/*@Transactional(readOnly = false)
 	public Map<String, Object> generateOrderByReg(HttpServletRequest request) {
 		Map<String, String> params = Maps.newHashMap();
 		params.put("id",WebUtils.getCleanParam(request, "id")); //预约id
@@ -136,7 +136,7 @@ public class AlipayTradeService extends BaseService {
 		params.put("id",WebUtils.getCleanParam(request, "id")); //预约id
 		params.put("orderPrice",WebUtils.getCleanParam(request, "orderPrice")); //订单价格
 		return generateOrderByType(params, request, AppoTypeEnum.careAppo);
-	}
+	}*/
 	
 	/**
 	 * app调用生成订单的方法
@@ -144,7 +144,7 @@ public class AlipayTradeService extends BaseService {
 	 * @param type
 	 * @return
 	 */
-	@Transactional(readOnly = false)
+	/*@Transactional(readOnly = false)
 	public Map<String, Object> generateOrderByType(Map<String, String> params, HttpServletRequest request, AppoTypeEnum type) {
 		Map<String, Object> retMap = new HashMap<String, Object>();
 		WemallOrder wemallOrder = null;
@@ -152,33 +152,33 @@ public class AlipayTradeService extends BaseService {
 		String orderPrice = params.get("orderPrice"); //订单价格
 		//构造订单对象
 		Map<String, Object> resultMap = Maps.newHashMap();
-		resultMap = wemallOrderService.generateOrderByCareAppo(id, orderPrice, PayMethod.alipay.toString());
-		/*switch(type) {
+		resultMap = wemallOrderService.generateOrderByCareAppo(id, orderPrice, PaymentType.alipay.getValue().toString());
+		switch(type) {
 		case reg:
 			resultMap = slSysOrderService.generateOrderBy(id, orderPrice, PayMethod.alipay.toString());
 			break;
 		case careAppo:
 			resultMap = slSysOrderService.generateOrderByCareAppo(id, orderPrice, PayMethod.alipay.toString());
 			break;
-		}*/
+		}
 		
 		if(!"0".equals(resultMap.get("ret"))) return resultMap;
 		else wemallOrder = (WemallOrder)resultMap.get("wemallOrder");
 		
 		//支付宝创建订单成功，向数据库中插入新创建订单信息，并将对应预约中的订单字段更新为订单号
 		wemallOrderService.saveOrderAndUpdateCareAppo(wemallOrder, id);
-    	/*switch(type) {
+    	switch(type) {
 		case reg:
 			slSysOrderService.saveOrderAndUpdateReg(wemallOrder, id);
 			break;
 		case careAppo:
 			slSysOrderService.saveOrderAndUpdateCareAppo(wemallOrder, id);
 			break;
-		}*/
+		}
 		
 		retMap = generatePrepareIdByOrder(id, wemallOrder, request);
 		return retMap;
-	}
+	}*/
 	
 	/**
 	 * app调用根据订单号生成预付款id的方法
@@ -188,17 +188,15 @@ public class AlipayTradeService extends BaseService {
 	 * @return
 	 */
 	@Transactional(readOnly = false)
-	public Map<String, Object> generatePrepareIdByType(Map<String, String> params, HttpServletRequest request, AppoTypeEnum type) {
+	public Map<String, Object> generatePrepareIdByType(String orderNo, HttpServletRequest request) {
 		Map<String, Object> retMap = new HashMap<String, Object>();
-		String id = params.get("id"); //预约id
-		String orderNo = params.get("orderNo"); //订单号
 		WemallOrder wemallOrder = wemallOrderService.get(orderNo);
 		if(wemallOrder == null) {
 			retMap.put("ret", "-1");
         	retMap.put("retMsg", "订单不存在。");
         	return retMap;
 		}
-		retMap = generatePrepareIdByOrder(id, wemallOrder, request);
+		retMap = generatePrepareIdByOrder(wemallOrder, request);
 		return retMap;
 	}
 	
@@ -210,7 +208,7 @@ public class AlipayTradeService extends BaseService {
 	 * @return
 	 */
 	@Transactional(readOnly = false)
-	private Map<String, Object> generatePrepareIdByOrder(String id, WemallOrder wemallOrder, HttpServletRequest request) {
+	private Map<String, Object> generatePrepareIdByOrder(WemallOrder wemallOrder, HttpServletRequest request) {
 		Map<String, Object> retMap = new HashMap<String, Object>();
 		String basePath = getBasePath(request);
 		
@@ -222,7 +220,7 @@ public class AlipayTradeService extends BaseService {
 	        AlipayTradeAppPayResponse appPayResponse = alipayClient.sdkExecute(appPayRequest);
 	        //System.out.println(appPayResponse.getBody());//就是orderString 可以直接给客户端请求，无需再做处理。
 	        wemallOrder.setPrepayId(appPayResponse.getBody());
-	        //wemallOrder.setPaymentType(PayMethod.alipay.toString());
+	        wemallOrder.setPaymentType(PaymentType.alipay.getValue());
         	
         	//更新预付款id和付款方式到订单中
 	        wemallOrderService.updatePrepayIdAndPayMethod(wemallOrder);

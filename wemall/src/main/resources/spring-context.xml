@@ -69,7 +69,7 @@
 	<cache:annotation-driven cache-manager="springCacheManager"/>
 	
 	<!-- 缓存key值生成器 -->
-	<bean id="cacheKeyGenerator" class="com.fulltl.wemall.modules.his.util.CacheKeyGenerator" />
+	<bean id="cacheKeyGenerator" class="com.fulltl.wemall.modules.pay.util.CacheKeyGenerator" />
 	
 	
 	<!-- 计划任务配置，用 @Service @Lazy(false)标注类，用@Scheduled(cron = "0 0 2 * * ?")标注方法 -->

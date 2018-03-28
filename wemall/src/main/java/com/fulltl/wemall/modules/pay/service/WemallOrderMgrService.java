@@ -1,7 +1,7 @@
 /**
  * Copyright &copy; 2012-2016 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
-package com.fulltl.wemall.modules.sys.service;
+package com.fulltl.wemall.modules.pay.service;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -18,12 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alipay.api.AlipayApiException;
 import com.fulltl.wemall.common.service.CrudService;
-import com.fulltl.wemall.modules.pay.service.AlipayTradeService;
-import com.fulltl.wemall.modules.pay.service.WeixinTradeService;
-import com.fulltl.wemall.modules.sys.entity.SlSysOrder.AppoTypeEnum;
 import com.fulltl.wemall.modules.wemall.dao.WemallOrderDao;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrder;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrder.PaymentType;
+import com.fulltl.wemall.modules.wemall.service.WemallOrderItemService;
 import com.fulltl.wemall.modules.wemall.service.WemallOrderService;
 import com.google.common.collect.Maps;
 
@@ -34,39 +32,39 @@ import com.google.common.collect.Maps;
  */
 @Service
 @Transactional(readOnly = true)
-public class SlSysOrderMgrService extends CrudService<WemallOrderDao, WemallOrder> {
+public class WemallOrderMgrService extends CrudService<WemallOrderDao, WemallOrder> {
 	@Autowired 
 	private WemallOrderService wemallOrderService;
+	@Autowired 
+	private WemallOrderItemService wemallOrderItemService;
 	@Autowired 
 	private AlipayTradeService alipayTradeService;
 	@Autowired 
 	private WeixinTradeService weixinTradeService;
 	
 	/**
-	 * app调用生成订单的方法
-	 * @param params 必须参数id，orderPrice
-	 * @param type
-	 * @return key值为slSysOrder的value为订单对象
+	 * 调用生成订单的方法
+	 * @param title
+	 * @param orderPrice
+	 * @param paymentType
+	 * @return key值为wemallOrder的value为订单对象
 	 */
 	@Transactional(readOnly = false)
-	public Map<String, Object> generateOrderByType(Map<String, String> params, AppoTypeEnum type) {
+	public Map<String, Object> generateOrderByType(String title, Integer orderPrice, Integer paymentType) {
     	//构造订单对象
 		Map<String, Object> resultMap = Maps.newHashMap();
-		String id = params.get("id"); //预约id
-		String orderPrice = params.get("orderPrice"); //订单价格
+		if(StringUtils.isBlank(title) || orderPrice == null) {
+			resultMap.put("ret", "-1");
+			resultMap.put("retMsg", "标题，订单价格不能为空！");
+			return resultMap;
+		}
 		WemallOrder wemallOrder = null;
-		//resultMap = wemallOrderService.generateOrderByCareAppo(id, orderPrice, null);
-		/*switch(type) {
-		case reg:
-			resultMap = wemallOrderService.generateOrderBy(id, orderPrice, null);
-			break;
-		case careAppo:
-			resultMap = wemallOrderService.generateOrderByCareAppo(id, orderPrice, null);
-			break;
-		}*/
+		resultMap = wemallOrderService.generateOrderBy(title, 
+														orderPrice, 
+														paymentType);
 		if(!"0".equals(resultMap.get("ret"))) return resultMap;
 		else wemallOrder = (WemallOrder)resultMap.get("wemallOrder");
-		wemallOrderService.updateOrderAndUpdateCareAppoStatus(wemallOrder);
+		wemallOrderService.saveOrder(wemallOrder);
 		
 		return resultMap;
 	}
@@ -107,6 +105,17 @@ public class SlSysOrderMgrService extends CrudService<WemallOrderDao, WemallOrde
 		}
 		
 		return retMap;
+	}
+	
+	/**
+	 * 根据订单号，更新订单状态
+	 * @param orderNo
+	 * @param status
+	 */
+	@Transactional(readOnly = false)
+	public void updateStatusByOrderNo(String orderNo, Integer status) {
+		wemallOrderService.updateStatusByOrderNo(orderNo, status);
+		wemallOrderItemService.updateStatusByOrderNo(orderNo, status);
 	}
 	
 	/**
@@ -183,4 +192,5 @@ public class SlSysOrderMgrService extends CrudService<WemallOrderDao, WemallOrde
 		}
 		return retMap;
 	}
+
 }

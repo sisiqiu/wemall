@@ -1,4 +1,4 @@
-package com.fulltl.wemall.modules.his.service.front.trade;
+package com.fulltl.wemall.modules.pay.service;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +22,8 @@ import com.fulltl.wemall.common.utils.XMLUtils;
 import com.fulltl.wemall.modules.sys.entity.SlSysOrder.AppoTypeEnum;
 import com.fulltl.wemall.modules.sys.utils.UserUtils;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrder;
-import com.fulltl.wemall.modules.wemall.entity.WemallOrder.PayMethod;
+import com.fulltl.wemall.modules.wemall.entity.WemallOrder.OrderStatus;
+import com.fulltl.wemall.modules.wemall.entity.WemallOrder.PaymentType;
 import com.fulltl.wemall.modules.wemall.entity.WemallRefund;
 import com.fulltl.wemall.modules.wemall.service.WemallOrderService;
 import com.fulltl.wemall.modules.wemall.service.WemallRefundService;
@@ -43,6 +44,8 @@ import com.google.common.collect.Maps;
 public class WeixinTradeService extends BaseService {
 	@Autowired
 	private WemallOrderService wemallOrderService;
+	@Autowired
+	private WemallOrderMgrService wemallOrderMgrService;
 	@Autowired
 	private WemallRefundService wemallRefundService;
 	
@@ -83,17 +86,11 @@ public class WeixinTradeService extends BaseService {
 			
 			if("CLOSED".equals(trade_state)) {
 				//CLOSED—已关闭
-				wemallOrder.setStatus(7);		//交易关闭
-				wemallOrderService.save(wemallOrder);
+				wemallOrderMgrService.updateStatusByOrderNo(wemallOrder.getOrderNo(), OrderStatus.alreadyClosed.getValue());
 			} else if ("SUCCESS".equals(trade_state)) {
 				//SUCCESS—支付成功
 				//是付款成功，更新订单状态和预约状态
-				wemallOrderService.updateOrderAndUpdateCareAppoStatus(wemallOrder);
-				/*if(OrderTypeEnum.careAppo.getValue().equals(slSysOrder.getOrderType())) {
-					slSysOrderService.updateOrderAndUpdateCareAppoStatus(slSysOrder);
-				} else {
-					slSysOrderService.updateOrderAndUpdateRegStatus(slSysOrder);
-				}*/
+				wemallOrderMgrService.updateStatusByOrderNo(wemallOrder.getOrderNo(), OrderStatus.alreadyPaid.getValue());
 			} else {
 				//没有trade_state字段，或其他trade_state字段值时
 				//退款状态
@@ -122,7 +119,7 @@ public class WeixinTradeService extends BaseService {
 		}
 	}
 	
-	@Transactional(readOnly = false)
+	/*@Transactional(readOnly = false)
 	public Map<String, Object> generateOrderByReg(HttpServletRequest request) {
 		Map<String, String> params = Maps.newHashMap();
 		params.put("id",WebUtils.getCleanParam(request, "id")); //预约id
@@ -138,14 +135,14 @@ public class WeixinTradeService extends BaseService {
 		params.put("orderPrice",WebUtils.getCleanParam(request, "orderPrice")); //订单价格
 		//return generateOrderByType(params, request, AppoTypeEnum.careAppo);
 		return null;
-	}
+	}*/
 
 	/**
 	 * app调用生成订单的方法
 	 * @param request
 	 * @return
 	 */
-	@Transactional(readOnly = false)
+	/*@Transactional(readOnly = false)
 	public Map<String, Object> generateOrderByType(Map<String, String> params, HttpServletRequest request, AppoTypeEnum type) {
 		Map<String, Object> retMap = new HashMap<String, Object>();
 		WemallOrder wemallOrder = null;
@@ -153,32 +150,32 @@ public class WeixinTradeService extends BaseService {
 		String orderPrice = params.get("orderPrice"); //订单价格
 		//构造订单对象
 		Map<String, Object> resultMap = Maps.newHashMap();
-		resultMap = wemallOrderService.generateOrderByCareAppo(id, orderPrice, PayMethod.weixin.toString());
-		/*switch(type) {
+		resultMap = wemallOrderService.generateOrderByCareAppo(id, orderPrice, PaymentType.weixin.getValue().toString());
+		switch(type) {
 		case reg:
 			resultMap = slSysOrderService.generateOrderBy(id, orderPrice, PayMethod.weixin.toString());
 			break;
 		case careAppo:
 			resultMap = slSysOrderService.generateOrderByCareAppo(id, orderPrice, PayMethod.weixin.toString());
 			break;
-		}*/
+		}
 		if(!"0".equals(resultMap.get("ret"))) return resultMap;
 		else wemallOrder = (WemallOrder)resultMap.get("wemallOrder");
 		
 		//微信统一下单成功，向数据库中插入新创建订单信息，并将对应预约中的订单字段更新为订单号
 		wemallOrderService.saveOrderAndUpdateCareAppo(wemallOrder, id);
-		/*switch(type) {
+		switch(type) {
 		case reg:
 			slSysOrderService.saveOrderAndUpdateReg(slSysOrder, id);
 			break;
 		case careAppo:
 			slSysOrderService.saveOrderAndUpdateCareAppo(slSysOrder, id);
 			break;
-		}*/
+		}
 		
 		retMap = generatePrepareIdByOrder(id, wemallOrder, request, type);
 		return retMap;
-	}
+	}*/
 	
 	/**
 	 * app调用根据订单号生成预付款id的方法
@@ -188,17 +185,15 @@ public class WeixinTradeService extends BaseService {
 	 * @return
 	 */
 	@Transactional(readOnly = false)
-	public Map<String, Object> generatePrepareIdByType(Map<String, String> params, HttpServletRequest request, AppoTypeEnum type) {
+	public Map<String, Object> generatePrepareIdByType(String orderNo, HttpServletRequest request) {
 		Map<String, Object> retMap = new HashMap<String, Object>();
-		String id = params.get("id"); //预约id
-		String orderNo = params.get("orderNo"); //订单号
 		WemallOrder wemallOrder = wemallOrderService.get(orderNo);
 		if(wemallOrder == null) {
 			retMap.put("ret", "-1");
         	retMap.put("retMsg", "订单不存在。");
         	return retMap;
 		}
-		retMap = generatePrepareIdByOrder(id, wemallOrder, request, type);
+		retMap = generatePrepareIdByOrder(wemallOrder, request);
 		return retMap;
 	}
 	
@@ -210,7 +205,7 @@ public class WeixinTradeService extends BaseService {
 	 * @return
 	 */
 	@Transactional(readOnly = false)
-	private Map<String, Object> generatePrepareIdByOrder(String id, WemallOrder wemallOrder, HttpServletRequest request, AppoTypeEnum type) {
+	private Map<String, Object> generatePrepareIdByOrder(WemallOrder wemallOrder, HttpServletRequest request) {
 		Map<String, Object> retMap = new HashMap<String, Object>();
 		//为调用微信接口统一下单构建参数map
 		Map<String, String> paramsMap = ParamsGenerator.generateParamsForUnifiedOrder(wemallOrder, request);
@@ -235,7 +230,7 @@ public class WeixinTradeService extends BaseService {
 			if(!"0".equals(retMap.get("ret"))) return retMap;
 			
 			wemallOrder.setPrepayId(weixinTradeAllEntity.getPrepay_id());
-			//wemallOrder.setPayment(PayMethod.weixin.toString());
+			wemallOrder.setPaymentType(PaymentType.weixin.getValue());
         	
         	//更新预付款id和付款方式到订单中
 			wemallOrderService.updatePrepayIdAndPayMethod(wemallOrder);
@@ -244,6 +239,7 @@ public class WeixinTradeService extends BaseService {
         	retMap.put("ret", "0");
         	retMap.put("retMsg", "订单生成成功");
         	retMap.put("prepay_id", weixinTradeAllEntity.getPrepay_id());
+        	retMap.put("payRequestParams", ParamsGenerator.generateParamsByPrepayId(weixinTradeAllEntity.getPrepay_id()));
 		}
 		return retMap;
 	}

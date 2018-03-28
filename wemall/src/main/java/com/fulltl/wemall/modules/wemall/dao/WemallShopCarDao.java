@@ -18,5 +18,7 @@ import com.fulltl.wemall.modules.wemall.entity.WemallShopCar;
 public interface WemallShopCarDao extends CrudDao<WemallShopCar> {
 
 	public void deleteByIds(List<String> ids);
+
+	public List<WemallShopCar> findByIds(List<String> shopCarIdList);
 	
 }

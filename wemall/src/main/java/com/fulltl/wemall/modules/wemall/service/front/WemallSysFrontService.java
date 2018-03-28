@@ -25,7 +25,7 @@ import com.fulltl.wemall.modules.cms.entity.Category;
 import com.fulltl.wemall.modules.cms.entity.Link;
 import com.fulltl.wemall.modules.cms.service.ArticleService;
 import com.fulltl.wemall.modules.cms.service.LinkService;
-import com.fulltl.wemall.modules.his.util.DataStorageUtil;
+import com.fulltl.wemall.modules.pay.util.DataStorageUtil;
 import com.fulltl.wemall.modules.sys.entity.Dict;
 import com.fulltl.wemall.modules.sys.service.SlSysAdvertiseService;
 import com.fulltl.wemall.modules.sys.service.SystemService;

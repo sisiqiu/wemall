@@ -3,14 +3,13 @@
  */
 package com.fulltl.wemall.modules.sys.service;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.fulltl.wemall.common.persistence.Page;
 import com.fulltl.wemall.common.service.CrudService;
 import com.fulltl.wemall.modules.sys.dao.SlSysOrderDao;
@@ -273,8 +272,8 @@ public class SlSysOrderService extends CrudService<SlSysOrderDao, SlSysOrder> {
 	 */
 	@Transactional(readOnly = false)
 	public void updateOrderRefundFee(SlSysOrder slSysOrder, String refundFee) {
-		/*slSysOrder.setTotalRefundFee(new BigDecimal(slSysOrder.getTotalRefundFee()).add(new BigDecimal(refundFee)).toString());
-		dao.updateTotalRefundFee(slSysOrder);*/
+		slSysOrder.setTotalRefundFee(new BigDecimal(slSysOrder.getTotalRefundFee()).add(new BigDecimal(refundFee)).toString());
+		dao.updateTotalRefundFee(slSysOrder);
 	}
 
 	/**
@@ -283,8 +282,8 @@ public class SlSysOrderService extends CrudService<SlSysOrderDao, SlSysOrder> {
 	 */
 	@Transactional(readOnly = false)
 	public void updatePrepayIdAndPayMethod(SlSysOrder slSysOrder) {
-		/*slSysOrder.preUpdate();
-		dao.updatePrepayIdAndPayMethod(slSysOrder);*/
+		slSysOrder.preUpdate();
+		dao.updatePrepayIdAndPayMethod(slSysOrder);
 	}
 
 }

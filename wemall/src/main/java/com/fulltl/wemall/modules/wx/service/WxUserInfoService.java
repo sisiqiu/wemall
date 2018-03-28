@@ -250,5 +250,14 @@ public class WxUserInfoService extends CrudService<WxUserInfoDao, WxUserInfo> {
             return retMap;
 		}
 	}
+
+	/**
+	 * 根据用户id获取微信用户
+	 * @param userId
+	 * @return
+	 */
+	public WxUserInfo getByUserId(String userId) {
+		return dao.getByUserId(userId);
+	}
 	
 }

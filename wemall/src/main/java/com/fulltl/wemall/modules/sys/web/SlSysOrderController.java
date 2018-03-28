@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fulltl.wemall.common.config.Global;
 import com.fulltl.wemall.common.persistence.Page;
+import com.fulltl.wemall.common.utils.StringUtils;
 import com.fulltl.wemall.common.web.BaseController;
 import com.fulltl.wemall.modules.sys.entity.SlSysOrder;
 import com.fulltl.wemall.modules.sys.service.SlSysOrderMgrService;
