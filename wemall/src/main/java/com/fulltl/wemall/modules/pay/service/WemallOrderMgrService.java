@@ -50,7 +50,7 @@ public class WemallOrderMgrService extends CrudService<WemallOrderDao, WemallOrd
 	 * @return key值为wemallOrder的value为订单对象
 	 */
 	@Transactional(readOnly = false)
-	public Map<String, Object> generateOrderByType(String title, Integer orderPrice, Integer paymentType) {
+	public Map<String, Object> generateOrderByType(String title, Integer orderPrice, Integer freightPrice, Integer paymentType, String shopCarIds) {
     	//构造订单对象
 		Map<String, Object> resultMap = Maps.newHashMap();
 		if(StringUtils.isBlank(title) || orderPrice == null) {
@@ -61,9 +61,11 @@ public class WemallOrderMgrService extends CrudService<WemallOrderDao, WemallOrd
 		WemallOrder wemallOrder = null;
 		resultMap = wemallOrderService.generateOrderBy(title, 
 														orderPrice, 
+														freightPrice,
 														paymentType);
 		if(!"0".equals(resultMap.get("ret"))) return resultMap;
 		else wemallOrder = (WemallOrder)resultMap.get("wemallOrder");
+		wemallOrder.setShopCarIds(shopCarIds);
 		wemallOrderService.saveOrder(wemallOrder);
 		
 		return resultMap;
@@ -114,8 +116,7 @@ public class WemallOrderMgrService extends CrudService<WemallOrderDao, WemallOrd
 	 */
 	@Transactional(readOnly = false)
 	public void updateStatusByOrderNo(String orderNo, Integer status) {
-		wemallOrderService.updateStatusByOrderNo(orderNo, status);
-		wemallOrderItemService.updateStatusByOrderNo(orderNo, status);
+		wemallOrderService.updateAllStatusByOrderNo(orderNo, status);
 	}
 	
 	/**

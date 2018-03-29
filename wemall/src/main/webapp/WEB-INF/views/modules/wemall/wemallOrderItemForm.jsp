@@ -28,7 +28,7 @@
 <body>
 	<ul class="nav nav-tabs">
 		<li><a href="${ctx}/wemall/wemallOrderItem/">订单-商品信息列表</a></li>
-		<li class="active"><a href="${ctx}/wemall/wemallOrderItem/form?orderNo=${wemallOrderItem.orderNo}&itemId=${wemallOrderItem.itemId}">订单-商品信息<shiro:hasPermission name="wemall:wemallOrderItem:edit">${not empty wemallOrderItem.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="wemall:wemallOrderItem:edit">查看</shiro:lacksPermission></a></li>
+		<li class="active"><a href="${ctx}/wemall/wemallOrderItem/form?id=${wemallOrderItem.id}">订单-商品信息<shiro:hasPermission name="wemall:wemallOrderItem:edit">${not empty wemallOrderItem.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="wemall:wemallOrderItem:edit">查看</shiro:lacksPermission></a></li>
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="wemallOrderItem" action="${ctx}/wemall/wemallOrderItem/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>

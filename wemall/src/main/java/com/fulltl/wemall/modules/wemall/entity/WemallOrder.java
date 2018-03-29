@@ -29,6 +29,7 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 	private Integer orderPrice;		// 订单金额
 	private Integer payment;		// 实付金额
 	private Integer paymentType;		// 支付类型
+	private Integer freightPrice;		// 总运费
 	private Integer totalRefundFee;		// 总退款金额
 	private String title;		// 订单名称
 	private String body;		// 订单描述
@@ -43,6 +44,8 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 	private Integer couponUsageNum;		// 使用优惠券数
 	private Integer vipCardId;		// 使用会员卡id
 	private String prepayId;		// 预付款id
+	private String buyerMessage;		// 买家留言
+	private String shopCarIds;		// 购物车id列表
 	private Integer beginOrderPrice;		// 开始 订单金额
 	private Integer endOrderPrice;		// 结束 订单金额
 	private Integer beginPayment;		// 开始 实付金额
@@ -161,7 +164,6 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 		this.user = user;
 	}
 	
-	@Length(min=1, max=64, message="支付平台订单号长度必须介于 1 和 64 之间")
 	public String getPlatformOrderNo() {
 		return platformOrderNo;
 	}
@@ -188,7 +190,6 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 		this.payment = payment;
 	}
 	
-	@NotNull(message="支付类型不能为空")
 	public Integer getPaymentType() {
 		return paymentType;
 	}
@@ -197,6 +198,15 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 		this.paymentType = paymentType;
 	}
 	
+	@NotNull(message="总运费不能为空")
+	public Integer getFreightPrice() {
+		return freightPrice;
+	}
+
+	public void setFreightPrice(Integer freightPrice) {
+		this.freightPrice = freightPrice;
+	}
+
 	@NotNull(message="总退款金额不能为空")
 	public Integer getTotalRefundFee() {
 		return totalRefundFee;
@@ -234,7 +244,6 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 	}
 	
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@NotNull(message="付款时间不能为空")
 	public Date getPaymentDate() {
 		return paymentDate;
 	}
@@ -244,7 +253,6 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 	}
 	
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@NotNull(message="发货时间不能为空")
 	public Date getConsignDate() {
 		return consignDate;
 	}
@@ -254,7 +262,6 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 	}
 	
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@NotNull(message="交易完成时间不能为空")
 	public Date getEndDate() {
 		return endDate;
 	}
@@ -264,7 +271,6 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 	}
 	
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@NotNull(message="交易关闭时间不能为空")
 	public Date getCloseDate() {
 		return closeDate;
 	}
@@ -273,7 +279,6 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 		this.closeDate = closeDate;
 	}
 	
-	@Length(min=1, max=10, message="类别长度必须介于 1 和 10 之间")
 	public String getType() {
 		return type;
 	}
@@ -282,7 +287,6 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 		this.type = type;
 	}
 	
-	@NotNull(message="使用积分数不能为空")
 	public Integer getScoreUsageNum() {
 		return scoreUsageNum;
 	}
@@ -291,7 +295,6 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 		this.scoreUsageNum = scoreUsageNum;
 	}
 	
-	@NotNull(message="使用奖励金数不能为空")
 	public Integer getBountyUsageNum() {
 		return bountyUsageNum;
 	}
@@ -300,7 +303,6 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 		this.bountyUsageNum = bountyUsageNum;
 	}
 	
-	@NotNull(message="使用优惠券数不能为空")
 	public Integer getCouponUsageNum() {
 		return couponUsageNum;
 	}
@@ -309,7 +311,6 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 		this.couponUsageNum = couponUsageNum;
 	}
 	
-	@NotNull(message="使用会员卡id不能为空")
 	public Integer getVipCardId() {
 		return vipCardId;
 	}
@@ -388,6 +389,22 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 
 	public void setPrepayId(String prepayId) {
 		this.prepayId = prepayId;
+	}
+	
+	public String getBuyerMessage() {
+		return buyerMessage;
+	}
+
+	public void setBuyerMessage(String buyerMessage) {
+		this.buyerMessage = buyerMessage;
+	}
+	
+	public String getShopCarIds() {
+		return shopCarIds;
+	}
+
+	public void setShopCarIds(String shopCarIds) {
+		this.shopCarIds = shopCarIds;
 	}
 
 	@Override

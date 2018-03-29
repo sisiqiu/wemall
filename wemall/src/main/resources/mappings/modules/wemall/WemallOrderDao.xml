@@ -9,6 +9,7 @@
 		a.order_price AS "orderPrice",
 		a.payment AS "payment",
 		a.payment_type AS "paymentType",
+		a.freight_price AS "freightPrice",
 		a.total_refund_fee AS "totalRefundFee",
 		a.title AS "title",
 		a.body AS "body",
@@ -25,6 +26,8 @@
 		a.coupon_usage_num AS "couponUsageNum",
 		a.vip_card_id AS "vipCardId",
 		a.remarks AS "remarks",
+		a.buyer_message AS "buyerMessage",
+		a.shopCarIds AS "shopCarIds",
 		a.del_flag AS "delFlag",
 		u2.name AS "user.name"
 	</sql>
@@ -121,6 +124,7 @@
 			order_price,
 			payment,
 			payment_type,
+			freight_price,
 			total_refund_fee,
 			title,
 			body,
@@ -137,6 +141,8 @@
 			coupon_usage_num,
 			vip_card_id,
 			remarks,
+			buyer_message,
+			shopCarIds,
 			del_flag
 		) VALUES (
 			#{orderNo},
@@ -145,6 +151,7 @@
 			#{orderPrice},
 			#{payment},
 			#{paymentType},
+			#{freightPrice},
 			#{totalRefundFee},
 			#{title},
 			#{body},
@@ -161,6 +168,8 @@
 			#{couponUsageNum},
 			#{vipCardId},
 			#{remarks},
+			#{buyerMessage},
+			#{shopCarIds},
 			#{delFlag}
 		)
 	</insert>
@@ -181,6 +190,9 @@
 			</if>
 			<if test="paymentType != null and paymentType != ''">
 			    payment_type = #{paymentType},
+			</if>
+			<if test="freightPrice != null and freightPrice != ''">
+			    freight_price = #{freightPrice},
 			</if>
 			<if test="totalRefundFee != null and totalRefundFee != ''">
 			    total_refund_fee = #{totalRefundFee},
@@ -224,6 +236,12 @@
 			<if test="remarks != null and remarks != ''">
 			    remarks = #{remarks},
 			</if>
+			<if test="buyerMessage != null and buyerMessage != ''">
+			    buyer_message = #{buyerMessage},
+			</if>
+			<if test="shopCarIds != null and shopCarIds != ''">
+			    shopCarIds = #{shopCarIds},
+			</if>
 			update_date = #{updateDate}
 		WHERE order_no = #{orderNo}
 	</update>
@@ -248,6 +266,9 @@
 			<if test="prepayId != null and prepayId != ''">
 			  prepay_id = #{prepayId},
 			</if>
+			<if test="buyerMessage != null and buyerMessage != ''">
+			    buyer_message = #{buyerMessage},
+			</if>
 			update_date = #{updateDate}
 		WHERE order_no = #{orderNo}
 	</update>
@@ -256,6 +277,18 @@
 		UPDATE wemall_order SET 
 			<if test="payment != null and payment != ''">
 			    payment = #{payment},
+			</if>
+			<if test="paymentDate != null and paymentDate != ''">
+			    payment_date = #{paymentDate},
+			</if>
+			<if test="consignDate != null and consignDate != ''">
+			    consign_date = #{consignDate},
+			</if>
+			<if test="endDate != null and endDate != ''">
+			    end_date = #{endDate},
+			</if>
+			<if test="closeDate != null and closeDate != ''">
+			    close_date = #{closeDate},
 			</if>
 			status = #{status}
 		WHERE order_no = #{orderNo}

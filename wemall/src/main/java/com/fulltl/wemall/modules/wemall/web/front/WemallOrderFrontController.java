@@ -143,8 +143,7 @@ public class WemallOrderFrontController extends BaseController {
 	 * 测试用例：
 	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/order/getOrderItemDetail
 	 *	参数：
-	 *		orderNo（*）=订单号
-	 *		itemId（*）=商品id
+	 *		id（*）=订单商品id
 	 *
 	 * 	例：
 	 * 
@@ -169,8 +168,7 @@ public class WemallOrderFrontController extends BaseController {
 	 * 测试用例：
 	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/order/evaluateOrderItem
 	 *	参数：
-	 *		orderNo（*）=订单号
-	 *		itemId（*）=商品id
+	 *		id（*）=订单商品id
 	 *		buyerMessage=买家留言
 	 *		buyerScore（*）=买家评分
 	 *
@@ -279,6 +277,7 @@ public class WemallOrderFrontController extends BaseController {
 	 *	参数：
 	 *		paymentType（*）=付款方式
 	 *		orderNo（*）=订单号
+	 *		buyerMessage=买家留言
 	 *
 	 * 	例：
 	 * 

@@ -23,11 +23,8 @@ import com.fulltl.wemall.modules.wemall.dao.WemallOrderItemDao;
 @Transactional(readOnly = true)
 public class WemallOrderItemService extends CrudService<WemallOrderItemDao, WemallOrderItem> {
 
-	public WemallOrderItem get(String orderNo, String itemId) {
-		WemallOrderItem wemallOrderItem = new WemallOrderItem();
-		wemallOrderItem.setOrderNo(orderNo);
-		wemallOrderItem.setItemId(itemId);
-		return super.get(wemallOrderItem);
+	public WemallOrderItem get(String id) {
+		return super.get(id);
 	}
 	
 	public List<WemallOrderItem> findList(WemallOrderItem wemallOrderItem) {

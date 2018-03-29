@@ -16,6 +16,7 @@ import com.fulltl.wemall.common.service.CrudService;
 import com.fulltl.wemall.modules.wemall.dao.WemallItemDao;
 import com.fulltl.wemall.modules.wemall.entity.WemallItem;
 import com.fulltl.wemall.modules.wemall.entity.WemallItemSpec;
+import com.fulltl.wemall.modules.wemall.entity.WemallOrderItem;
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -76,6 +77,30 @@ public class WemallItemService extends CrudService<WemallItemDao, WemallItem> {
 	@Transactional(readOnly = false)
 	public void delete(WemallItem wemallItem) {
 		super.delete(wemallItem);
+	}
+
+	/**
+	 * 校验库存
+	 * @return
+	 */
+	public boolean checkStorage(List<WemallOrderItem> wemallOrderItems) {
+		return true;
+	}
+	
+	/**
+	 * 减库存
+	 * @return
+	 */
+	public boolean reduceStorage(List<WemallOrderItem> wemallOrderItems) {
+		return true;
+	}
+	
+	/**
+	 * 增销量
+	 * @return
+	 */
+	public boolean increaseSalesNum(List<WemallOrderItem> wemallOrderItems) {
+		return true;
 	}
 
 }

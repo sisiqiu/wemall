@@ -165,7 +165,7 @@ public class WemallOrderFrontService extends BaseService {
 		
 		Map<String, Object> data = Maps.newHashMap();
 		//查询订单商品对象
-		WemallOrderItem entity = wemallOrderItemService.get(wemallOrderItem.getOrderNo(), wemallOrderItem.getItemId());
+		WemallOrderItem entity = wemallOrderItemService.get(wemallOrderItem);
 		data.put("orderItemInfo", entity);
 		//查询订单地址
 		WemallOrderAddress orderAddr = wemallOrderAddressService.get(wemallOrderItem.getOrderNo());
@@ -210,7 +210,7 @@ public class WemallOrderFrontService extends BaseService {
 		}
 		User user = UserUtils.getUser();
 		//查询订单商品对象
-		WemallOrderItem entity = wemallOrderItemService.get(wemallOrderItem.getOrderNo(), wemallOrderItem.getItemId());
+		WemallOrderItem entity = wemallOrderItemService.get(wemallOrderItem);
 		//判断是否可评价。判断当前用户以及判断订单商品状态
 		if(entity == null || new Integer(1).equals(entity.getBuyerComment())) {
 			map.put("ret", "-1");
@@ -251,12 +251,12 @@ public class WemallOrderFrontService extends BaseService {
 	@Transactional(readOnly = false)
 	public Map<String, Object> generateOrderByShopCarIds(HttpServletRequest request) {
 		Map<String ,Object> map=new HashMap<String, Object>();
-		String shopCarIds = WebUtils.getCleanParam(request, "shopCarIds");
-		
+		String shopCarStr = WebUtils.getCleanParam(request, "shopCarStr");
+		System.err.println(shopCarStr);
 		//校验数据
-		if(StringUtils.isBlank(shopCarIds)) {
+		if(StringUtils.isBlank(shopCarStr)) {
 			map.put("ret", "-1");
-			map.put("retMsg", "购物车id列表不能为空！");
+			map.put("retMsg", "请选择购物车项！");
 			return map;
 		}
 		
@@ -266,24 +266,56 @@ public class WemallOrderFrontService extends BaseService {
 		if(!"0".equals(map.get("ret"))) return map;
 		
 		//1.先计算总价，生成一个订单。
-		List<String> shopCarIdList = Arrays.asList(shopCarIds.split(","));
-		List<WemallShopCar> wemallShopCarList = wemallShopCarService.findByIds(shopCarIdList);
+		List<String> shopCarStrList = Arrays.asList(shopCarStr.split(","));
+		List<String> shopCarIds = Lists.newArrayList();
+		Map<String, Integer> shopCarMap = Maps.newHashMap();
+		String shopCarIdStr = StringUtils.EMPTY;
+		for(String tempShopCarStr : shopCarStrList) {
+			String key = tempShopCarStr.split("\\|")[0];//购物车id
+			String num = tempShopCarStr.split("\\|")[1];//数量num
+			shopCarIdStr = shopCarIdStr + key + ",";
+			shopCarIds.add(key);
+			shopCarMap.put(key, Integer.parseInt(num));
+		}
+		if(StringUtils.isNotBlank(shopCarIdStr)) {
+			shopCarIdStr = shopCarIdStr.substring(0, shopCarIdStr.length()-1);
+		}
+		
+		List<WemallShopCar> wemallShopCarList = wemallShopCarService.findByIds(shopCarIds);
 		
 		//获取价格
 		Integer orderPrice = 0;
+		Integer totalFreightPrice = 0;
 		List<WemallOrderItem> wemallOrderItemList = Lists.newArrayList();
 		if(wemallShopCarList != null) {
 			for(WemallShopCar wemallShopCar : wemallShopCarList) {
-				Integer shopCarPrice = wemallShopCarService.getPriceByWemallShopCar(wemallShopCar);
+				Integer shopCarPrice = wemallShopCarService.getPriceByWemallShopCar(wemallShopCar, shopCarMap.get(wemallShopCar.getId()));
+				
+				if(wemallShopCar.getItem().getFreightFree().equals(0)) {
+					//不免邮
+					totalFreightPrice = totalFreightPrice + wemallShopCar.getItem().getFreightPrice();
+				}
 				orderPrice = orderPrice + shopCarPrice;
 				
 				//构造订单--商品信息，之后方便保存
 				WemallOrderItem wemallOrderItem = new WemallOrderItem();
 				wemallOrderItem.initBy(wemallShopCar, null, shopCarPrice);//价格为单个商品总价格
+				wemallOrderItem.setItemNum(shopCarMap.get(wemallShopCar.getId()));
+				wemallOrderItem.setUserId(user.getId());
 				wemallOrderItemList.add(wemallOrderItem);
 			}
 		}
-		map = wemallOrderMgrService.generateOrderByType("购物车购买商品", orderPrice, null);
+		orderPrice = orderPrice + totalFreightPrice;
+		
+		//校验库存
+		boolean checkStorage = wemallItemService.checkStorage(wemallOrderItemList);
+		if(!checkStorage) {
+			map.put("ret", "-1");
+			map.put("retMsg", "抱歉，商品库存不足！");
+			return map;
+		}
+		
+		map = wemallOrderMgrService.generateOrderByType("购物车购买商品", orderPrice, totalFreightPrice, null, shopCarIdStr);
 		
 		WemallOrder wemallOrder = null;
 		if(!"0".equals(map.get("ret"))) return map;
@@ -339,16 +371,34 @@ public class WemallOrderFrontService extends BaseService {
 		wemallShopCar.setItem(wemallItem);
 		
 		//获取价格
-		Integer orderPrice = wemallShopCarService.getPriceByWemallShopCar(wemallShopCar);
-		map = wemallOrderMgrService.generateOrderByType("购买商品：" + wemallItem.getName(), orderPrice, null);
+		Integer orderPrice = wemallShopCarService.getPriceByWemallShopCar(wemallShopCar, null);
+		Integer totalFreightPrice = 0;
+		if(wemallShopCar.getItem().getFreightFree().equals(0)) {
+			//不免邮
+			totalFreightPrice = totalFreightPrice + wemallShopCar.getItem().getFreightPrice();
+		}
+		
+		//校验库存
+		WemallOrderItem wemallOrderItem = new WemallOrderItem();
+		wemallOrderItem.initBy(wemallShopCar, null, orderPrice);
+		wemallOrderItem.setUserId(user.getId());
+		List<WemallOrderItem> wemallOrderItemList = Lists.newArrayList();
+		wemallOrderItemList.add(wemallOrderItem);
+		boolean checkStorage = wemallItemService.checkStorage(wemallOrderItemList);
+		if(!checkStorage) {
+			map.put("ret", "-1");
+			map.put("retMsg", "抱歉，商品库存不足！");
+			return map;
+		}
+		
+		map = wemallOrderMgrService.generateOrderByType("购买商品：" + wemallItem.getName(), orderPrice, totalFreightPrice, null, null);
 		
 		WemallOrder wemallOrder = null;
 		if(!"0".equals(map.get("ret"))) return map;
 		else wemallOrder = (WemallOrder)map.get("wemallOrder");
 		
 		//2.再根据订单号，生成订单--商品信息。
-		WemallOrderItem wemallOrderItem = new WemallOrderItem();
-		wemallOrderItem.initBy(wemallShopCar, wemallOrder.getOrderNo(), orderPrice);
+		wemallOrderItem.setOrderNo(wemallOrder.getOrderNo());
 		wemallOrderItemService.save(wemallOrderItem);
 		
 		//3.根据默认收货地址id保存订单地址。
@@ -430,6 +480,17 @@ public class WemallOrderFrontService extends BaseService {
 		User user = UserUtils.getUser();
 		map = systemService.checkCurrentUser(user);
 		if(!"0".equals(map.get("ret"))) return map;
+		
+		//校验库存
+		WemallOrderItem query = new WemallOrderItem();
+		query.setOrderNo(orderNo);
+		List<WemallOrderItem> wemallOrderItemList = wemallOrderItemService.findList(query);
+		boolean checkStorage = wemallItemService.checkStorage(wemallOrderItemList);
+		if(!checkStorage) {
+			map.put("ret", "-1");
+			map.put("retMsg", "抱歉，商品库存不足！");
+			return map;
+		}
 		
 		//生成订单信息，获取要进行付款所需要的相关支付信息
 		if(PaymentType.alipay.getValue().toString().equals(paymentType)) {

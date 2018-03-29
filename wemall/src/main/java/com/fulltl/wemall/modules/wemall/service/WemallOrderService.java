@@ -4,6 +4,7 @@
 package com.fulltl.wemall.modules.wemall.service;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,8 @@ import com.fulltl.wemall.modules.wemall.entity.WemallOrder;
 public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder> {
 	@Autowired 
 	private SystemService systemService;
+	@Autowired 
+	private WemallOrderItemService wemallOrderItemService;
 	
 	public WemallOrder get(String id) {
 		return super.get(id);
@@ -66,7 +69,7 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 	 * @return key值为wemallOrder的value为订单对象
 	 */
 	@Transactional(readOnly = false)
-	public Map<String, Object> generateOrderBy(String title, Integer orderPrice, Integer paymentType) {
+	public Map<String, Object> generateOrderBy(String title, Integer orderPrice, Integer freightPrice, Integer paymentType) {
 		Map<String, Object> retMap = new HashMap<String, Object>();
 		
 		//根据护理预约信息中的用户，验证是否是当前用户
@@ -81,6 +84,7 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 		wemallOrder.setTitle(title);
         //slSysOrder.setDescription(subject);
 		wemallOrder.setOrderPrice(orderPrice);	//订单价格
+		wemallOrder.setFreightPrice(freightPrice);	//总运费
         //slSysOrder.setActualPayment(orderPrice);	//实际支付价格
 		wemallOrder.setPayment(0);	//实际支付价格
 		//wemallOrder.setMobile(user.getMobile());
@@ -167,6 +171,18 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 		WemallOrder wemallOrder = new WemallOrder();
 		wemallOrder.setOrderNo(orderNo);
 		wemallOrder.setStatus(status);
+		wemallOrder.setPaymentDate(new Date());
 		dao.updateStatusByOrderNo(wemallOrder);
+	}
+	
+	/**
+	 * 根据订单号，更新订单状态
+	 * @param orderNo
+	 * @param status
+	 */
+	@Transactional(readOnly = false)
+	public void updateAllStatusByOrderNo(String orderNo, Integer status) {
+		this.updateStatusByOrderNo(orderNo, status);
+		wemallOrderItemService.updateStatusByOrderNo(orderNo, status);
 	}
 }

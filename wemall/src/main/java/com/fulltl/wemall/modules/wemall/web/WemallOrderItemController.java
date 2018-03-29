@@ -19,6 +19,7 @@ import com.fulltl.wemall.common.config.Global;
 import com.fulltl.wemall.common.persistence.Page;
 import com.fulltl.wemall.common.utils.StringUtils;
 import com.fulltl.wemall.common.web.BaseController;
+import com.fulltl.wemall.modules.wemall.entity.WemallOrder;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrderItem;
 import com.fulltl.wemall.modules.wemall.service.WemallOrderItemService;
 
@@ -35,11 +36,10 @@ public class WemallOrderItemController extends BaseController {
 	private WemallOrderItemService wemallOrderItemService;
 	
 	@ModelAttribute
-	public WemallOrderItem get(@RequestParam(required=false, value="orderNo") String orderNo,
-			@RequestParam(required=false, value="itemId") String itemId) {
+	public WemallOrderItem get(@RequestParam(required=false) String id) {
 		WemallOrderItem entity = null;
-		if (StringUtils.isNotBlank(orderNo) && itemId != null){
-			entity = wemallOrderItemService.get(orderNo, itemId);
+		if (StringUtils.isNotBlank(id)){
+			entity = wemallOrderItemService.get(id);
 		}
 		if (entity == null){
 			entity = new WemallOrderItem();
@@ -58,8 +58,7 @@ public class WemallOrderItemController extends BaseController {
 	@RequiresPermissions("wemall:wemallOrderItem:view")
 	@RequestMapping(value = "form")
 	public String form(WemallOrderItem wemallOrderItem, Model model) {
-		if (StringUtils.isBlank(wemallOrderItem.getOrderNo()) && 
-				wemallOrderItem.getItemId() != null){
+		if (StringUtils.isBlank(wemallOrderItem.getId())){
 			wemallOrderItem.setIsNewRecord(true);
 		}
 		model.addAttribute("wemallOrderItem", wemallOrderItem);

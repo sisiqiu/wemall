@@ -53,8 +53,7 @@
 		<div class="control-group">
 			<label class="control-label">支付平台订单号：</label>
 			<div class="controls">
-				<form:input path="platformOrderNo" htmlEscape="false" maxlength="64" class="input-xlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:input path="platformOrderNo" htmlEscape="false" maxlength="64" class="input-xlarge"/>
 			</div>
 		</div>
 		<div class="control-group">
@@ -78,6 +77,13 @@
 					<form:option value="" label=""/>
 					<form:options items="${fns:getDictList('payment_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">总运费：</label>
+			<div class="controls">
+				<form:input path="freightPrice" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
@@ -115,37 +121,33 @@
 		<div class="control-group">
 			<label class="control-label">付款时间：</label>
 			<div class="controls">
-				<input name="paymentDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
+				<input name="paymentDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${wemallOrder.paymentDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
-				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">发货时间：</label>
 			<div class="controls">
-				<input name="consignDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
+				<input name="consignDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${wemallOrder.consignDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
-				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">交易完成时间：</label>
 			<div class="controls">
-				<input name="endDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
+				<input name="endDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${wemallOrder.endDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
-				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">交易关闭时间：</label>
 			<div class="controls">
-				<input name="closeDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
+				<input name="closeDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${wemallOrder.closeDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
-				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
@@ -161,29 +163,31 @@
 		<div class="control-group">
 			<label class="control-label">使用积分数：</label>
 			<div class="controls">
-				<form:input path="scoreUsageNum" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:input path="scoreUsageNum" htmlEscape="false" maxlength="11" class="input-xlarge digits"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">使用奖励金数：</label>
 			<div class="controls">
-				<form:input path="bountyUsageNum" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:input path="bountyUsageNum" htmlEscape="false" maxlength="11" class="input-xlarge digits"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">使用优惠券数：</label>
 			<div class="controls">
-				<form:input path="couponUsageNum" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:input path="couponUsageNum" htmlEscape="false" maxlength="11" class="input-xlarge digits"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">使用会员卡id：</label>
 			<div class="controls">
-				<form:input path="vipCardId" htmlEscape="false" maxlength="6" class="input-xlarge required digits"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:input path="vipCardId" htmlEscape="false" maxlength="6" class="input-xlarge digits"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">买家留言：</label>
+			<div class="controls">
+				<form:textarea path="buyerMessage" htmlEscape="false" rows="4" maxlength="255" class="input-xxlarge "/>
 			</div>
 		</div>
 		<div class="control-group">

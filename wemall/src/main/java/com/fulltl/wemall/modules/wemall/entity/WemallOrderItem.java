@@ -234,6 +234,7 @@ public class WemallOrderItem extends DataEntity<WemallOrderItem> {
 		}
 		this.setItemsData(itemsData);//设置规格信息
 		this.setStatus(1);//未付款
+		this.isNewRecord = true;
 	}
 
 	/**

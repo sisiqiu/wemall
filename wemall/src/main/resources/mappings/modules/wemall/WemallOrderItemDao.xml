@@ -3,6 +3,7 @@
 <mapper namespace="com.fulltl.wemall.modules.wemall.dao.WemallOrderItemDao">
     
 	<sql id="wemallOrderItemColumns">
+		a.id AS "id",
 		a.order_no AS "orderNo",
 		a.item_id AS "itemId",
 		a.user_id AS "userId",
@@ -31,7 +32,7 @@
 			<include refid="wemallOrderItemColumns"/>
 		FROM wemall_order_item a
 		<include refid="wemallOrderItemJoins"/>
-		WHERE a.order_no = #{orderNo} AND a.item_id = #{itemId}
+		WHERE a.id = #{id}
 	</select>
 	
 	<select id="findList" resultType="WemallOrderItem">
@@ -41,6 +42,9 @@
 		<include refid="wemallOrderItemJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="orderNo != null and orderNo != ''">
+				AND a.order_no = #{orderNo}
+			</if>
 			<if test="itemId != null and itemId != ''">
 				AND a.item_id = #{itemId}
 			</if>
@@ -165,7 +169,7 @@
 			buyer_score = #{buyerScore},
 			buyer_comment = #{buyerComment},
 			comment_time = #{commentTime}
-		WHERE order_no = #{orderNo} AND item_id = #{itemId}
+		WHERE id = #{id}
 	</update>
 	
 	<update id="saveBuyerEvaluate">
@@ -179,13 +183,13 @@
 			buyer_score = #{buyerScore},
 			buyer_comment = #{buyerComment},
 			comment_time = #{commentTime}
-		WHERE order_no = #{orderNo} AND item_id = #{itemId}
+		WHERE id = #{id}
 	</update>
 	
 	<update id="delete">
 		UPDATE wemall_order_item SET 
 			del_flag = #{DEL_FLAG_DELETE}
-		WHERE order_no = #{orderNo} AND item_id = #{itemId}
+		WHERE id = #{id}
 	</update>
 	
 	<update id="updateStatusByOrderNo">

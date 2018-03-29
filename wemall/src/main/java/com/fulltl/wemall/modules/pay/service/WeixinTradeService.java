@@ -3,12 +3,15 @@ package com.fulltl.wemall.modules.pay.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,14 +22,17 @@ import com.fulltl.wemall.common.utils.BeanToMapUtils;
 import com.fulltl.wemall.common.utils.CallServletUtil;
 import com.fulltl.wemall.common.utils.IdGen;
 import com.fulltl.wemall.common.utils.XMLUtils;
-import com.fulltl.wemall.modules.sys.entity.SlSysOrder.AppoTypeEnum;
 import com.fulltl.wemall.modules.sys.utils.UserUtils;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrder;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrder.OrderStatus;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrder.PaymentType;
+import com.fulltl.wemall.modules.wemall.entity.WemallOrderItem;
 import com.fulltl.wemall.modules.wemall.entity.WemallRefund;
+import com.fulltl.wemall.modules.wemall.service.WemallItemService;
+import com.fulltl.wemall.modules.wemall.service.WemallOrderItemService;
 import com.fulltl.wemall.modules.wemall.service.WemallOrderService;
 import com.fulltl.wemall.modules.wemall.service.WemallRefundService;
+import com.fulltl.wemall.modules.wemall.service.WemallShopCarService;
 import com.fulltl.wemall.modules.wx.core.ParamsGenerator;
 import com.fulltl.wemall.modules.wx.core.WeixinTradeConfig;
 import com.fulltl.wemall.modules.wx.core.pojo.trade.WeixinTradeAllEntity;
@@ -45,9 +51,13 @@ public class WeixinTradeService extends BaseService {
 	@Autowired
 	private WemallOrderService wemallOrderService;
 	@Autowired
-	private WemallOrderMgrService wemallOrderMgrService;
-	@Autowired
 	private WemallRefundService wemallRefundService;
+	@Autowired
+	private WemallShopCarService wemallShopCarService;
+	@Autowired
+	private WemallItemService wemallItemService;
+	@Autowired
+	private WemallOrderItemService wemallOrderItemService;
 	
 	/**
 	 * 处理微信异步通知交易状态的方法
@@ -86,11 +96,21 @@ public class WeixinTradeService extends BaseService {
 			
 			if("CLOSED".equals(trade_state)) {
 				//CLOSED—已关闭
-				wemallOrderMgrService.updateStatusByOrderNo(wemallOrder.getOrderNo(), OrderStatus.alreadyClosed.getValue());
+				wemallOrderService.updateAllStatusByOrderNo(wemallOrder.getOrderNo(), OrderStatus.alreadyClosed.getValue());
 			} else if ("SUCCESS".equals(trade_state)) {
 				//SUCCESS—支付成功
 				//是付款成功，更新订单状态和预约状态
-				wemallOrderMgrService.updateStatusByOrderNo(wemallOrder.getOrderNo(), OrderStatus.alreadyPaid.getValue());
+				wemallOrderService.updateAllStatusByOrderNo(wemallOrder.getOrderNo(), OrderStatus.alreadyPaid.getValue());
+				if(StringUtils.isNotBlank(wemallOrder.getShopCarIds())) {
+					//删除对应的购物车项
+					List<String> shopCarIdList = Arrays.asList(wemallOrder.getShopCarIds().split(","));
+					wemallShopCarService.delete(shopCarIdList);
+				}
+				//减库存
+				WemallOrderItem query = new WemallOrderItem();
+				query.setOrderNo(wemallOrder.getOrderNo());
+				List<WemallOrderItem> wemallOrderItemList = wemallOrderItemService.findList(query);
+				wemallItemService.reduceStorage(wemallOrderItemList);
 			} else {
 				//没有trade_state字段，或其他trade_state字段值时
 				//退款状态
@@ -188,11 +208,13 @@ public class WeixinTradeService extends BaseService {
 	public Map<String, Object> generatePrepareIdByType(String orderNo, HttpServletRequest request) {
 		Map<String, Object> retMap = new HashMap<String, Object>();
 		WemallOrder wemallOrder = wemallOrderService.get(orderNo);
+		String buyerMessage = WebUtils.getCleanParam(request, "buyerMessage");//订单号
 		if(wemallOrder == null) {
 			retMap.put("ret", "-1");
         	retMap.put("retMsg", "订单不存在。");
         	return retMap;
 		}
+		wemallOrder.setBuyerMessage(buyerMessage);
 		retMap = generatePrepareIdByOrder(wemallOrder, request);
 		return retMap;
 	}

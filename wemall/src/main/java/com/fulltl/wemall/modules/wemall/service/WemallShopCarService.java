@@ -5,6 +5,7 @@ package com.fulltl.wemall.modules.wemall.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,25 +80,27 @@ public class WemallShopCarService extends CrudService<WemallShopCarDao, WemallSh
 	/**
 	 * 获取购物车价格
 	 * @param wemallShopCar
+	 * @param shopCarMap 
 	 * @return
 	 */
-	public Integer getPriceByWemallShopCar(WemallShopCar wemallShopCar) {
+	public Integer getPriceByWemallShopCar(WemallShopCar wemallShopCar, Integer num) {
+		if(num == null) num = wemallShopCar.getItemNum();
 		//根据商品规格价格
 		if(wemallShopCar.getItemSpecs() != null && wemallShopCar.getItemSpecs().size() > 0) {
-			return wemallShopCar.getItemSpecs().get(0).getPrice()*wemallShopCar.getItemNum();
+			return wemallShopCar.getItemSpecs().get(0).getPrice() * num;
 		} else {
 			fillItemSpecs(wemallShopCar);
 			if(wemallShopCar.getItemSpecs() != null && wemallShopCar.getItemSpecs().size() > 0) {
-				return wemallShopCar.getItemSpecs().get(0).getPrice()*wemallShopCar.getItemNum();
+				return wemallShopCar.getItemSpecs().get(0).getPrice() * num;
 			}
 		}
 		
 		//根据商品价格
 		if(wemallShopCar.getItem() != null) {
-			return wemallShopCar.getItem().getCurrentPrice()*wemallShopCar.getItemNum();
+			return wemallShopCar.getItem().getCurrentPrice() * num;
 		} else if(wemallShopCar.getItemId() != null) {
 			WemallItem wemallItem = wemallItemService.get(wemallShopCar.getItemId().toString());
-			return wemallItem.getCurrentPrice()*wemallShopCar.getItemNum();
+			return wemallItem.getCurrentPrice() * num;
 		}
 		
 		return null;
