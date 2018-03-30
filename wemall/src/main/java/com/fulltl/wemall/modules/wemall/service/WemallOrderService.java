@@ -193,6 +193,8 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 				List<String> shopCarIdList = Arrays.asList(wemallOrder.getShopCarIds().split(","));
 				wemallShopCarService.delete(shopCarIdList);
 			}
+			//添加商品销量
+			wemallItemService.increaseSalesNum(wemallOrder.getOrderNo());
 		}
 		if(OrderStatus.alreadyClosed.getValue().equals(status)) {
 			//订单关闭

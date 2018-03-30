@@ -138,5 +138,17 @@ public class WemallItemService extends CrudService<WemallItemDao, WemallItem> {
 	public boolean increaseSalesNum(List<WemallOrderItem> wemallOrderItems) {
 		return true;
 	}
+	
+	/**
+	 * 增销量
+	 * @return
+	 */
+	@Transactional(readOnly = false)
+	public boolean increaseSalesNum(String orderNo) {
+		WemallOrderItem query = new WemallOrderItem();
+		query.setOrderNo(orderNo);
+		List<WemallOrderItem> wemallOrderItemList = wemallOrderItemService.findList(query);
+		return this.increaseSalesNum(wemallOrderItemList);
+	}
 
 }
