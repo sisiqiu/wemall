@@ -15,11 +15,13 @@
 		a.create_date AS "createDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
-		u3.name AS "user.name"
+		u3.name AS "user.name",
+		o.platform_order_no AS "platformOrderNo"
 	</sql>
 	
 	<sql id="wemallRefundJoins">
 		LEFT JOIN sys_user u3 ON u3.id = a.user_id
+		LEFT JOIN wemall_order o ON o.order_no = a.order_no
 	</sql>
     
 	<select id="get" resultType="WemallRefund">

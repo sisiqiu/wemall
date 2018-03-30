@@ -37,7 +37,8 @@ public class ParamsGenerator {
 		Map<String, String> paramsMap = generateCommonParams();
 		
 		paramsMap.put("body", wemallOrder.getBody());
-		paramsMap.put("out_trade_no", wemallOrder.getOrderNo());
+		//paramsMap.put("out_trade_no", wemallOrder.getOrderNo());
+		paramsMap.put("out_trade_no", wemallOrder.getPlatformOrderNo());
 		paramsMap.put("total_fee", wemallOrder.getOrderPrice().toString());//订单总金额，单位为分
 		logger.debug("请求微信下单的用户ip为：" + RequestUtil.getIpAddress(request));
 		logger.debug("请求微信下单的用户ip为：" + RequestUtil.getIP(request));
@@ -66,7 +67,8 @@ public class ParamsGenerator {
 		Map<String, String> paramsMap = generateCommonParams();
 		
 		paramsMap.put("out_refund_no", wemallRefund.getRefundId());
-		paramsMap.put("out_trade_no", wemallRefund.getOrderNo());
+		//paramsMap.put("out_trade_no", wemallRefund.getOrderNo());
+		paramsMap.put("out_trade_no", wemallRefund.getPlatformOrderNo());
 		paramsMap.put("total_fee", wemallRefund.getOrderPrice().toString());//订单总金额，单位为分
 		paramsMap.put("refund_fee", wemallRefund.getRefundFee().toString());//退款金额，单位为分
 		paramsMap.put("refund_desc", wemallRefund.getRefundDesc());

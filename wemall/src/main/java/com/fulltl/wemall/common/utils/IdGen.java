@@ -70,6 +70,7 @@ public class IdGen implements IdGenerator, SessionIdGenerator {
 	private static String curMillis = StringUtils.EMPTY;
 	private static final String MACHINE_ID = "";
 	private static final String REFUND_PREFIX = "tk";
+	private static final int PLATFORM_ORDER_RANDOM = 6;
 	
 	/**
 	 * 生成订单号
@@ -100,6 +101,24 @@ public class IdGen implements IdGenerator, SessionIdGenerator {
 		
 		String orderNo= MACHINE_ID + millis + intStr;
 		return orderNo;
+	}
+	
+	/**
+	 * 根据业务订单号生成第三方订单号
+	 * @param orderNo
+	 * @return
+	 */
+	public static String generatePlatformOrderNo(String orderNo) {
+		return orderNo + "_" + randomBase62(PLATFORM_ORDER_RANDOM);
+	}
+	
+	/**
+	 * 根据第三方订单号获取业务订单号
+	 * @param platformOrderNo
+	 * @return
+	 */
+	public static String getOrderNoByPlatformOrderNo(String platformOrderNo) {
+		return platformOrderNo.substring(0, platformOrderNo.length()-PLATFORM_ORDER_RANDOM-1);
 	}
 	
 	/**

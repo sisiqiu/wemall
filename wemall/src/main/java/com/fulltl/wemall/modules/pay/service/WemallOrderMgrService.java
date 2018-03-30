@@ -114,10 +114,10 @@ public class WemallOrderMgrService extends CrudService<WemallOrderDao, WemallOrd
 	 * @param orderNo
 	 * @param status
 	 */
-	@Transactional(readOnly = false)
+	/*@Transactional(readOnly = false)
 	public void updateStatusByOrderNo(String orderNo, Integer status) {
 		wemallOrderService.updateAllStatusByOrderNo(orderNo, status);
-	}
+	}*/
 	
 	/**
 	 * 查询订单详情

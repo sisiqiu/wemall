@@ -37,6 +37,8 @@ public class WemallRefund extends DataEntity<WemallRefund> {
 	private Date beginRefundDate;		// 开始 退款时间
 	private Date endRefundDate;		// 结束 退款时间
 	
+	private String platformOrderNo;		// 第三方订单号
+	
 	public WemallRefund() {
 		super();
 	}
@@ -191,6 +193,14 @@ public class WemallRefund extends DataEntity<WemallRefund> {
 		this.endRefundDate = endRefundDate;
 	}
 	
+	public String getPlatformOrderNo() {
+		return platformOrderNo;
+	}
+
+	public void setPlatformOrderNo(String platformOrderNo) {
+		this.platformOrderNo = platformOrderNo;
+	}
+
 	@Override
 	public boolean getIsNewRecord() {
 		 return isNewRecord;

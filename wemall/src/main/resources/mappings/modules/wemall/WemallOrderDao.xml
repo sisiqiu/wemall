@@ -258,6 +258,12 @@
 		WHERE order_no = #{orderNo}
 	</update>
 	
+	<update id="updatePlatformOrderNo">
+		UPDATE wemall_order SET 
+			platform_order_no = #{platformOrderNo}
+		WHERE order_no = #{orderNo}
+	</update>
+	
 	<update id="updatePrepayIdAndPayMethod">
 		UPDATE wemall_order SET 
 			<if test="paymentType != null and paymentType != ''">
@@ -268,6 +274,9 @@
 			</if>
 			<if test="buyerMessage != null and buyerMessage != ''">
 			    buyer_message = #{buyerMessage},
+			</if>
+			<if test="platformOrderNo != null and platformOrderNo != ''">
+			    platform_order_no = #{platformOrderNo},
 			</if>
 			update_date = #{updateDate}
 		WHERE order_no = #{orderNo}

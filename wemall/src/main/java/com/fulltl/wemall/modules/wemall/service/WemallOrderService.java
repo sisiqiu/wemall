@@ -4,6 +4,7 @@
 package com.fulltl.wemall.modules.wemall.service;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +23,7 @@ import com.fulltl.wemall.modules.sys.service.SystemService;
 import com.fulltl.wemall.modules.sys.utils.UserUtils;
 import com.fulltl.wemall.modules.wemall.dao.WemallOrderDao;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrder;
+import com.fulltl.wemall.modules.wemall.entity.WemallOrder.OrderStatus;
 
 /**
  * 订单管理Service
@@ -35,6 +37,10 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 	private SystemService systemService;
 	@Autowired 
 	private WemallOrderItemService wemallOrderItemService;
+	@Autowired 
+	private WemallShopCarService wemallShopCarService;
+	@Autowired 
+	private WemallItemService wemallItemService;
 	
 	public WemallOrder get(String id) {
 		return super.get(id);
@@ -167,11 +173,8 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 	 * @param status
 	 */
 	@Transactional(readOnly = false)
-	public void updateStatusByOrderNo(String orderNo, Integer status) {
-		WemallOrder wemallOrder = new WemallOrder();
-		wemallOrder.setOrderNo(orderNo);
+	public void updateStatusByOrderNo(WemallOrder wemallOrder, Integer status) {
 		wemallOrder.setStatus(status);
-		wemallOrder.setPaymentDate(new Date());
 		dao.updateStatusByOrderNo(wemallOrder);
 	}
 	
@@ -181,8 +184,36 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 	 * @param status
 	 */
 	@Transactional(readOnly = false)
-	public void updateAllStatusByOrderNo(String orderNo, Integer status) {
-		this.updateStatusByOrderNo(orderNo, status);
-		wemallOrderItemService.updateStatusByOrderNo(orderNo, status);
+	public void updateAllStatusByOrderNo(WemallOrder wemallOrder, Integer status) {
+		if(OrderStatus.alreadyPaid.getValue().equals(status)) {
+			wemallOrder.setPaymentDate(new Date());
+			//付款成功
+			if(StringUtils.isNotBlank(wemallOrder.getShopCarIds())) {
+				//删除对应的购物车项
+				List<String> shopCarIdList = Arrays.asList(wemallOrder.getShopCarIds().split(","));
+				wemallShopCarService.delete(shopCarIdList);
+			}
+		}
+		if(OrderStatus.alreadyClosed.getValue().equals(status)) {
+			//订单关闭
+			if(wemallOrder.getPaymentDate() != null) {
+				//判断是过期未付款订单，则根据第三方订单号匹配订单，释放库存，并将对应第三方订单号删除
+				WemallOrder query = new WemallOrder();
+				query.setPlatformOrderNo(wemallOrder.getPlatformOrderNo());
+				List<WemallOrder> list = this.findList(query);
+				if(list.size() > 0) {
+					WemallOrder timeoutOrder = list.get(0);
+					timeoutOrder.setPlatformOrderNo(null);
+					//释放库存
+					wemallItemService.releaseStorage(timeoutOrder.getOrderNo());
+					//将对应第三方订单号删除
+					dao.updatePlatformOrderNo(timeoutOrder);
+				}
+			}
+		}
+		
+		
+		this.updateStatusByOrderNo(wemallOrder, status);
+		wemallOrderItemService.updateStatusByOrderNo(wemallOrder.getOrderNo(), status);
 	}
 }

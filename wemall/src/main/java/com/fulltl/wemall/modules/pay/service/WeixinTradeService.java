@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -96,21 +97,16 @@ public class WeixinTradeService extends BaseService {
 			
 			if("CLOSED".equals(trade_state)) {
 				//CLOSED—已关闭
-				wemallOrderService.updateAllStatusByOrderNo(wemallOrder.getOrderNo(), OrderStatus.alreadyClosed.getValue());
+				wemallOrderService.updateAllStatusByOrderNo(wemallOrder, OrderStatus.alreadyClosed.getValue());
 			} else if ("SUCCESS".equals(trade_state)) {
 				//SUCCESS—支付成功
 				//是付款成功，更新订单状态和预约状态
-				wemallOrderService.updateAllStatusByOrderNo(wemallOrder.getOrderNo(), OrderStatus.alreadyPaid.getValue());
-				if(StringUtils.isNotBlank(wemallOrder.getShopCarIds())) {
-					//删除对应的购物车项
-					List<String> shopCarIdList = Arrays.asList(wemallOrder.getShopCarIds().split(","));
-					wemallShopCarService.delete(shopCarIdList);
-				}
+				wemallOrderService.updateAllStatusByOrderNo(wemallOrder, OrderStatus.alreadyPaid.getValue());
 				//减库存
-				WemallOrderItem query = new WemallOrderItem();
+				/*WemallOrderItem query = new WemallOrderItem();
 				query.setOrderNo(wemallOrder.getOrderNo());
 				List<WemallOrderItem> wemallOrderItemList = wemallOrderItemService.findList(query);
-				wemallItemService.reduceStorage(wemallOrderItemList);
+				wemallItemService.reduceStorage(wemallOrderItemList);*/
 			} else {
 				//没有trade_state字段，或其他trade_state字段值时
 				//退款状态
@@ -205,9 +201,8 @@ public class WeixinTradeService extends BaseService {
 	 * @return
 	 */
 	@Transactional(readOnly = false)
-	public Map<String, Object> generatePrepareIdByType(String orderNo, HttpServletRequest request) {
+	public Map<String, Object> generatePrepareIdByType(WemallOrder wemallOrder, HttpServletRequest request) {
 		Map<String, Object> retMap = new HashMap<String, Object>();
-		WemallOrder wemallOrder = wemallOrderService.get(orderNo);
 		String buyerMessage = WebUtils.getCleanParam(request, "buyerMessage");//订单号
 		if(wemallOrder == null) {
 			retMap.put("ret", "-1");
@@ -229,6 +224,16 @@ public class WeixinTradeService extends BaseService {
 	@Transactional(readOnly = false)
 	private Map<String, Object> generatePrepareIdByOrder(WemallOrder wemallOrder, HttpServletRequest request) {
 		Map<String, Object> retMap = new HashMap<String, Object>();
+		
+		//判断是否存在第三方订单号，执行减库存
+        if(StringUtils.isBlank(wemallOrder.getPlatformOrderNo())) {
+        	//执行减库存
+        	wemallItemService.reduceStorage(wemallOrder.getOrderNo());
+        }
+        
+        //生成并设置第三方订单号
+        wemallOrder.setPlatformOrderNo(IdGen.generatePlatformOrderNo(wemallOrder.getOrderNo()));
+		
 		//为调用微信接口统一下单构建参数map
 		Map<String, String> paramsMap = ParamsGenerator.generateParamsForUnifiedOrder(wemallOrder, request);
 		
@@ -260,6 +265,7 @@ public class WeixinTradeService extends BaseService {
         	logger.info("为用户'" + UserUtils.getUser().getLoginName() + "'生成订单，订单号为：" + wemallOrder.getOrderNo());
         	retMap.put("ret", "0");
         	retMap.put("retMsg", "订单生成成功");
+        	retMap.put("needPay", "1");
         	retMap.put("prepay_id", weixinTradeAllEntity.getPrepay_id());
         	retMap.put("payRequestParams", ParamsGenerator.generateParamsByPrepayId(weixinTradeAllEntity.getPrepay_id()));
 		}
@@ -305,17 +311,17 @@ public class WeixinTradeService extends BaseService {
 		
 		//构造退款对象
 		WemallRefund refund = new WemallRefund();
-		/*refund.setOrderNo(orderNo);
-		refund.setUser(slSysOrder.getUser());
-		refund.setOrderPrice(slSysOrder.getOrderPrice());
-		refund.setPayment(slSysOrder.getActualPayment());
-		refund.setRefundFee(refundFee);
+		refund.setOrderNo(orderNo);
+		refund.setPlatformOrderNo(wemallOrder.getPlatformOrderNo());
+		refund.setUser(wemallOrder.getUser());
+		refund.setOrderPrice(wemallOrder.getOrderPrice());
+		refund.setPayment(wemallOrder.getPayment());
+		refund.setRefundFee(Integer.parseInt(refundFee));
 		refund.setRefundDesc(refundDesc);
 		refund.setRefundId(refundId);
-		refund.setRefundStatus("1");  //退款状态（0--未成功，1--已退款）
+		refund.setRefundStatus(1);  //退款状态（0--未成功，1--已退款）
 		refund.setRefundDate(new Date());//退款时间
-		refund.setPayMethod(PayMethod.weixin.toString());
-		refund.setIsNewRecord(true);*/
+		refund.setIsNewRecord(true);
 		
 		//为调用微信接口申请退款构建参数map
 		Map<String, String> paramsMap = ParamsGenerator.generateParamsForRefund(refund);
@@ -473,7 +479,7 @@ public class WeixinTradeService extends BaseService {
 		
 		//根据订单号查询订单，若没有，忽略通知
 		String out_trade_no = weixinTradeAllEntity.getOut_trade_no(); //商户订单号
-		WemallOrder wemallOrder = wemallOrderService.get(out_trade_no);
+		WemallOrder wemallOrder = wemallOrderService.get(IdGen.getOrderNoByPlatformOrderNo(out_trade_no));
 		if(wemallOrder == null) return null;
 		//若查到的订单对象中实际付款金额与total_fee不等，忽略通知
 		BigDecimal total_amount = weixinTradeAllEntity.getTotal_fee();

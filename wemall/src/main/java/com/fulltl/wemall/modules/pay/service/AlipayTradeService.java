@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,11 +31,13 @@ import com.fulltl.wemall.common.service.BaseService;
 import com.fulltl.wemall.common.utils.IdGen;
 import com.fulltl.wemall.modules.alipay.core.AlipayConfig;
 import com.fulltl.wemall.modules.alipay.core.pojo.AlipayTradeAllEntity;
-import com.fulltl.wemall.modules.sys.entity.SlSysOrder.AppoTypeEnum;
 import com.fulltl.wemall.modules.sys.utils.UserUtils;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrder;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrder.PaymentType;
+import com.fulltl.wemall.modules.wemall.entity.WemallOrderItem;
 import com.fulltl.wemall.modules.wemall.entity.WemallRefund;
+import com.fulltl.wemall.modules.wemall.service.WemallItemService;
+import com.fulltl.wemall.modules.wemall.service.WemallOrderItemService;
 import com.fulltl.wemall.modules.wemall.service.WemallOrderService;
 import com.fulltl.wemall.modules.wemall.service.WemallRefundService;
 import com.google.common.collect.Maps;
@@ -52,6 +55,10 @@ public class AlipayTradeService extends BaseService {
 	private WemallOrderService wemallOrderService;
 	@Autowired 
 	private WemallRefundService wemallRefundService;
+	@Autowired 
+	private WemallItemService wemallItemService;
+	@Autowired 
+	private WemallOrderItemService wemallOrderItemService;
 	
 	/**
 	 * 处理支付宝异步通知交易状态的方法
@@ -188,9 +195,8 @@ public class AlipayTradeService extends BaseService {
 	 * @return
 	 */
 	@Transactional(readOnly = false)
-	public Map<String, Object> generatePrepareIdByType(String orderNo, HttpServletRequest request) {
+	public Map<String, Object> generatePrepareIdByType(WemallOrder wemallOrder, HttpServletRequest request) {
 		Map<String, Object> retMap = new HashMap<String, Object>();
-		WemallOrder wemallOrder = wemallOrderService.get(orderNo);
 		if(wemallOrder == null) {
 			retMap.put("ret", "-1");
         	retMap.put("retMsg", "订单不存在。");
@@ -211,6 +217,15 @@ public class AlipayTradeService extends BaseService {
 	private Map<String, Object> generatePrepareIdByOrder(WemallOrder wemallOrder, HttpServletRequest request) {
 		Map<String, Object> retMap = new HashMap<String, Object>();
 		String basePath = getBasePath(request);
+		
+		//判断是否存在第三方订单号，执行减库存
+        if(StringUtils.isBlank(wemallOrder.getPlatformOrderNo())) {
+        	//执行减库存
+        	wemallItemService.reduceStorage(wemallOrder.getOrderNo());
+        }
+        
+        //生成并设置第三方订单号
+        wemallOrder.setPlatformOrderNo(IdGen.generatePlatformOrderNo(wemallOrder.getOrderNo()));
 		
 		//实例化客户端
 		AlipayClient alipayClient = AlipayConfig.getAlipayClient();

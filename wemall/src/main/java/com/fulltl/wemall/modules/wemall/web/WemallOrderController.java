@@ -140,7 +140,9 @@ public class WemallOrderController extends BaseController {
 	@RequestMapping(value = "alreadyShipped")
 	public String alreadyShipped(HttpServletRequest request, RedirectAttributes redirectAttributes) {
 		String orderNo = WebUtils.getCleanParam(request, "id");
-		wemallOrderMgrService.updateStatusByOrderNo(orderNo, OrderStatus.alreadyShipped.getValue());
+		WemallOrder wemallOrder = new WemallOrder();
+		wemallOrder.setOrderNo(orderNo);
+		wemallOrderService.updateAllStatusByOrderNo(wemallOrder, OrderStatus.alreadyShipped.getValue());
 		addMessage(redirectAttributes, "发货成功!");
 		return "redirect:"+Global.getAdminPath()+"/wemall/wemallOrder/?repage";
 	}

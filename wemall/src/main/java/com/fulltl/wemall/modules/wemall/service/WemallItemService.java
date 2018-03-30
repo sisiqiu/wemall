@@ -29,9 +29,10 @@ import com.google.gson.reflect.TypeToken;
 public class WemallItemService extends CrudService<WemallItemDao, WemallItem> {
 	@Autowired
 	private WemallItemSpecService wemallItemSpecService;
-	
 	@Autowired
 	private WemallItemActivityService wemallItemActivityService;
+	@Autowired
+	private WemallOrderItemService wemallOrderItemService;
 	
 	public WemallItem get(WemallItem entity) {
 		WemallItem wemallItem = super.get(entity);
@@ -91,14 +92,49 @@ public class WemallItemService extends CrudService<WemallItemDao, WemallItem> {
 	 * 减库存
 	 * @return
 	 */
+	@Transactional(readOnly = false)
 	public boolean reduceStorage(List<WemallOrderItem> wemallOrderItems) {
 		return true;
+	}
+	
+	/**
+	 * 减库存
+	 * @return
+	 */
+	@Transactional(readOnly = false)
+	public boolean reduceStorage(String orderNo) {
+		WemallOrderItem query = new WemallOrderItem();
+		query.setOrderNo(orderNo);
+		List<WemallOrderItem> wemallOrderItemList = wemallOrderItemService.findList(query);
+		return this.reduceStorage(wemallOrderItemList);
+	}
+	
+	/**
+	 * 释放库存
+	 * @return
+	 */
+	@Transactional(readOnly = false)
+	public boolean releaseStorage(List<WemallOrderItem> wemallOrderItems) {
+		return true;
+	}
+	
+	/**
+	 * 释放库存
+	 * @return
+	 */
+	@Transactional(readOnly = false)
+	public boolean releaseStorage(String orderNo) {
+		WemallOrderItem query = new WemallOrderItem();
+		query.setOrderNo(orderNo);
+		List<WemallOrderItem> wemallOrderItemList = wemallOrderItemService.findList(query);
+		return this.releaseStorage(wemallOrderItemList);
 	}
 	
 	/**
 	 * 增销量
 	 * @return
 	 */
+	@Transactional(readOnly = false)
 	public boolean increaseSalesNum(List<WemallOrderItem> wemallOrderItems) {
 		return true;
 	}

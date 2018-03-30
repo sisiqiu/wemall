@@ -19,7 +19,6 @@ import com.fulltl.wemall.common.service.BaseService;
 import com.fulltl.wemall.modules.pay.service.AlipayTradeService;
 import com.fulltl.wemall.modules.pay.service.WeixinTradeService;
 import com.fulltl.wemall.modules.pay.service.WemallOrderMgrService;
-import com.fulltl.wemall.modules.sys.entity.SlSysOrder.AppoTypeEnum;
 import com.fulltl.wemall.modules.sys.entity.User;
 import com.fulltl.wemall.modules.sys.service.SystemService;
 import com.fulltl.wemall.modules.sys.utils.UserUtils;
@@ -35,6 +34,7 @@ import com.fulltl.wemall.modules.wemall.service.WemallFreightInfoService;
 import com.fulltl.wemall.modules.wemall.service.WemallItemService;
 import com.fulltl.wemall.modules.wemall.service.WemallOrderAddressService;
 import com.fulltl.wemall.modules.wemall.service.WemallOrderItemService;
+import com.fulltl.wemall.modules.wemall.service.WemallOrderService;
 import com.fulltl.wemall.modules.wemall.service.WemallShopCarService;
 import com.fulltl.wemall.modules.wemall.service.WemallUserAddressService;
 import com.fulltl.wemall.modules.wx.entity.WxUserInfo;
@@ -61,6 +61,8 @@ public class WemallOrderFrontService extends BaseService {
 	private WemallShopCarService wemallShopCarService;
 	@Autowired
 	private WemallItemService wemallItemService;
+	@Autowired
+	private WemallOrderService wemallOrderService;
 	@Autowired
 	private WemallOrderMgrService wemallOrderMgrService;
 	@Autowired
@@ -492,11 +494,33 @@ public class WemallOrderFrontService extends BaseService {
 			return map;
 		}
 		
+		WemallOrder wemallOrder = wemallOrderService.get(orderNo);
+		if(wemallOrder == null) {
+    		map.put("ret", "-1");
+    		map.put("retMsg", "订单不存在。");
+        	return map;
+    	}
+		//判断金额是否为0，若为0，则直接成功。
+		if(wemallOrder.getOrderPrice().equals(0)) {
+			//执行减库存
+        	wemallItemService.reduceStorage(wemallOrder.getOrderNo());
+        	
+        	String buyerMessage = WebUtils.getCleanParam(request, "buyerMessage");//订单号
+    		wemallOrder.setBuyerMessage(buyerMessage);
+    		wemallOrderService.updatePrepayIdAndPayMethod(wemallOrder);
+    		wemallOrderService.updateAllStatusByOrderNo(wemallOrder, OrderStatus.alreadyPaid.getValue());
+    		
+    		map.put("ret", "0");
+    		map.put("retMsg", "生成成功！");
+    		map.put("needPay", "0");
+    		return map;
+		}
+		
 		//生成订单信息，获取要进行付款所需要的相关支付信息
 		if(PaymentType.alipay.getValue().toString().equals(paymentType)) {
-			map = alipayTradeService.generatePrepareIdByType(orderNo, request);
+			map = alipayTradeService.generatePrepareIdByType(wemallOrder, request);
 		} else if(PaymentType.weixin.getValue().toString().equals(paymentType)) {
-			map = weixinTradeService.generatePrepareIdByType(orderNo, request);
+			map = weixinTradeService.generatePrepareIdByType(wemallOrder, request);
 		} else {
 			map.put("ret", "-1");
 			map.put("retMsg", "支付方式格式错误！");
@@ -531,7 +555,9 @@ public class WemallOrderFrontService extends BaseService {
 		map = systemService.checkCurrentUser(user);
 		if(!"0".equals(map.get("ret"))) return map;
 		
-		wemallOrderMgrService.updateStatusByOrderNo(orderNo, status);
+		WemallOrder wemallOrder = new WemallOrder();
+		wemallOrder.setOrderNo(orderNo);
+		wemallOrderService.updateAllStatusByOrderNo(wemallOrder, status);
 		
 		map.put("ret", "0");
 		map.put("retMsg", "生成成功！");
