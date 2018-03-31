@@ -24,6 +24,8 @@ import com.fulltl.wemall.modules.sys.utils.UserUtils;
 import com.fulltl.wemall.modules.wemall.dao.WemallOrderDao;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrder;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrder.OrderStatus;
+import com.fulltl.wemall.modules.wemall.entity.WemallOrderAddress;
+import com.fulltl.wemall.modules.wemall.entity.WemallOrderItem;
 
 /**
  * 订单管理Service
@@ -41,6 +43,8 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 	private WemallShopCarService wemallShopCarService;
 	@Autowired 
 	private WemallItemService wemallItemService;
+	@Autowired 
+	private WemallOrderAddressService wemallOrderAddressService;
 	
 	public WemallOrder get(String id) {
 		return super.get(id);
@@ -217,5 +221,28 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 		
 		this.updateStatusByOrderNo(wemallOrder, status);
 		wemallOrderItemService.updateStatusByOrderNo(wemallOrder.getOrderNo(), status);
+	}
+
+	/**
+	 * 获取定单详情
+	 * @param orderNo
+	 * @return
+	 */
+	public Map<String, Object> getOrderDetail(String orderNo) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		//订单信息
+		WemallOrder wemallOrder = this.get(orderNo);
+		//订单收货地址信息
+		WemallOrderAddress wemallOrderAddress = wemallOrderAddressService.get(orderNo);
+		//订单商品信息
+		WemallOrderItem query = new WemallOrderItem();
+		query.setOrderNo(orderNo);
+		List<WemallOrderItem> orderItemList = wemallOrderItemService.findList(query);
+		map.put("ret", "0");
+		map.put("retMsg", "获取成功！");
+		map.put("wemallOrder", wemallOrder);
+		map.put("wemallOrderAddress", wemallOrderAddress);
+		map.put("orderItemList", orderItemList);
+		return map;
 	}
 }

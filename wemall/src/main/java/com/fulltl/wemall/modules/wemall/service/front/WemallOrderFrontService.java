@@ -637,20 +637,7 @@ public class WemallOrderFrontService extends BaseService {
 			map.put("retMsg", "订单号不能为空！");
 			return map;
 		}
-		//订单信息
-		WemallOrder wemallOrder = wemallOrderMgrService.get(orderNo);
-		//订单收货地址信息
-		WemallOrderAddress wemallOrderAddress = wemallOrderAddressService.get(orderNo);
-		//订单商品信息
-		WemallOrderItem query = new WemallOrderItem();
-		query.setOrderNo(orderNo);
-		List<WemallOrderItem> orderItemList = wemallOrderItemService.findList(query);
-		
-		map.put("ret", "0");
-		map.put("retMsg", "获取成功！");
-		map.put("wemallOrder", wemallOrder);
-		map.put("wemallOrderAddress", wemallOrderAddress);
-		map.put("orderItemList", orderItemList);
+		map = wemallOrderService.getOrderDetail(orderNo);
 		return map;
 	}
 
