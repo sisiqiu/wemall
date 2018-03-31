@@ -4,6 +4,8 @@
 package com.fulltl.wemall.modules.wemall.entity;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
@@ -14,6 +16,7 @@ import com.fulltl.wemall.common.persistence.DataEntity;
 import com.fulltl.wemall.common.utils.IdGen;
 import com.fulltl.wemall.modules.sys.entity.User;
 import com.fulltl.wemall.modules.sys.utils.UserUtils;
+import com.fulltl.wemall.modules.wemall.entity.WemallOrder.OrderStatus;
 
 /**
  * 订单管理Entity
@@ -33,7 +36,7 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 	private Integer totalRefundFee;		// 总退款金额
 	private String title;		// 订单名称
 	private String body;		// 订单描述
-	private Integer status;		// 状态（1、未付款，2、已付款，3、已发货，4、已收货，5、已评论，6、交易退货，7、交易关闭，8、已取消）
+	private Integer status;		// 状态（1、未付款，2、已付款，3、已发货，4、已收货，5、已评论，6、交易退货，7、交易关闭，8、未付款，已取消，9、已付款，已取消）
 	private Date paymentDate;		// 付款时间
 	private Date consignDate;		// 发货时间
 	private Date endDate;		// 交易完成时间
@@ -122,9 +125,13 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 		 */
 		alreadyClosed(7),
 		/**
-		 * 已取消
+		 * 未付款，已取消
 		 */
-		alreadyCancelled(8)
+		alreadyCancelled_unPaid(8),
+		/**
+		 * 未付款，已取消
+		 */
+		alreadyCancelled_alreadyPaid(9),
 		;
 		
 		private Integer value;
@@ -135,6 +142,30 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 		
 		public Integer getValue() {
 			return value;
+		}
+		
+		public static OrderStatus getOrderStatusByValue(Integer value) {
+			switch(value) {
+			case 1:
+				return unPaid;
+			case 2:
+				return alreadyPaid;
+			case 3:
+				return alreadyShipped;
+			case 4:
+				return alreadyReceived;
+			case 5:
+				return alreadyCommented;
+			case 6:
+				return alreadyRejected;
+			case 7:
+				return alreadyClosed;
+			case 8:
+				return alreadyCancelled_unPaid;
+			case 9:
+				return alreadyCancelled_alreadyPaid;
+			}
+			return null;
 		}
 	}
 	
@@ -426,5 +457,75 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 		this.setCreateDate(new Date());	//下单日期
 		this.setTotalRefundFee(0);	//总退款金额
 		this.setPayment(0);	//实付金额
+	}
+	
+	/**
+	 * 更新订单状态值时，对状态做校验
+	 * @param orderStatus 要更新到的状态值
+	 * @return
+	 */
+	public Map<String, Object> checkUpdateStatus(OrderStatus orderStatus) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		switch(orderStatus) {
+		case unPaid:
+			break;
+		case alreadyPaid:
+			if(!orderStatus.unPaid.getValue().equals(this.getStatus())) {
+				map.put("ret", "-1");
+				map.put("retMsg", "订单处于不可支付状态，请确认订单处于未付款状态。");
+				return map;
+			}
+			break;
+		case alreadyShipped:
+			if(!orderStatus.alreadyPaid.getValue().equals(this.getStatus())) {
+				map.put("ret", "-1");
+				map.put("retMsg", "请确认订单处于已支付状态。");
+				return map;
+			}
+			break;
+		case alreadyReceived:
+			if(!orderStatus.alreadyShipped.getValue().equals(this.getStatus())) {
+				map.put("ret", "-1");
+				map.put("retMsg", "请确认订单处于已发货状态。");
+				return map;
+			}
+			break;
+		case alreadyCommented:
+			if(!orderStatus.alreadyReceived.getValue().equals(this.getStatus())) {
+				map.put("ret", "-1");
+				map.put("retMsg", "请确认订单处于已收货状态。");
+				return map;
+			}
+			break;
+		case alreadyRejected:
+			if(!orderStatus.alreadyReceived.getValue().equals(this.getStatus())) {
+				map.put("ret", "-1");
+				map.put("retMsg", "请确认订单已发货且未收货。");
+				return map;
+			}
+			break;
+		case alreadyClosed:
+			break;
+		case alreadyCancelled_unPaid:
+			//更新
+			if(!orderStatus.unPaid.getValue().equals(this.getStatus())) {
+				map.put("ret", "-1");
+				map.put("retMsg", "请确认订单处于未付款状态。");
+				return map;
+			}
+			break;
+		case alreadyCancelled_alreadyPaid:
+			//更新
+			if(!orderStatus.alreadyPaid.getValue().equals(this.getStatus())) {
+				map.put("ret", "-1");
+				map.put("retMsg", "请确认订单处于已付款未发货状态。");
+				return map;
+			}
+			break;
+		}
+		
+		map.put("ret", "0");
+		map.put("retMsg", "校验成功");
+		return map;
 	}
 }

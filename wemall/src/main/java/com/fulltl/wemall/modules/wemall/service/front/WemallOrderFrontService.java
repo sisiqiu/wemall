@@ -500,6 +500,9 @@ public class WemallOrderFrontService extends BaseService {
     		map.put("retMsg", "订单不存在。");
         	return map;
     	}
+		//更新订单状态值时，对状态做校验
+		map = wemallOrder.checkUpdateStatus(OrderStatus.alreadyPaid);
+		if(!"0".equals(map.get("ret"))) return map;
 		
 		WemallOrderAddress wemallOrderAddress = wemallOrderAddressService.get(orderNo);
 		
@@ -563,8 +566,18 @@ public class WemallOrderFrontService extends BaseService {
 		map = systemService.checkCurrentUser(user);
 		if(!"0".equals(map.get("ret"))) return map;
 		
-		WemallOrder wemallOrder = new WemallOrder();
-		wemallOrder.setOrderNo(orderNo);
+		WemallOrder wemallOrder = wemallOrderService.get(orderNo);
+		//更新订单状态值时，对状态做校验
+		map = wemallOrder.checkUpdateStatus(OrderStatus.getOrderStatusByValue(status));
+		if(!"0".equals(map.get("ret"))) return map;
+		
+		if(OrderStatus.alreadyCancelled_alreadyPaid.getValue().equals(status)) {
+			//执行退款逻辑
+			if(!wemallOrder.getOrderPrice().equals(0)) {
+				wemallOrderMgrService.refund(orderNo, wemallOrder.getOrderPrice().toString(), null);
+			}
+		}
+		
 		wemallOrderService.updateAllStatusByOrderNo(wemallOrder, status);
 		
 		map.put("ret", "0");
@@ -669,7 +682,11 @@ public class WemallOrderFrontService extends BaseService {
 		for(WemallOrderItem entity : page.getList()) {
 			dataList.add(entity.getSmallEntityMap());
 		}*/
-		map.put("list", page.getList());
+		List<Map<String, Object>> list = Lists.newArrayList();
+		for(WemallOrder entity : page.getList()) {
+			list.add(wemallOrderService.getOrderDetail(entity.getOrderNo()));
+		}
+		map.put("list", list);
 		map.put("count", page.getCount());
 		map.put("ret", "0");
 		map.put("retMsg", "获取成功");

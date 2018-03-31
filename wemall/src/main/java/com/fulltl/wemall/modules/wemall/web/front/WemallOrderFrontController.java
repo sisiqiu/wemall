@@ -316,7 +316,32 @@ public class WemallOrderFrontController extends BaseController {
 	@ResponseBody
 	public String cancelOrder(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> map = slHisOrderFrontService.updateOrderAndOrderItemStatus(WebUtils.getCleanParam(request, "orderNo"), 
-																OrderStatus.alreadyCancelled.getValue());
+																OrderStatus.alreadyCancelled_unPaid.getValue());
+		return gson.toJson(formatReturnMsg(map));
+	}
+	
+	/**
+	 * 取消订单的接口。
+	 * 
+	 * 测试用例：
+	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/order/cancelOrderForAlreadyPaid
+	 *	参数：
+	 *		orderNo（*）=订单号
+	 *
+	 * 	例：
+	 * 
+	 * 结果示例：{"ret":"0","data":{},"retMsg":"生成成功！"}
+	 * 		或
+	 * 		{"ret":"-1","data":{},"retMsg":"订单号不能为空！"}
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = {"cancelOrderForAlreadyPaid"})
+	@ResponseBody
+	public String cancelOrderForAlreadyPaid(HttpServletRequest request, HttpServletResponse response) {
+		Map<String, Object> map = slHisOrderFrontService.updateOrderAndOrderItemStatus(WebUtils.getCleanParam(request, "orderNo"), 
+																OrderStatus.alreadyCancelled_alreadyPaid.getValue());
 		return gson.toJson(formatReturnMsg(map));
 	}
 	

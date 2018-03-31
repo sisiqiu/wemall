@@ -4,6 +4,7 @@
 package com.fulltl.wemall.modules.wemall.entity;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.constraints.NotNull;
@@ -12,7 +13,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
 
 import com.fulltl.wemall.common.persistence.DataEntity;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.gson.Gson;
 
 /**
  * 订单-商品管理Entity
@@ -30,7 +33,7 @@ public class WemallOrderItem extends DataEntity<WemallOrderItem> {
 	private String photo;		// 商品缩略图
 	private Integer totalFee;		// 商品总金额
 	private String itemsData;		// 商品规格说明，[{&quot;k&quot;:属性类别,&quot;v&quot;:属性名}]
-	private Integer status;		// 状态（1、未付款，2、已付款，3、已发货，4、已收货，5、已评论，6、交易退货，7、交易关闭，8、已取消）
+	private Integer status;		// 状态（1、未付款，2、已付款，3、已发货，4、已收货，5、已评论，6、交易退货，7、交易关闭，8、未付款，已取消，9、已付款，已取消）
 	private String freightName;		// 物流名称
 	private String freightNo;		// 物流单号
 	private String buyerMessage;		// 买家留言
@@ -228,9 +231,16 @@ public class WemallOrderItem extends DataEntity<WemallOrderItem> {
 		this.setTotalFee(orderPrice);
 		String itemsData = StringUtils.EMPTY;
 		if(wemallShopCar.getItemSpecs() != null) {
+			List<Map<String, Object>> itemSpecList = Lists.newArrayList();
 			for(WemallItemSpec itemSpec : wemallShopCar.getItemSpecs()) {
-				itemsData = itemsData + itemSpec.getSpecName() + "：" + itemSpec.getSpecInfoName() + ";";
+				Map<String, Object> itemSpecMap = Maps.newHashMap();
+				itemSpecMap.put("id", itemSpec.getId());
+				itemSpecMap.put("specName", itemSpec.getSpecName());
+				itemSpecMap.put("specInfoName", itemSpec.getSpecInfoName());
+				itemSpecMap.put("itemId", itemSpec.getItemId());
+				itemSpecList.add(itemSpecMap);
 			}
+			itemsData = new Gson().toJson(itemSpecList);
 		}
 		this.setItemsData(itemsData);//设置规格信息
 		this.setStatus(1);//未付款
