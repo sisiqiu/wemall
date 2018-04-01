@@ -29,6 +29,8 @@
 		a.buyer_message AS "buyerMessage",
 		a.shopCarIds AS "shopCarIds",
 		a.del_flag AS "delFlag",
+		a.freight_name AS "freightName",
+		a.freight_no AS "freightNo",
 		u2.name AS "user.name"
 	</sql>
 	
@@ -242,6 +244,12 @@
 			<if test="shopCarIds != null and shopCarIds != ''">
 			    shopCarIds = #{shopCarIds},
 			</if>
+			<if test="freightName != null and freightName != ''">
+			    freight_name = #{freightName},
+			</if>
+			<if test="freightNo != null and freightNo != ''">
+			    freight_no = #{freightNo},
+			</if>
 			update_date = #{updateDate}
 		WHERE order_no = #{orderNo}
 	</update>
@@ -298,6 +306,12 @@
 			</if>
 			<if test="closeDate != null and closeDate != ''">
 			    close_date = #{closeDate},
+			</if>
+			<if test="freightName != null and freightName != ''">
+			    freight_name = #{freightName},
+			</if>
+			<if test="freightNo != null and freightNo != ''">
+			    freight_no = #{freightNo},
 			</if>
 			status = #{status}
 		WHERE order_no = #{orderNo}
