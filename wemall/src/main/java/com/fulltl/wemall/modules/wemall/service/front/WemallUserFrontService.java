@@ -685,4 +685,27 @@ public class WemallUserFrontService extends BaseService {
 		retMap.put("retMsg", "验证成功");
 		return retMap;
 	}
+
+	@Transactional(readOnly = false)
+	public Map<String, Object> updateWemallUserInfo(WxUserInfo wxUserInfo, HttpServletRequest request) {
+		Map<String, Object> retMap = Maps.newHashMap();
+		User user = UserUtils.getUser();
+		retMap = systemService.checkCurrentUser(user);
+		if(!"0".equals(retMap.get("ret"))) return retMap;
+		if(StringUtils.isEmpty(wxUserInfo.getId())) {
+			retMap.put("ret", "-1");
+			retMap.put("retMsg", "用户id不能为空");
+			return retMap;
+		}
+		if(!StringUtils.isEmpty(wxUserInfo.getMobile()) && 
+				!RegExpValidatorUtil.isMobile(wxUserInfo.getMobile())){
+			retMap.put("ret", "-1");
+			retMap.put("retMsg", "手机号格式错误");
+			return retMap;
+		}
+		wxUserInfoService.updateInfoById(wxUserInfo);
+		retMap.put("ret", "0");
+		retMap.put("retMsg", "修改成功");
+		return retMap;
+	}
 }

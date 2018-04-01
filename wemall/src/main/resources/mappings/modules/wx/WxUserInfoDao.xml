@@ -249,6 +249,54 @@
 		WHERE open_id = #{openId}
 	</update>
 	
+	<update id="updateInfoById">
+		UPDATE wx_user_info SET 
+			<if test="user != null and user.id != null and user.id != ''">
+				user_id = #{user.id},
+			</if>
+			<if test="userName != null and userName != ''">
+				user_name = #{userName},
+			</if>
+			<if test="nickName != null and nickName != ''">
+				nick_name = #{nickName},
+			</if>
+			<if test="sex != null and sex != ''">
+				sex = #{sex},
+			</if>
+			<if test="country != null and country != ''">
+				country = #{country},
+			</if>
+			<if test="province != null and province != ''">
+				province = #{province},
+			</if>
+			<if test="city != null and city != ''">
+				city = #{city},
+			</if>
+			<if test="language != null and language != ''">
+				language = #{language},
+			</if>
+			<if test="headImgUrl != null and headImgUrl != ''">
+				head_img_url = #{headImgUrl},
+			</if>
+			<if test="mobile != null and mobile != ''">
+				mobile = #{mobile},
+			</if>
+			<if test="isFocus != null">
+				is_focus = #{isFocus},
+			</if>
+			<if test="isGetUserInfo != null">
+				is_get_user_info = #{isGetUserInfo},
+			</if>
+			<if test="isChangePw != null">
+				is_change_pw = #{isChangePw},
+			</if>
+			<if test="isBindMobile != null">
+				is_bind_mobile = #{isBindMobile},
+			</if>
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
 	<update id="delete">
 		UPDATE wx_user_info SET 
 			del_flag = #{DEL_FLAG_DELETE}
