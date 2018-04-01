@@ -57,6 +57,8 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 	private Integer endTotalRefundFee;		// 结束 总退款金额
 	private Date beginPaymentDate;		// 开始 付款时间
 	private Date endPaymentDate;		// 结束 付款时间
+	private String freightName;			//物流公司
+	private String freightNo;			//物流单号
 	
 	/**
 	 * 付款方式
@@ -443,6 +445,22 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 		return isNewRecord;
 	}
 	
+	public String getFreightName() {
+		return freightName;
+	}
+
+	public void setFreightName(String freightName) {
+		this.freightName = freightName;
+	}
+
+	public String getFreightNo() {
+		return freightNo;
+	}
+
+	public void setFreightNo(String freightNo) {
+		this.freightNo = freightNo;
+	}
+
 	/**
 	 * 初始化新建订单对象，
 	 * 生成订单号、匹配当前用户id、订单状态、支付状态、下单日期

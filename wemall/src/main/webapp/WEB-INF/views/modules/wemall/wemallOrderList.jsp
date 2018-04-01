@@ -23,6 +23,10 @@
 			promptx("填写退款金额", "退款金额", href, null);
 		}
 		
+		function delivery(href) {
+			promptxDouble("填写发货信息", "物流公司","物流单号", href, null);
+		}
+		
 		function downloadBill() {
 			var href = "${ctx}/wemall/wemallOrder/downloadBill";
 			mypromptx("下载对账单", href, null);
@@ -113,7 +117,6 @@
 <body>
 	<ul class="nav nav-tabs">
 		<li class="active"><a href="${ctx}/wemall/wemallOrder/">订单列表</a></li>
-		<shiro:hasPermission name="wemall:wemallOrder:edit"><li><a href="${ctx}/wemall/wemallOrder/form">订单添加</a></li></shiro:hasPermission>
 	</ul>
 	<form:form id="searchForm" modelAttribute="wemallOrder" action="${ctx}/wemall/wemallOrder/" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
@@ -225,16 +228,16 @@
 					<a href="${ctx}/wemall/wemallOrder/delete?orderNo=${wemallOrder.orderNo}" onclick="return confirmx('确认要删除该订单吗？', this.href)">删除</a>
 				</td></shiro:hasPermission> --%>
 				<shiro:hasPermission name="wemall:wemallOrder:edit"><td>
-    				<a href="${ctx}/wemall/wemallOrder/form?orderNo=${wemallOrder.orderNo}">修改</a>
+    				<a href="${ctx}/wemall/wemallOrder/form?orderNo=${wemallOrder.orderNo}">查看详情</a>
 					<a href="${ctx}/wemall/wemallOrder/delete?orderNo=${wemallOrder.orderNo}" onclick="return confirmx('确认要删除该订单吗？', this.href)">删除</a>
 				</td></shiro:hasPermission>
 				<shiro:hasPermission name="wemall:wemallOrder:refund"><td>
 					<a onclick="return refund('${ctx}/wemall/wemallOrder/refund?orderNo=${wemallOrder.orderNo}')" >退款</a>
 				</td></shiro:hasPermission>
-				<c:if test="${wemallOrder.status} == '2'">
-					<shiro:hasPermission name="wemall:wemallOrder:alreadyShipped"><td>
-						<a href="${ctx}/wemall/wemallOrder/alreadyShipped?orderNo=${wemallOrder.orderNo}" onclick="return confirmx('确认对该订单执行发货吗？', this.href)" >发货</a>
-					</td></shiro:hasPermission>
+				<c:if test="${wemallOrder.status == 2}">
+					<td>
+						<a onclick="return delivery('${ctx}/wemall/wemallOrder/alreadyShipped?orderNo=${wemallOrder.orderNo}')" >发货</a>
+					</td>
 				</c:if>
 			</tr>
 		</c:forEach>

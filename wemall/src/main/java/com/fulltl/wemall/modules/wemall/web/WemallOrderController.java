@@ -3,6 +3,8 @@
  */
 package com.fulltl.wemall.modules.wemall.web;
 
+import java.net.URLDecoder;
+import java.util.Date;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -65,6 +67,8 @@ public class WemallOrderController extends BaseController {
 	@RequiresPermissions("wemall:wemallOrder:view")
 	@RequestMapping(value = "form")
 	public String form(WemallOrder wemallOrder, Model model) {
+		Map<String, Object> allData = wemallOrderService.getOrderDetail(wemallOrder.getOrderNo());
+		model.addAttribute("allData", allData);
 		model.addAttribute("wemallOrder", wemallOrder);
 		return "modules/wemall/wemallOrderForm";
 	}
@@ -139,9 +143,14 @@ public class WemallOrderController extends BaseController {
 	@RequiresPermissions("wemall:wemallOrder:alreadyShipped")
 	@RequestMapping(value = "alreadyShipped")
 	public String alreadyShipped(HttpServletRequest request, RedirectAttributes redirectAttributes) {
-		String orderNo = WebUtils.getCleanParam(request, "id");
+		String orderNo = WebUtils.getCleanParam(request, "orderNo");
+		String freightName = WebUtils.getCleanParam(request, "freightName");
+		String freightNo = WebUtils.getCleanParam(request, "freightNo");
 		WemallOrder wemallOrder = new WemallOrder();
 		wemallOrder.setOrderNo(orderNo);
+		wemallOrder.setFreightName(URLDecoder.decode(freightName));
+		wemallOrder.setFreightNo(freightNo);
+		wemallOrder.setConsignDate(new Date());
 		wemallOrderService.updateAllStatusByOrderNo(wemallOrder, OrderStatus.alreadyShipped.getValue());
 		addMessage(redirectAttributes, "发货成功!");
 		return "redirect:"+Global.getAdminPath()+"/wemall/wemallOrder/?repage";

@@ -92,8 +92,8 @@ public class WemallItemService extends CrudService<WemallItemDao, WemallItem> {
 			if(item!=null){
 				 thisStorage = item.getStorage();	
 			}
-			if(StringUtils.isEmpty(w.getItemsData())){
-				if(thisStorage >=w.getItemNum()){
+			if(StringUtils.isEmpty(w.getItemsData()) || w.getItemsData().equals("[]")){
+				if(thisStorage >= w.getItemNum()){
 					result = true;
 				}else{
 					result = false;

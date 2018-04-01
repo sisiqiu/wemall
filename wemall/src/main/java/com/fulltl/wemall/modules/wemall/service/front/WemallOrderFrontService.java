@@ -465,7 +465,10 @@ public class WemallOrderFrontService extends BaseService {
 		}
 		wemallOrderAddress.initBy(wemallUserAddress, orderNo);
 		wemallOrderAddressService.save(wemallOrderAddress);
-		return null;
+		
+		map.put("ret", "0");
+		map.put("retMsg", "更新成功！");
+		return map;
 	}
 	
 	/**

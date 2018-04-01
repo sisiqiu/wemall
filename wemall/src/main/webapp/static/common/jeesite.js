@@ -154,6 +154,30 @@ function promptx(title, lable, href, closed){
 	return false;
 }
 
+function promptxDouble(title, lable,lable1, href, closed){
+	top.$.jBox("<div class='form-search' style='padding:20px;text-align:center;'>" + lable + "：<input type='text' id='txt' name='txt'/>"+"</br></br>"+ lable1 + "：<input type='text' id='txt1' name='txt1'/></div>", {
+			title: title, submit: function (v, h, f){
+	    if (f.txt == '') {
+	        top.$.jBox.tip("请输入" + lable + "。", 'error');
+	        return false;
+	    }
+	    if (f.txt1 == '') {
+	        top.$.jBox.tip("请输入" + lable1 + "。", 'error');
+	        return false;
+	    }
+		if (typeof href == 'function') {
+			href();
+		}else{
+			resetTip(); //loading();
+			location = href + "&freightName="+ encodeURI(encodeURI(f.txt))+"&freightNo="+ encodeURIComponent(f.txt1);
+		}
+	},closed:function(){
+		if (typeof closed == 'function') {
+			closed();
+		}
+	}});
+	return false;
+}
 // 添加TAB页面
 function addTabPage(title, url, closeable, $this, refresh){
 	top.$.fn.jerichoTab.addTab({

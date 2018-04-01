@@ -9,6 +9,16 @@
 			if($("#salesNum").val() == "") {
 				$("#salesNum").val("0");
 			}
+			$("input[name='freightFree']").click(function(){
+				var thisVal = $(this).val();
+				if(thisVal==1){
+					$("#freightPrice").val("0");
+					$("#freightPrice").attr("readonly",true);
+				}else{
+					$("#freightPrice").attr("readonly",false);
+
+				}
+			})
 			var editorElement = CKEDITOR.document.getById('desc');
 			editorElement.setHtml(CKEDITOR.instances.desc.getData());
 			//$("#name").focus();
@@ -282,10 +292,11 @@
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
-		<div class="control-group">
+		<div class="control-group" style="display:none">
 			<label class="control-label">是否支持下单减库存：</label>
 			<div class="controls">
-				<form:radiobuttons path="subStock" items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false" class="required"/>
+				<%-- <form:radiobuttons path="subStock" vlaue = "1"  items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false" class="required"/> --%>
+				<form:hidden path="subStock" value="1"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
