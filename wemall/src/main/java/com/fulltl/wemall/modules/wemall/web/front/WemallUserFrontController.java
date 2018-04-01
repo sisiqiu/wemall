@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.fulltl.wemall.common.web.BaseController;
 import com.fulltl.wemall.modules.sys.service.SystemService;
 import com.fulltl.wemall.modules.wemall.service.front.WemallUserFrontService;
+import com.fulltl.wemall.modules.wx.entity.WxUserInfo;
+import com.fulltl.wemall.modules.wx.service.WxUserInfoService;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 
@@ -525,5 +527,33 @@ public class WemallUserFrontController extends BaseController {
 	@ResponseBody
 	public String checkMobile(HttpServletRequest request, HttpServletResponse response, Model model) {
 		return new Gson().toJson(formatReturnMsg(slHisUserFrontService.checkMobile(request)));
+	}
+	
+	/**
+	 * 个人中心修改用户信息
+	 * url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/user/updateWemallUserInfo
+	 *	参数：id(*)=用户Id必须传
+	 *		mobile = 手机号
+	 *		nickName = 用户昵称
+	 *		userName = 真实姓名
+	 *		sex = 性别
+	 * 	例：{
+	 * 		id=13
+	 * 		nickName=皮卡丘
+	 * 		userName = 真实姓名
+	 * 		sex=0
+	 * 		}
+	 * 
+	 * 结果示例：{"ret":"0","retMsg":"修改成功！","data":{}}
+	 * 		或
+	 * 		{"ret":"-1","retMsg":"传参错误","data":{}}
+	 * @param request
+	 * @param response
+	 * @param w
+	 */
+	@RequestMapping(value = {"wemall/user/updateWemallUserInfo"})
+	@ResponseBody
+	public String updateWemallUserInfo(WxUserInfo wxUserInfo, HttpServletRequest request, HttpServletResponse response, WxUserInfo w) {
+		return new Gson().toJson(formatReturnMsg(slHisUserFrontService.updateWemallUserInfo(wxUserInfo, request)));
 	}
 }

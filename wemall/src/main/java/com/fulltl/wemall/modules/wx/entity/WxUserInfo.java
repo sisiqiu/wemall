@@ -7,9 +7,12 @@ import com.fulltl.wemall.modules.sys.entity.User;
 import com.fulltl.wemall.modules.wx.core.pojo.WXOAuthUserInfo;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 import org.hibernate.validator.constraints.Length;
 
 import com.fulltl.wemall.common.persistence.DataEntity;
+import com.fulltl.wemall.common.utils.RegExpValidatorUtil;
 
 /**
  * 微信用户信息管理Entity
@@ -143,6 +146,7 @@ public class WxUserInfo extends DataEntity<WxUserInfo> {
 	}
 	
 	@Length(min=0, max=20, message="手机号长度必须介于 0 和 20 之间")
+	@Pattern(regexp=RegExpValidatorUtil.REGEX_NULL_OR_MOBILE, message="手机号格式错误")
 	public String getMobile() {
 		return mobile;
 	}
