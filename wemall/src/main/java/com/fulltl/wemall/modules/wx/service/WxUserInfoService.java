@@ -262,6 +262,7 @@ public class WxUserInfoService extends CrudService<WxUserInfoDao, WxUserInfo> {
 
 	@Transactional(readOnly = false)
 	public void updateInfoById(WxUserInfo wxUserInfo) {
+		wxUserInfo.preUpdate();
 		dao.updateInfoById(wxUserInfo);
 	}
 	
