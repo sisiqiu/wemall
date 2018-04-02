@@ -278,6 +278,9 @@ public class WemallOrderFrontController extends BaseController {
 	 *		paymentType（*）=付款方式
 	 *		orderNo（*）=订单号
 	 *		buyerMessage=买家留言
+	 *		activityId=活动id
+	 *		activityType=活动类别
+	 *		scoreUsageNum=使用积分数
 	 *
 	 * 	例：
 	 * 
@@ -394,6 +397,30 @@ public class WemallOrderFrontController extends BaseController {
 	@ResponseBody
 	public String commentItem(WemallOrderItem wemallOrderItem, HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> map = slHisOrderFrontService.commentItem(wemallOrderItem, request);
+		return gson.toJson(formatReturnMsg(map));
+	}
+	
+	/**
+	 * 用户评论订单商品的接口。
+	 * 
+	 * 测试用例：
+	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/order/applyForReject
+	 *	参数：
+	 *		orderNo（*）=订单号
+	 *
+	 * 	例：
+	 * 
+	 * 结果示例：{"ret":"0","data":{},"retMsg":"提交成功！"}
+	 * 		或
+	 * 		{"ret":"-1","data":{},"retMsg":"订单号不能为空！"}
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = {"applyForReject"})
+	@ResponseBody
+	public String applyForReject(HttpServletRequest request, HttpServletResponse response) {
+		Map<String, Object> map = slHisOrderFrontService.applyForReject(request);
 		return gson.toJson(formatReturnMsg(map));
 	}
 }

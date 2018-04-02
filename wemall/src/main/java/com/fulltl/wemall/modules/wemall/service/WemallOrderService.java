@@ -4,6 +4,7 @@
 package com.fulltl.wemall.modules.wemall.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -18,14 +19,17 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fulltl.wemall.common.persistence.Page;
 import com.fulltl.wemall.common.service.CrudService;
 import com.fulltl.wemall.common.utils.IdGen;
+import com.fulltl.wemall.modules.sys.entity.OrderDict;
 import com.fulltl.wemall.modules.sys.entity.User;
 import com.fulltl.wemall.modules.sys.service.SystemService;
+import com.fulltl.wemall.modules.sys.utils.OrderDictUtils;
 import com.fulltl.wemall.modules.sys.utils.UserUtils;
 import com.fulltl.wemall.modules.wemall.dao.WemallOrderDao;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrder;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrder.OrderStatus;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrderAddress;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrderItem;
+import com.fulltl.wemall.modules.wemall.entity.WemallScoreInfo.ScoreFromType;
 
 /**
  * 订单管理Service
@@ -45,6 +49,8 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 	private WemallItemService wemallItemService;
 	@Autowired 
 	private WemallOrderAddressService wemallOrderAddressService;
+	@Autowired 
+	private WemallScoreInfoService wemallScoreInfoService;
 	
 	public WemallOrder get(String id) {
 		return super.get(id);
@@ -159,6 +165,7 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 	@Transactional(readOnly = false)
 	public void updateOrderRefundFee(WemallOrder wemallOrder, String refundFee) {
 		wemallOrder.setTotalRefundFee(new BigDecimal(wemallOrder.getTotalRefundFee()).add(new BigDecimal(refundFee)).intValue());
+		wemallOrder.setStatus(OrderStatus.alreadyRejected.getValue());
 		dao.updateTotalRefundFee(wemallOrder);
 	}
 
@@ -200,6 +207,29 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 			}
 			//添加商品销量
 			wemallItemService.increaseSalesNum(wemallOrder.getOrderNo());
+			//对用户的积分执行扣除操作
+			if(wemallOrder.getScoreUsageNum() != null && wemallOrder.getScoreUsageNum() != 0) {
+				wemallScoreInfoService.updateUserScore(wemallOrder.getUser().getId(), wemallOrder.getScoreUsageNum()*(-1), ScoreFromType.itemScoreDeduction);
+			}
+		}
+		if(OrderStatus.alreadyCancelled_alreadyPaid.getValue().equals(status)) {
+			//订单已付款，已取消
+			//释放库存
+			wemallItemService.releaseStorage(wemallOrder.getOrderNo());
+			//将该订单消耗的积分退回给用户
+			if(wemallOrder.getScoreUsageNum() != null && wemallOrder.getScoreUsageNum() != 0) {
+				wemallScoreInfoService.updateUserScore(wemallOrder.getUser().getId(), wemallOrder.getScoreUsageNum(), ScoreFromType.rollback);
+			}
+		}
+		if(OrderStatus.alreadyReceived.getValue().equals(status)) {
+			//订单已收货
+			//根据订单实付金额 及 购买商品获取积分比例，为该用户增加相关积分
+			Integer payment = wemallOrder.getPayment();
+			OrderDict orderDict = OrderDictUtils.getOrderDictByTypeAndValue("score_about_set", "2");
+			if(orderDict != null) {
+				int intValue = new BigDecimal(orderDict.getPrice()).multiply(new BigDecimal(payment)).divide(new BigDecimal(100), 0, RoundingMode.FLOOR).intValue();
+				wemallScoreInfoService.updateUserScore(wemallOrder.getUser().getId(), intValue, ScoreFromType.buyItems);
+			}
 		}
 		if(OrderStatus.alreadyClosed.getValue().equals(status)) {
 			//订单关闭
@@ -245,5 +275,21 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 		map.put("wemallOrderAddress", wemallOrderAddress);
 		map.put("orderItemList", orderItemList);
 		return map;
+	}
+
+	/**
+	 * 用户申请退货
+	 * @param wemallOrder
+	 */
+	@Transactional(readOnly = false)
+	public void applyForReject(WemallOrder wemallOrder) {
+		wemallOrder.setApplyForReject(1);
+		wemallOrder.setRejectDate(new Date());
+		wemallOrder.preUpdate();
+		dao.applyForReject(wemallOrder);
+	}
+
+	public List<WemallOrder> findUnPaidOrderList(WemallOrder wemallOrder) {
+		return dao.findUnPaidOrderList(wemallOrder);
 	}
 }

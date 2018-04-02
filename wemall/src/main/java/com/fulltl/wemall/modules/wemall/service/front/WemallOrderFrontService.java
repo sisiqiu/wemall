@@ -557,7 +557,7 @@ public class WemallOrderFrontService extends BaseService {
 	}
 
 	/**
-	 * 根据预约id，订单号，付款方式生成并返回预付款id。
+	 * 根据订单号和状态值，更新订单及订单商品的状态
 	 * @param request
 	 * @return
 	 */
@@ -591,6 +591,46 @@ public class WemallOrderFrontService extends BaseService {
 		map.put("ret", "0");
 		map.put("retMsg", "生成成功！");
 		return map;
+	}
+	
+	/**
+	 * 用户提交退货申请的接口。
+	 * @param request
+	 * @return
+	 */
+	@Transactional(readOnly = false)
+	public Map<String, Object> applyForReject(HttpServletRequest request) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		String orderNo = WebUtils.getCleanParam(request, "orderNo");
+		if(StringUtils.isBlank(orderNo)) {
+			map.put("ret", "-1");
+			map.put("retMsg", "订单号不能为空！");
+			return map;
+		}
+		// 校验当前用户是否已登录
+		User user = UserUtils.getUser();
+		map = systemService.checkCurrentUser(user);
+		if(!"0".equals(map.get("ret"))) return map;
+		
+		WemallOrder wemallOrder = wemallOrderService.get(orderNo);
+		if(wemallOrder.getStatus().equals(OrderStatus.alreadyPaid.getValue())) {
+			map.put("ret", "-1");
+			map.put("retMsg", "商家尚未发货，用户可选择取消订单来撤回订单！");
+			return map;
+		}
+		if(wemallOrder.getStatus().equals(OrderStatus.alreadyShipped.getValue()) || 
+				wemallOrder.getStatus().equals(OrderStatus.alreadyReceived.getValue()) || 
+				wemallOrder.getStatus().equals(OrderStatus.alreadyCommented.getValue())) {
+			//可执行退货
+			wemallOrderService.applyForReject(wemallOrder);
+			map.put("ret", "0");
+			map.put("retMsg", "提交退货申请成功！");
+			return map;
+		} else {
+			map.put("ret", "-1");
+			map.put("retMsg", "订单不可提交退货申请！");
+			return map;
+		}
 	}
 	
 	/**
@@ -671,6 +711,7 @@ public class WemallOrderFrontService extends BaseService {
 		Integer pageNo = null;
 		Integer pageSize  = null;
 		Map<String ,Object> map=new HashMap<String, Object>();
+		String statusList = WebUtils.getCleanParam(request, "statusList");
 		try {
 			pageNo = Integer.parseInt(request.getParameter("pageNo"));
 			pageSize = Integer.parseInt(request.getParameter("pageSize"));
@@ -685,6 +726,9 @@ public class WemallOrderFrontService extends BaseService {
 		if(!"0".equals(map.get("ret"))) return map;
 		
 		wemallOrder.setUser(user);
+		if(StringUtils.isNotBlank(statusList)) {
+			wemallOrder.setStatusList(Arrays.asList(statusList.split(",")));
+		}
 		Page<WemallOrder> page = wemallOrderMgrService.findPage(new Page<WemallOrder>(pageNo, pageSize), wemallOrder);
 		/*List<Map<String, Object>> dataList = Lists.newArrayList();
 		for(WemallOrderItem entity : page.getList()) {

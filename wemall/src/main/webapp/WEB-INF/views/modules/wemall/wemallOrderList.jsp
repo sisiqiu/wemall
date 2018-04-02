@@ -239,7 +239,10 @@
 					<a href="${ctx}/wemall/wemallOrder/delete?orderNo=${wemallOrder.orderNo}" onclick="return confirmx('确认要删除该订单吗？', this.href)">删除</a>
 				</td></shiro:hasPermission>
 				<shiro:hasPermission name="wemall:wemallOrder:refund"><td>
-					<a onclick="return refund('${ctx}/wemall/wemallOrder/refund?orderNo=${wemallOrder.orderNo}')" >退款</a>
+					<a onclick="return refund('${ctx}/wemall/wemallOrder/refund?orderNo=${wemallOrder.orderNo}')" >部分退款</a>
+				</td></shiro:hasPermission>
+				<shiro:hasPermission name="wemall:wemallOrder:refund"><td>
+					<a href="${ctx}/wemall/wemallOrder/refund?orderNo=${wemallOrder.orderNo}&refundFee=${wemallOrder.payment}" onclick="return refundTotal('')" >全部退款</a>
 				</td></shiro:hasPermission>
 				<c:if test="${wemallOrder.status == 2}">
 					<td>

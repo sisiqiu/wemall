@@ -3,6 +3,8 @@
  */
 package com.fulltl.wemall.modules.wemall.dao;
 
+import java.util.List;
+
 import com.fulltl.wemall.common.persistence.CrudDao;
 import com.fulltl.wemall.common.persistence.annotation.MyBatisDao;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrder;
@@ -22,4 +24,8 @@ public interface WemallOrderDao extends CrudDao<WemallOrder> {
 	public void updateStatusByOrderNo(WemallOrder wemallOrder);
 	
 	public void updatePlatformOrderNo(WemallOrder wemallOrder);
+	
+	public void applyForReject(WemallOrder wemallOrder);
+	
+	public List<WemallOrder> findUnPaidOrderList(WemallOrder wemallOrder);
 }

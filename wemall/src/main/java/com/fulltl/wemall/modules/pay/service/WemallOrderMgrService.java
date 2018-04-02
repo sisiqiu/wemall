@@ -178,17 +178,15 @@ public class WemallOrderMgrService extends CrudService<WemallOrderDao, WemallOrd
 			
 			int deductPrice = 0;
 			//执行根据积分减价，更新订单价格，最小为0
-			List<OrderDict> orderDictList = OrderDictUtils.getOrderDictList("orderPrice_about_set");
-			for(OrderDict orderDict : orderDictList) {
-				if(orderDict.getValue().equals("1")) {
-					String price = orderDict.getPrice();
-					deductPrice = new BigDecimal(scoreUsageNum)
-						.multiply(new BigDecimal(100))
-						.divide(new BigDecimal(price), 0, RoundingMode.FLOOR)
-						.intValue();
-					int orderPrice = wemallOrder.getOrderPrice() - deductPrice;
-					wemallOrder.setOrderPrice(orderPrice > 0 ? orderPrice : 0);
-				}
+			OrderDict orderDict = OrderDictUtils.getOrderDictByTypeAndValue("orderPrice_about_set", "1");
+			if(orderDict != null) {
+				String price = orderDict.getPrice();
+				deductPrice = new BigDecimal(scoreUsageNum)
+					.multiply(new BigDecimal(100))
+					.divide(new BigDecimal(price), 0, RoundingMode.FLOOR)
+					.intValue();
+				int orderPrice = wemallOrder.getOrderPrice() - deductPrice;
+				wemallOrder.setOrderPrice(orderPrice > 0 ? orderPrice : 0);
 			}
 			
 			//校验当前使用积分额对应的抵扣金额  是否超过  商品列表的积分最大抵扣金额

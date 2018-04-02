@@ -103,6 +103,34 @@
 			<if test="activityType != null and activityType != ''">
 			    AND a.activity_type = #{activityType},
 			</if>
+			<if test="statusList != null">
+				AND a.status IN  
+			    <foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">  
+			        #{item}  
+			    </foreach>  
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findUnPaidOrderList" resultType="WemallOrder">
+		SELECT 
+			<include refid="wemallOrderColumns"/>
+		FROM wemall_order a
+		<include refid="wemallOrderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.platform_order_no is not null
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -297,6 +325,9 @@
 	
 	<update id="updateTotalRefundFee">
 		UPDATE wemall_order SET 
+			<if test="status != null and status != ''">
+			    status = #{status},
+			</if>
 			total_refund_fee = #{totalRefundFee}
 		WHERE order_no = #{orderNo}
 	</update>
@@ -361,6 +392,18 @@
 			    freight_no = #{freightNo},
 			</if>
 			status = #{status}
+		WHERE order_no = #{orderNo}
+	</update>
+	
+	<update id="applyForReject">
+		UPDATE wemall_order SET 
+			<if test="applyForReject != null and applyForReject != ''">
+			    apply_for_reject = #{applyForReject},
+			</if>
+			<if test="rejectDate != null and rejectDate != ''">
+			    reject_date = #{rejectDate},
+			</if>
+			update_date = #{updateDate}
 		WHERE order_no = #{orderNo}
 	</update>
 </mapper>

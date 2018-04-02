@@ -82,6 +82,16 @@ public class OrderDictUtils {
 		return dictList;
 	}
 	
+	public static OrderDict getOrderDictByTypeAndValue(String type, String value) {
+		List<OrderDict> orderDictList = OrderDictUtils.getOrderDictList(type);
+		for(OrderDict orderDict : orderDictList) {
+			if(orderDict.getValue().equals(value)) {
+				return orderDict;
+			}
+		}
+		return null;
+	}
+	
 	/**
 	 * 返回字典列表（JSON）
 	 * @param type

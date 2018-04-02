@@ -96,7 +96,7 @@ public class WemallOrderController extends BaseController {
 	@RequestMapping(value = "refund")
 	public String refund(HttpServletRequest request, RedirectAttributes redirectAttributes) {
 		String refundFee = WebUtils.getCleanParam(request, "refundFee");
-		String orderNo = WebUtils.getCleanParam(request, "id");
+		String orderNo = WebUtils.getCleanParam(request, "orderNo");
 		Map<String, Object> retMap = wemallOrderMgrService.refund(orderNo, refundFee, "");
 		if(!"0".equals(retMap.get("ret"))) {
 			addMessage(redirectAttributes, "退款失败!");

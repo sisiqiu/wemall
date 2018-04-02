@@ -136,13 +136,13 @@
 		<div class="control-group">
 			<label class="control-label">物流公司：</label>
 			<div class="controls">
-				<input name="freightName" type="text" readonly="readonly" maxlength="50" class="input-xlarge required digits" value="${allData['wemallOrder'].freightName}"/>
+				<input name="freightName" type="text" readonly="readonly" maxlength="50" class="input-xlarge required" value="${allData['wemallOrder'].freightName}"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">物流单号：</label>
 			<div class="controls">
-				<input name="freightNo" type="text" readonly="readonly" maxlength="50" class="input-xlarge required digits" value="${allData['wemallOrder'].freightNo}"/>
+				<input name="freightNo" type="text" readonly="readonly" maxlength="50" class="input-xlarge required" value="${allData['wemallOrder'].freightNo}"/>
 			</div>
 		</div>
 		<div class="control-group">

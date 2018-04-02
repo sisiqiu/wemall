@@ -17,6 +17,7 @@ import com.fulltl.wemall.modules.sys.utils.UserUtils;
 import com.fulltl.wemall.modules.wemall.dao.WemallScoreInfoDao;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrderItem;
 import com.fulltl.wemall.modules.wemall.entity.WemallScoreInfo;
+import com.fulltl.wemall.modules.wemall.entity.WemallScoreInfo.ScoreFromType;
 
 /**
  * 积分明细管理Service
@@ -69,14 +70,17 @@ public class WemallScoreInfoService extends CrudService<WemallScoreInfoDao, Wema
 	 * @param fromType
 	 */
 	@Transactional(readOnly = false)
-	public void updateUserScore(Integer score, String fromType) {
-		User user = UserUtils.getUser();
+	public void updateUserScore(String userId, Integer score, ScoreFromType scoreFromType) {
+		User user = UserUtils.get(userId);
 		user.setCurScoreNum(user.getCurScoreNum()+score);
+		if(!scoreFromType.equals(ScoreFromType.rollback) && score > 0) {
+			user.setTotalScoreNum(user.getTotalScoreNum() + score);
+		}
 		systemService.updateUserInfo(user);
 		
 		WemallScoreInfo wemallScoreInfo = new WemallScoreInfo();
 		wemallScoreInfo.setUser(user);
-		wemallScoreInfo.setFromType(fromType);
+		wemallScoreInfo.setFromType(scoreFromType.getValue());
 		wemallScoreInfo.setScore(score);
 		wemallScoreInfo.setType(score > 0 ? "1": "0");
 		this.save(wemallScoreInfo);

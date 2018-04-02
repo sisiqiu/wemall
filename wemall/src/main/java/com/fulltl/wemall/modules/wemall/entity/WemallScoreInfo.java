@@ -31,6 +31,49 @@ public class WemallScoreInfo extends DataEntity<WemallScoreInfo> {
 	private Date beginCreateDate;		// 开始 创建时间
 	private Date endCreateDate;		// 结束 创建时间
 	
+	public enum ScoreFromType {
+		/**
+		 * 抽奖
+		 */
+		signIn("1"),
+		/**
+		 * 抽奖
+		 */
+		lottery("2"),
+		/**
+		 * 评论
+		 */
+		comment("3"),
+		/**
+		 * 购买商品获取
+		 */
+		buyItems("4"),
+		/**
+		 * 积分撤回
+		 */
+		rollback("5"),
+		/**
+		 * 商品积分抵扣
+		 */
+		itemScoreDeduction("6"),
+		/**
+		 * 商品积分兑换
+		 */
+		itemScoreExchange("7");
+		
+		private String value;
+		private ScoreFromType(String value) {
+			this.value = value;
+		}
+		
+		public String getValue() {
+			return value;
+		}
+		public void setValue(String value) {
+			this.value = value;
+		}
+	}
+	
 	public WemallScoreInfo() {
 		super();
 	}

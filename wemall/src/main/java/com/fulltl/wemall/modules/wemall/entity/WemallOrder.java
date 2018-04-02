@@ -5,6 +5,7 @@ package com.fulltl.wemall.modules.wemall.entity;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.constraints.NotNull;
@@ -16,7 +17,6 @@ import com.fulltl.wemall.common.persistence.DataEntity;
 import com.fulltl.wemall.common.utils.IdGen;
 import com.fulltl.wemall.modules.sys.entity.User;
 import com.fulltl.wemall.modules.sys.utils.UserUtils;
-import com.fulltl.wemall.modules.wemall.entity.WemallOrder.OrderStatus;
 
 /**
  * 订单管理Entity
@@ -64,6 +64,8 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 	private String freightNo;			//物流单号
 	private String activityId;			//活动id
 	private String activityType;			//活动类别
+	
+	private List<String> statusList; //状态列表
 	
 	/**
 	 * 付款方式
@@ -136,7 +138,7 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 		 */
 		alreadyCancelled_unPaid(8),
 		/**
-		 * 未付款，已取消
+		 * 已付款，已取消
 		 */
 		alreadyCancelled_alreadyPaid(9),
 		;
@@ -272,7 +274,7 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 		this.body = body;
 	}
 	
-	@NotNull(message="状态（1、未付款，2、已付款，3、未发货，4、已发货，5、交易成功，6、交易关闭）不能为空")
+	@NotNull(message="状态（1、未付款，2、已付款，3、已发货，4、已收货，5、已评论，6、交易退货，7、交易关闭，8、未付款，已取消，9、已付款，已取消）不能为空")
 	public Integer getStatus() {
 		return status;
 	}
@@ -505,6 +507,14 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 
 	public void setActivityType(String activityType) {
 		this.activityType = activityType;
+	}
+
+	public List<String> getStatusList() {
+		return statusList;
+	}
+
+	public void setStatusList(List<String> statusList) {
+		this.statusList = statusList;
 	}
 
 	/**
