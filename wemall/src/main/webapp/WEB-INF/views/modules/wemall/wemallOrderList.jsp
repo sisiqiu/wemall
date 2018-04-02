@@ -169,6 +169,9 @@
 			<li><label>会员卡id：</label>
 				<form:input path="vipCardId" htmlEscape="false" maxlength="6" class="input-medium"/>
 			</li>
+			<li><label>是否申请退货：</label>
+				<form:radiobuttons path="applyForReject" items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false" class=""/>
+			</li>
 			<li class="btns">
 				<input id="btn_reset" class="btn btn-primary" type="button" value="重置"/>
 				<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
@@ -182,6 +185,7 @@
 		<thead>
 			<tr>
 				<th>订单号</th>
+				<th>原始订单金额</th>
 				<th>订单金额</th>
 				<th>实付金额</th>
 				<th>支付类型</th>
@@ -199,6 +203,9 @@
 				<td><a href="${ctx}/wemall/wemallOrder/form?orderNo=${wemallOrder.orderNo}">
 					${wemallOrder.orderNo}
 				</a></td>
+				<td>
+					${wemallOrder.originalOrderPrice}
+				</td>
 				<td>
 					${wemallOrder.orderPrice}
 				</td>

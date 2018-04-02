@@ -123,6 +123,12 @@
 			<if test="activityId != null and activityId != ''">
 				AND a.activity_id = #{activityId}
 			</if>
+			<if test="ids != null">
+				AND a.id IN  
+			    <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">  
+			        #{item}  
+			    </foreach>  
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">

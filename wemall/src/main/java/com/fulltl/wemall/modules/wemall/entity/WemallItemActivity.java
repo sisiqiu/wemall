@@ -3,6 +3,8 @@
  */
 package com.fulltl.wemall.modules.wemall.entity;
 
+import java.util.List;
+
 import javax.validation.constraints.NotNull;
 
 import com.fulltl.wemall.common.persistence.DataEntity;
@@ -18,6 +20,9 @@ public class WemallItemActivity extends DataEntity<WemallItemActivity> {
 	private Integer itemId;		// 商品id
 	private Integer activityId;		// 活动id
 	private Integer activityType;		// 对应活动类型 1-限时返现 2-满减送 3-限时折扣 4-限时团购'
+	
+	private List<String> itemIds;
+	
 	public WemallItemActivity() {
 		super();
 	}
@@ -52,8 +57,13 @@ public class WemallItemActivity extends DataEntity<WemallItemActivity> {
 	public void setActivityType(Integer activityType) {
 		this.activityType = activityType;
 	}
-	
-	
 
+	public List<String> getItemIds() {
+		return itemIds;
+	}
+
+	public void setItemIds(List<String> itemIds) {
+		this.itemIds = itemIds;
+	}
 	
 }

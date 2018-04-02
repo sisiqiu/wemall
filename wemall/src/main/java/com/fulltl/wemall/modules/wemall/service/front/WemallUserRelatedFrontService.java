@@ -419,16 +419,16 @@ public class WemallUserRelatedFrontService extends BaseService {
 		}
 		
 		//验证用户是否有权限获取该会员卡
-		String totalOrderNum = user.getTotalOrderNum();
-		String totalConsumeNum = user.getTotalConsumeNum();
-		String totalScoreNum = user.getTotalScoreNum();
+		Integer totalOrderNum = user.getTotalOrderNum();
+		Integer totalConsumeNum = user.getTotalConsumeNum();
+		Integer totalScoreNum = user.getTotalScoreNum();
 		
 		Integer orderNum = vipCard.getOrderNum();
 		Integer consumeNum = vipCard.getConsumeNum();
 		Integer scoreNum = vipCard.getScoreNum();
-		if(new BigDecimal(totalOrderNum).compareTo(new BigDecimal(orderNum)) == -1 &&
-				new BigDecimal(totalConsumeNum).compareTo(new BigDecimal(consumeNum)) == -1 &&
-				new BigDecimal(totalScoreNum).compareTo(new BigDecimal(scoreNum)) == -1
+		if(totalOrderNum.compareTo(orderNum) < 0 &&
+				totalConsumeNum.compareTo(consumeNum) < 0 &&
+				totalScoreNum.compareTo(scoreNum) < 0
 				) {
 			map.put("ret", "-1");
 			map.put("retMsg", "领取条件未达成，领取失败!");

@@ -93,6 +93,7 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
         //设置其他字段值
 		wemallOrder.setTitle(title);
         //slSysOrder.setDescription(subject);
+		wemallOrder.setOriginalOrderPrice(orderPrice);	//原始订单价格
 		wemallOrder.setOrderPrice(orderPrice);	//订单价格
 		wemallOrder.setFreightPrice(freightPrice);	//总运费
         //slSysOrder.setActualPayment(orderPrice);	//实际支付价格

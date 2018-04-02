@@ -3,11 +3,12 @@
  */
 package com.fulltl.wemall.modules.wemall.entity;
 
-import org.hibernate.validator.constraints.Length;
-
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.Length;
 
 import com.fulltl.wemall.common.persistence.DataEntity;
 import com.google.common.collect.Maps;
@@ -58,6 +59,7 @@ public class WemallItem extends DataEntity<WemallItem> {
 	
 	private String specInfoStr; //规格值列表json字符串
 	private String sortName; //商品类别名称
+	private List<String> ids;
 	
 	public WemallItem() {
 		super();
@@ -384,6 +386,14 @@ public class WemallItem extends DataEntity<WemallItem> {
 
 	public void setSortName(String sortName) {
 		this.sortName = sortName;
+	}
+	
+	public List<String> getIds() {
+		return ids;
+	}
+
+	public void setIds(List<String> ids) {
+		this.ids = ids;
 	}
 
 	/**

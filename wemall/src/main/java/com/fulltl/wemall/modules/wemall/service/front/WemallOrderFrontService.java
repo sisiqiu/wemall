@@ -514,6 +514,11 @@ public class WemallOrderFrontService extends BaseService {
     		map.put("retMsg", "请选择订单收货地址。");
         	return map;
     	}
+		
+		//根据积分抵扣，或活动优惠，或其他优惠方式，对价格做调整。
+		map = wemallOrderMgrService.updateOrderPriceForDiscount(wemallOrder, wemallOrderItemList, request);
+		if(!"0".equals(map.get("ret"))) return map;
+		
 		//判断金额是否为0，若为0，则直接成功。
 		if(wemallOrder.getOrderPrice().equals(0)) {
 			//执行减库存

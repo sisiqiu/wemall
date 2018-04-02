@@ -67,13 +67,13 @@ public class User extends DataEntity<User> {
 	private String status; //用户状态；0--邮箱未验证，1--邮箱已验证
 	private String emailValidateCode; //邮箱验证码
 	
-	private String curBountyNum; //用户当前可用奖励金
-	private String totalBountyNum; //用户累计获得奖励金（累加）
-	private String curScoreNum; //用户当前积分
-	private String totalScoreNum; //用户累计积分（累加）
+	private Integer curBountyNum; //用户当前可用奖励金
+	private Integer totalBountyNum; //用户累计获得奖励金（累加）
+	private Integer curScoreNum; //用户当前积分
+	private Integer totalScoreNum; //用户累计积分（累加）
 	private String vipCardIds; //会员卡id列表
-	private String totalOrderNum; //用户累计订单数
-	private String totalConsumeNum; //用户累计消费额
+	private Integer totalOrderNum; //用户累计订单数
+	private Integer totalConsumeNum; //用户累计消费额
 
 	private String sid;//存储用户对应的sid
 	
@@ -416,35 +416,35 @@ public class User extends DataEntity<User> {
 		return id;
 	}
 	
-	public String getCurBountyNum() {
+	public Integer getCurBountyNum() {
 		return curBountyNum;
 	}
 
-	public void setCurBountyNum(String curBountyNum) {
+	public void setCurBountyNum(Integer curBountyNum) {
 		this.curBountyNum = curBountyNum;
 	}
 
-	public String getTotalBountyNum() {
+	public Integer getTotalBountyNum() {
 		return totalBountyNum;
 	}
 
-	public void setTotalBountyNum(String totalBountyNum) {
+	public void setTotalBountyNum(Integer totalBountyNum) {
 		this.totalBountyNum = totalBountyNum;
 	}
 
-	public String getCurScoreNum() {
+	public Integer getCurScoreNum() {
 		return curScoreNum;
 	}
 
-	public void setCurScoreNum(String curScoreNum) {
+	public void setCurScoreNum(Integer curScoreNum) {
 		this.curScoreNum = curScoreNum;
 	}
 
-	public String getTotalScoreNum() {
+	public Integer getTotalScoreNum() {
 		return totalScoreNum;
 	}
 
-	public void setTotalScoreNum(String totalScoreNum) {
+	public void setTotalScoreNum(Integer totalScoreNum) {
 		this.totalScoreNum = totalScoreNum;
 	}
 
@@ -456,19 +456,19 @@ public class User extends DataEntity<User> {
 		this.vipCardIds = vipCardIds;
 	}
 
-	public String getTotalOrderNum() {
+	public Integer getTotalOrderNum() {
 		return totalOrderNum;
 	}
 
-	public void setTotalOrderNum(String totalOrderNum) {
+	public void setTotalOrderNum(Integer totalOrderNum) {
 		this.totalOrderNum = totalOrderNum;
 	}
 
-	public String getTotalConsumeNum() {
+	public Integer getTotalConsumeNum() {
 		return totalConsumeNum;
 	}
 
-	public void setTotalConsumeNum(String totalConsumeNum) {
+	public void setTotalConsumeNum(Integer totalConsumeNum) {
 		this.totalConsumeNum = totalConsumeNum;
 	}
 
@@ -535,12 +535,12 @@ public class User extends DataEntity<User> {
 		this.mobile = "";
 		this.remarks = remarks;
 		
-		this.curBountyNum = "0"; //用户当前可用奖励金
-		this.totalBountyNum = "0"; //用户累计获得奖励金（累加）
-		this.curScoreNum = "0"; //用户当前积分
-		this.totalScoreNum = "0"; //用户累计积分（累加）
-		this.totalOrderNum = "0"; //用户累计订单数
-		this.totalConsumeNum = "0"; //用户累计消费额
+		this.curBountyNum = 0; //用户当前可用奖励金
+		this.totalBountyNum = 0; //用户累计获得奖励金（累加）
+		this.curScoreNum = 0; //用户当前积分
+		this.totalScoreNum = 0; //用户累计积分（累加）
+		this.totalOrderNum = 0; //用户累计订单数
+		this.totalConsumeNum = 0; //用户累计消费额
 		
 		if(roleIdStrs != null) {
 			List<String> roleList = Arrays.asList(roleIdStrs);

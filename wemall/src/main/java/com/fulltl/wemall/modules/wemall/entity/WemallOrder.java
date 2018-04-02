@@ -29,6 +29,7 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 	private String orderNo;		// 订单号
 	private User user;		// 用户id
 	private String platformOrderNo;		// 支付平台订单号
+	private Integer originalOrderPrice;		// 原始订单金额
 	private Integer orderPrice;		// 订单金额
 	private Integer payment;		// 实付金额
 	private Integer paymentType;		// 支付类型
@@ -37,8 +38,10 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 	private String title;		// 订单名称
 	private String body;		// 订单描述
 	private Integer status;		// 状态（1、未付款，2、已付款，3、已发货，4、已收货，5、已评论，6、交易退货，7、交易关闭，8、未付款，已取消，9、已付款，已取消）
+	private Integer applyForReject;		// 是否提交退货申请（1、是，0、否）
 	private Date paymentDate;		// 付款时间
 	private Date consignDate;		// 发货时间
+	private Date rejectDate;		// 申请退货时间
 	private Date endDate;		// 交易完成时间
 	private Date closeDate;		// 交易关闭时间
 	private String type;		// 类别
@@ -59,6 +62,8 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 	private Date endPaymentDate;		// 结束 付款时间
 	private String freightName;			//物流公司
 	private String freightNo;			//物流单号
+	private String activityId;			//活动id
+	private String activityType;			//活动类别
 	
 	/**
 	 * 付款方式
@@ -460,6 +465,47 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 	public void setFreightNo(String freightNo) {
 		this.freightNo = freightNo;
 	}
+	
+	@NotNull(message="原始订单金额不能为空")
+	public Integer getOriginalOrderPrice() {
+		return originalOrderPrice;
+	}
+
+	public void setOriginalOrderPrice(Integer originalOrderPrice) {
+		this.originalOrderPrice = originalOrderPrice;
+	}
+
+	public Integer getApplyForReject() {
+		return applyForReject;
+	}
+
+	public void setApplyForReject(Integer applyForReject) {
+		this.applyForReject = applyForReject;
+	}
+
+	public Date getRejectDate() {
+		return rejectDate;
+	}
+
+	public void setRejectDate(Date rejectDate) {
+		this.rejectDate = rejectDate;
+	}
+	
+	public String getActivityId() {
+		return activityId;
+	}
+
+	public void setActivityId(String activityId) {
+		this.activityId = activityId;
+	}
+
+	public String getActivityType() {
+		return activityType;
+	}
+
+	public void setActivityType(String activityType) {
+		this.activityType = activityType;
+	}
 
 	/**
 	 * 初始化新建订单对象，
@@ -475,6 +521,7 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 		this.setCreateDate(new Date());	//下单日期
 		this.setTotalRefundFee(0);	//总退款金额
 		this.setPayment(0);	//实付金额
+		this.setApplyForReject(0); //未申请退货
 	}
 	
 	/**

@@ -5,13 +5,18 @@ package com.fulltl.wemall.modules.wemall.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fulltl.wemall.common.persistence.Page;
 import com.fulltl.wemall.common.service.CrudService;
-import com.fulltl.wemall.modules.wemall.entity.WemallScoreInfo;
+import com.fulltl.wemall.modules.sys.entity.User;
+import com.fulltl.wemall.modules.sys.service.SystemService;
+import com.fulltl.wemall.modules.sys.utils.UserUtils;
 import com.fulltl.wemall.modules.wemall.dao.WemallScoreInfoDao;
+import com.fulltl.wemall.modules.wemall.entity.WemallOrderItem;
+import com.fulltl.wemall.modules.wemall.entity.WemallScoreInfo;
 
 /**
  * 积分明细管理Service
@@ -22,6 +27,9 @@ import com.fulltl.wemall.modules.wemall.dao.WemallScoreInfoDao;
 @Transactional(readOnly = true)
 public class WemallScoreInfoService extends CrudService<WemallScoreInfoDao, WemallScoreInfo> {
 
+	@Autowired
+	private SystemService systemService;
+	
 	public WemallScoreInfo get(String id) {
 		return super.get(id);
 	}
@@ -42,6 +50,46 @@ public class WemallScoreInfoService extends CrudService<WemallScoreInfoDao, Wema
 	@Transactional(readOnly = false)
 	public void delete(WemallScoreInfo wemallScoreInfo) {
 		super.delete(wemallScoreInfo);
+	}
+	
+	/**
+	 * 校验所用积分数是否超过当前用户剩余积分数
+	 * @param score
+	 * @return
+	 */
+	public boolean checkUserScore(Integer score) {
+		User user = UserUtils.getUser();
+		if(score == null || score.compareTo(user.getCurScoreNum()) < 0) return false;
+		else return true;
+	}
+	
+	/**
+	 * 对用户的积分执行扣除或增加操作
+	 * @param score	根据正负判断是增加，还是消耗
+	 * @param fromType
+	 */
+	@Transactional(readOnly = false)
+	public void updateUserScore(Integer score, String fromType) {
+		User user = UserUtils.getUser();
+		user.setCurScoreNum(user.getCurScoreNum()+score);
+		systemService.updateUserInfo(user);
+		
+		WemallScoreInfo wemallScoreInfo = new WemallScoreInfo();
+		wemallScoreInfo.setUser(user);
+		wemallScoreInfo.setFromType(fromType);
+		wemallScoreInfo.setScore(score);
+		wemallScoreInfo.setType(score > 0 ? "1": "0");
+		this.save(wemallScoreInfo);
+	}
+
+	/**
+	 * 校验当前使用积分额对应的抵扣金额  是否超过  商品列表的积分最大抵扣金额
+	 * @param wemallOrderItemList
+	 * @param deductPrice
+	 * @return false--超过，true--没有超过
+	 */
+	public boolean checkItemsScoreDeductPrice(List<WemallOrderItem> wemallOrderItemList, Integer deductPrice) {
+		return true;
 	}
 	
 }

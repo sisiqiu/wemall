@@ -57,6 +57,13 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">原始订单金额：</label>
+			<div class="controls">
+				<form:input path="orderPrice" value= "${allData['wemallOrder'].originalOrderPrice}" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">订单金额：</label>
 			<div class="controls">
 				<form:input path="orderPrice" value= "${allData['wemallOrder'].orderPrice}" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
@@ -194,6 +201,36 @@
 			<label class="control-label">使用会员卡id：</label>
 			<div class="controls">
 				<form:input path="vipCardId" value="${allData['wemallOrder'].vipCardId}" htmlEscape="false" maxlength="6" class="input-xlarge digits"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">商品参与活动类别：</label>
+			<div class="controls">
+				<form:select path="activityType" class="input-xlarge">
+					<form:option value="" label=""/>
+					<form:options items="${fns:getDictList('item_activity_sort')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">商品参与活动id：</label>
+			<div class="controls">
+				<form:input path="activityId" value="${allData['wemallOrder'].activityId}" htmlEscape="false" maxlength="6" class="input-xlarge"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">是否申请退货：</label>
+			<div class="controls">
+				<form:radiobuttons path="applyForReject" value="${allData['wemallOrder'].applyForReject}" items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false" class=""/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">申请退货时间：</label>
+			<div class="controls">
+				<input name="rejectDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="<fmt:formatDate value="${allData['wemallOrder'].rejectDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
 			</div>
 		</div>
 		<div class="control-group">
