@@ -184,6 +184,8 @@ public class WemallItemActivityService extends CrudService<WemallItemActivityDao
 			}
 		}
 		
+		if(result == null) return Lists.newArrayList();
+		
 		//根据几类活动列表，将活动对象赋值进商品活动对象中
 		for(WemallItemActivity entity : result) {
 			switch(ActivityTypeEnum.getEnumByValue(entity.getActivityType())) {

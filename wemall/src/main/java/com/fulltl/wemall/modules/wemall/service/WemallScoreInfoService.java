@@ -61,8 +61,8 @@ public class WemallScoreInfoService extends CrudService<WemallScoreInfoDao, Wema
 	 */
 	public boolean checkUserScore(Integer score) {
 		User user = UserUtils.getUser();
-		if(score == null || score.compareTo(user.getCurScoreNum()) < 0) return false;
-		else return true;
+		if(score == null || score.compareTo(user.getCurScoreNum()) < 0) return true;
+		else return false;
 	}
 	
 	/**
