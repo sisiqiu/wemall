@@ -126,31 +126,10 @@ public class WemallItemService extends CrudService<WemallItemDao, WemallItem> {
 	 */
 	@Transactional(readOnly = false)
 	public boolean reduceStorage(List<WemallOrderItem> wemallOrderItems) {
-		return true;
-	}
-	
-	/**
-	 * 减库存
-	 * @return
-	 */
-	@Transactional(readOnly = false)
-	public boolean reduceStorage(String orderNo) {
-		WemallOrderItem query = new WemallOrderItem();
-		query.setOrderNo(orderNo);
-		List<WemallOrderItem> wemallOrderItemList = wemallOrderItemService.findList(query);
-		return this.reduceStorage(wemallOrderItemList);
-	}
-	
-	/**
-	 * 释放库存
-	 * @return
-	 */
-	@Transactional(readOnly = false)
-	public boolean releaseStorage(List<WemallOrderItem> wemallOrderItems) {
 		boolean result = true;
 		for(WemallOrderItem w :wemallOrderItems){
 			WemallItem item = super.get(w.getItemId());
-			if(StringUtils.isEmpty(w.getItemsData())){
+			if(StringUtils.isEmpty(w.getItemsData()) || w.getItemsData().equals("[]")){
 				int remainStorage = item.getStorage()-w.getItemNum();
 				if(remainStorage>=0){
 					result = true;
@@ -183,6 +162,59 @@ public class WemallItemService extends CrudService<WemallItemDao, WemallItem> {
 	}
 	
 	/**
+	 * 减库存
+	 * @return
+	 */
+	@Transactional(readOnly = false)
+	public boolean reduceStorage(String orderNo) {
+		WemallOrderItem query = new WemallOrderItem();
+		query.setOrderNo(orderNo);
+		List<WemallOrderItem> wemallOrderItemList = wemallOrderItemService.findList(query);
+		return this.reduceStorage(wemallOrderItemList);
+	}
+	
+	/**
+	 * 释放库存
+	 * @return
+	 */
+	@Transactional(readOnly = false)
+	public boolean releaseStorage(List<WemallOrderItem> wemallOrderItems) {
+		boolean result = true;
+		for(WemallOrderItem w :wemallOrderItems){
+			WemallItem item = super.get(w.getItemId());
+			if(StringUtils.isEmpty(w.getItemsData()) || w.getItemsData().equals("[]")){
+				int remainStorage = item.getStorage()+w.getItemNum();
+				if(remainStorage>=0){
+					result = true;
+					item.setStorage(remainStorage);
+					super.save(item);
+				}else{
+					result = false;
+				}
+			}else{
+				List<WemallItemSpec> itemSpecList = gson.fromJson(w.getItemsData(), new TypeToken<List<WemallItemSpec>>() {}.getType());
+				WemallItemSpec entity = new WemallItemSpec();
+				if(itemSpecList.size()>0){
+					entity = itemSpecList.get(0);
+				}
+				entity.setItemId(w.getItemId());
+				WemallItemSpec itemSpec = wemallItemSpecService.get(entity);
+				if(itemSpec!=null){
+					int remainStorage = Integer.valueOf(itemSpec.getStorage())+w.getItemNum();
+					if(remainStorage>=0){
+						result = true;
+						itemSpec.setStorage(String.valueOf(remainStorage));
+						wemallItemSpecService.save(itemSpec);
+					}else{
+						result = false;
+					}
+				}
+			}
+		}
+		return result;
+	}
+	
+	/**
 	 * 释放库存
 	 * @return
 	 */
@@ -200,28 +232,14 @@ public class WemallItemService extends CrudService<WemallItemDao, WemallItem> {
 	 */
 	@Transactional(readOnly = false)
 	public boolean increaseSalesNum(List<WemallOrderItem> wemallOrderItems) {
-		boolean result = true;
+		boolean result = false;
 		for(WemallOrderItem w :wemallOrderItems){
 			WemallItem item = super.get(w.getItemId());
-			if(StringUtils.isEmpty(w.getItemsData())){
-				int remainStorage = item.getStorage()+w.getItemNum();
+			if(item!=null){
+				int salesNum = item.getSalesNum()+w.getItemNum();
 				result = true;
-				item.setStorage(remainStorage);
+				item.setSalesNum(salesNum);
 				super.save(item);
-			}else{
-				List<WemallItemSpec> itemSpecList = gson.fromJson(w.getItemsData(), new TypeToken<List<WemallItemSpec>>() {}.getType());
-				WemallItemSpec entity = new WemallItemSpec();
-				if(itemSpecList.size()>0){
-					entity = itemSpecList.get(0);
-				}
-				entity.setItemId(w.getItemId());
-				WemallItemSpec itemSpec = wemallItemSpecService.get(entity);
-				if(itemSpec!=null){
-					int remainStorage = Integer.valueOf(itemSpec.getStorage())+w.getItemNum();
-					result = true;
-					itemSpec.setStorage(String.valueOf(remainStorage));
-					wemallItemSpecService.save(itemSpec);
-				}
 			}
 		}
 		return result;

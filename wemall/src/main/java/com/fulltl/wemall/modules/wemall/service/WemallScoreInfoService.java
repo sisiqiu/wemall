@@ -16,9 +16,11 @@ import com.fulltl.wemall.modules.sys.service.SystemService;
 import com.fulltl.wemall.modules.sys.utils.OrderDictUtils;
 import com.fulltl.wemall.modules.sys.utils.UserUtils;
 import com.fulltl.wemall.modules.wemall.dao.WemallScoreInfoDao;
+import com.fulltl.wemall.modules.wemall.entity.WemallItem;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrderItem;
 import com.fulltl.wemall.modules.wemall.entity.WemallScoreInfo;
 import com.fulltl.wemall.modules.wemall.entity.WemallScoreInfo.ScoreFromType;
+import com.fulltl.wemall.modules.wx.service.WxUserInfoService;
 
 /**
  * 积分明细管理Service
@@ -31,6 +33,8 @@ public class WemallScoreInfoService extends CrudService<WemallScoreInfoDao, Wema
 
 	@Autowired
 	private SystemService systemService;
+	@Autowired
+	private WemallItemService wemallItemService;
 	
 	public WemallScoreInfo get(String id) {
 		return super.get(id);
@@ -93,7 +97,16 @@ public class WemallScoreInfoService extends CrudService<WemallScoreInfoDao, Wema
 	 * @return
 	 */
 	public int getTotalDeductPrice(List<WemallOrderItem> wemallOrderItemList) {
-		return 100000;
+		int totalNum = 0;
+		for(WemallOrderItem w :wemallOrderItemList){
+			WemallItem item = wemallItemService.get(w.getItemId());
+			if(item!=null){
+				if(item.getCanUseScoreDeduct()==1){
+					totalNum += item.getScoreDeductPrice();
+				}
+			}
+		}
+		return totalNum;
 	}
 	
 	/**
