@@ -297,6 +297,14 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 			}
 			//获取可参加的活动列表
 			List<WemallItemActivity> activityList = wemallItemActivityService.findListByItems(itemIds);
+			//计算参加每种活动后的价格
+			for(WemallItemActivity entity : activityList) {
+				try {
+					Integer priceByOrderPrice = wemallItemActivityService.getPriceByOrderPrice(wemallOrder.getOrderPrice(), entity);
+					entity.setJoinPrice(priceByOrderPrice);
+				} catch (Exception e) {
+				}
+			}
 			//获取最大可使用积分数
 			int canUseTotalScore = wemallScoreInfoService.getCanUseTotalScore(orderItemList);
 			map.put("activityList", activityList);
@@ -304,6 +312,12 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 			
 			User u = UserUtils.getUser();
 			map.put("userCurScoreNum", u.getCurScoreNum());
+			//获取积分和人民币的兑换比率
+			OrderDict orderDict = OrderDictUtils.getOrderDictByTypeAndValue("orderPrice_about_set", "1");
+			if(orderDict != null) {
+				String orderDictPrice = orderDict.getPrice();
+				map.put("scoreRate", orderDictPrice);
+			}
 		}
 		
 		map.put("ret", "0");

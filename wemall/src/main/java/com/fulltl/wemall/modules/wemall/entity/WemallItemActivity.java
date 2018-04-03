@@ -25,6 +25,8 @@ public class WemallItemActivity extends DataEntity<WemallItemActivity> {
 	
 	private List<String> itemIds;
 	
+	private Integer joinPrice;
+	
 	public enum ActivityTypeEnum {
 		/**
 		 * 限时返现
@@ -117,6 +119,14 @@ public class WemallItemActivity extends DataEntity<WemallItemActivity> {
 
 	public void setItemIds(List<String> itemIds) {
 		this.itemIds = itemIds;
+	}
+
+	public Integer getJoinPrice() {
+		return joinPrice;
+	}
+
+	public void setJoinPrice(Integer joinPrice) {
+		this.joinPrice = joinPrice;
 	}
 	
 }
