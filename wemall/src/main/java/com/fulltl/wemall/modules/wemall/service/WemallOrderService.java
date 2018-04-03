@@ -168,9 +168,20 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 	 */
 	@Transactional(readOnly = false)
 	public void updateOrderRefundFee(WemallOrder wemallOrder, String refundFee) {
+		//若是全额退款，更新用户的累计订单数及累计消费额（撤回）
+		if(wemallOrder.getPayment().toString().equals(refundFee) && 
+				!OrderStatus.alreadyCancelled_alreadyPaid.getValue().equals(wemallOrder.getStatus())) {
+			User user = UserUtils.get(wemallOrder.getUser().getId());
+			user.setTotalOrderNum((user.getTotalOrderNum()==null?0:user.getTotalOrderNum())-1);
+			user.setTotalConsumeNum(user.getTotalConsumeNum() - wemallOrder.getPayment());
+			systemService.updateUserInfo(user);
+		}
+		
+		//更新退款
 		wemallOrder.setTotalRefundFee(new BigDecimal(wemallOrder.getTotalRefundFee()).add(new BigDecimal(refundFee)).intValue());
 		wemallOrder.setStatus(OrderStatus.alreadyRejected.getValue());
 		dao.updateTotalRefundFee(wemallOrder);
+		
 	}
 
 	/**
@@ -215,6 +226,11 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 			if(wemallOrder.getScoreUsageNum() != null && wemallOrder.getScoreUsageNum() != 0) {
 				wemallScoreInfoService.updateUserScore(wemallOrder.getUser().getId(), wemallOrder.getScoreUsageNum()*(-1), ScoreFromType.itemScoreDeduction);
 			}
+			//更新用户的累计订单数及累计消费额
+			User user = UserUtils.get(wemallOrder.getUser().getId());
+			user.setTotalOrderNum((user.getTotalOrderNum()==null?0:user.getTotalOrderNum())+1);
+			user.setTotalConsumeNum(user.getTotalConsumeNum() + wemallOrder.getPayment());
+			systemService.updateUserInfo(user);
 		}
 		if(OrderStatus.alreadyCancelled_alreadyPaid.getValue().equals(status)) {
 			//订单已付款，已取消

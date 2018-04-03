@@ -33,7 +33,7 @@ public class WemallScoreInfo extends DataEntity<WemallScoreInfo> {
 	
 	public enum ScoreFromType {
 		/**
-		 * 抽奖
+		 * 签到
 		 */
 		signIn("1"),
 		/**

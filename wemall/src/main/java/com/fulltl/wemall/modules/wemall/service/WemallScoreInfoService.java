@@ -72,6 +72,7 @@ public class WemallScoreInfoService extends CrudService<WemallScoreInfoDao, Wema
 	 */
 	@Transactional(readOnly = false)
 	public void updateUserScore(String userId, Integer score, ScoreFromType scoreFromType) {
+		//更新用户的当前积分数及累计积分数
 		User user = UserUtils.get(userId);
 		user.setCurScoreNum(user.getCurScoreNum()+score);
 		if(!scoreFromType.equals(ScoreFromType.rollback) && score > 0) {

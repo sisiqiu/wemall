@@ -579,6 +579,8 @@ public class WemallOrderFrontService extends BaseService {
 		map = wemallOrder.checkUpdateStatus(OrderStatus.getOrderStatusByValue(status));
 		if(!"0".equals(map.get("ret"))) return map;
 		
+		wemallOrderService.updateAllStatusByOrderNo(wemallOrder, status);
+		
 		if(OrderStatus.alreadyCancelled_alreadyPaid.getValue().equals(status)) {
 			//执行退款逻辑
 			if(!wemallOrder.getOrderPrice().equals(0)) {
@@ -586,7 +588,6 @@ public class WemallOrderFrontService extends BaseService {
 			}
 		}
 		
-		wemallOrderService.updateAllStatusByOrderNo(wemallOrder, status);
 		
 		map.put("ret", "0");
 		map.put("retMsg", "生成成功！");
