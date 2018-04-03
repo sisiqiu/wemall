@@ -194,6 +194,7 @@
 				<th>状态</th>
 				<th>付款时间</th>
 				<th>类别</th>
+				<th>申请退货</th>
 				<shiro:hasPermission name="wemall:wemallOrder:edit"><th>操作</th></shiro:hasPermission>
 			</tr>
 		</thead>
@@ -229,6 +230,9 @@
 				</td>
 				<td>
 					${fns:getDictLabel(wemallOrder.type, 'order_type', '')}
+				</td>
+				<td>
+					${fns:getDictLabel(wemallOrder.applyForReject, 'yes_no', '')}
 				</td>
 				<%-- <shiro:hasPermission name="wemall:wemallOrder:edit"><td>
     				<a href="${ctx}/wemall/wemallOrder/form?orderNo=${wemallOrder.orderNo}">修改</a>

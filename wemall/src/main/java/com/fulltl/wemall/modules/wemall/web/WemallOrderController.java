@@ -67,7 +67,7 @@ public class WemallOrderController extends BaseController {
 	@RequiresPermissions("wemall:wemallOrder:view")
 	@RequestMapping(value = "form")
 	public String form(WemallOrder wemallOrder, Model model) {
-		Map<String, Object> allData = wemallOrderService.getOrderDetail(wemallOrder.getOrderNo());
+		Map<String, Object> allData = wemallOrderService.getOrderDetail(wemallOrder.getOrderNo(), false);
 		model.addAttribute("allData", allData);
 		model.addAttribute("wemallOrder", wemallOrder);
 		return "modules/wemall/wemallOrderForm";

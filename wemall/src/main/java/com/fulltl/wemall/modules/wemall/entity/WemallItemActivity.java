@@ -21,7 +21,52 @@ public class WemallItemActivity extends DataEntity<WemallItemActivity> {
 	private Integer activityId;		// 活动id
 	private Integer activityType;		// 对应活动类型 1-限时返现 2-满减送 3-限时折扣 4-限时团购'
 	
+	private Object activity;
+	
 	private List<String> itemIds;
+	
+	public enum ActivityTypeEnum {
+		/**
+		 * 限时返现
+		 */
+		CashbackDiscount(1),
+		/**
+		 * 满减送
+		 */
+		FullDiscount(2),
+		/**
+		 * 限时打折
+		 */
+		TimeDiscount(3),
+		/**
+		 * 限时拼团
+		 */
+		TeamDiscount(4);
+		
+		private int value;
+		
+		private ActivityTypeEnum(int value) {
+			this.value = value;
+		}
+
+		public int getValue() {
+			return value;
+		}
+		
+		public static ActivityTypeEnum getEnumByValue(int value) {
+			switch(value) {
+			case 1:
+				return CashbackDiscount;
+			case 2:
+				return FullDiscount;
+			case 3:
+				return TimeDiscount;
+			case 4:
+				return TeamDiscount;
+			}
+			return null;
+		}
+	}
 	
 	public WemallItemActivity() {
 		super();
@@ -56,6 +101,14 @@ public class WemallItemActivity extends DataEntity<WemallItemActivity> {
 
 	public void setActivityType(Integer activityType) {
 		this.activityType = activityType;
+	}
+	
+	public Object getActivity() {
+		return activity;
+	}
+
+	public void setActivity(Object activity) {
+		this.activity = activity;
 	}
 
 	public List<String> getItemIds() {

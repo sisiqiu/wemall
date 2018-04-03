@@ -3,6 +3,8 @@
  */
 package com.fulltl.wemall.modules.sys.utils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 
@@ -99,6 +101,40 @@ public class OrderDictUtils {
 	 */
 	public static String getOrderDictListJson(String type){
 		return JsonMapper.toJsonString(getOrderDictList(type));
+	}
+	
+	/**
+	 * 输入积分，获取对应的价格
+	 * @return
+	 */
+	public static Integer scoreToPrice(int score) {
+		OrderDict orderDict = OrderDictUtils.getOrderDictByTypeAndValue("orderPrice_about_set", "1");
+		if(orderDict != null) {
+			String orderDictPrice = orderDict.getPrice();
+			int resultPrice = new BigDecimal(score)
+				.multiply(new BigDecimal(100))
+				.divide(new BigDecimal(orderDictPrice), 0, RoundingMode.FLOOR)
+				.intValue();
+			return resultPrice;
+		}
+		return null;
+	}
+	
+	/**
+	 * 输入价格，获取对应的积分
+	 * @return
+	 */
+	public static Integer priceToScore(int price) {
+		OrderDict orderDict = OrderDictUtils.getOrderDictByTypeAndValue("orderPrice_about_set", "1");
+		if(orderDict != null) {
+			String orderDictPrice = orderDict.getPrice();
+			int resultScore = new BigDecimal(price)
+				.multiply(new BigDecimal(orderDictPrice))
+				.divide(new BigDecimal(100), 0, RoundingMode.FLOOR)
+				.intValue();
+			return resultScore;
+		}
+		return null;
 	}
 	
 }

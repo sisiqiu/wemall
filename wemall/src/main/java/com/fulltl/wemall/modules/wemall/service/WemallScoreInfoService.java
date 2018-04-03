@@ -13,6 +13,7 @@ import com.fulltl.wemall.common.persistence.Page;
 import com.fulltl.wemall.common.service.CrudService;
 import com.fulltl.wemall.modules.sys.entity.User;
 import com.fulltl.wemall.modules.sys.service.SystemService;
+import com.fulltl.wemall.modules.sys.utils.OrderDictUtils;
 import com.fulltl.wemall.modules.sys.utils.UserUtils;
 import com.fulltl.wemall.modules.wemall.dao.WemallScoreInfoDao;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrderItem;
@@ -87,13 +88,33 @@ public class WemallScoreInfoService extends CrudService<WemallScoreInfoDao, Wema
 	}
 
 	/**
+	 * 获取最大可抵扣金额（此项需补全实现）
+	 * @return
+	 */
+	public int getTotalDeductPrice(List<WemallOrderItem> wemallOrderItemList) {
+		return 100000;
+	}
+	
+	/**
+	 * 获取最大可使用的积分总额
+	 * @return
+	 */
+	public int getCanUseTotalScore(List<WemallOrderItem> wemallOrderItemList) {
+		return OrderDictUtils.priceToScore(getTotalDeductPrice(wemallOrderItemList));
+	}
+	
+	/**
 	 * 校验当前使用积分额对应的抵扣金额  是否超过  商品列表的积分最大抵扣金额
 	 * @param wemallOrderItemList
 	 * @param deductPrice
 	 * @return false--超过，true--没有超过
 	 */
 	public boolean checkItemsScoreDeductPrice(List<WemallOrderItem> wemallOrderItemList, Integer deductPrice) {
-		return true;
+		if(deductPrice <= getTotalDeductPrice(wemallOrderItemList)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 }

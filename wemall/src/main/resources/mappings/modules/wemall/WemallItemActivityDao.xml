@@ -4,7 +4,7 @@
     
 	<sql id="wemallItemActivityColumns">
 		a.item_id AS "itemId",
-		a.activity_id AS "activityId"
+		a.activity_id AS "activityId",
 		a.activity_type AS "activityType"
 	</sql>
 	
@@ -26,7 +26,21 @@
 		FROM wemall_item_activity a
 		<include refid="wemallItemActivityJoins"/>
 		<where>
-			
+			<if test="itemId != null and itemId != ''">
+				AND a.item_id = #{itemId}
+			</if>
+			<if test="activityId != null and activityId != ''">
+				AND a.activity_id = #{activityId}
+			</if>
+			<if test="activityType != null and activityType != ''">
+				AND a.activity_type = #{activityType}
+			</if>
+			<if test="itemIds != null">
+				AND a.item_id IN  
+			    <foreach collection="itemIds" index="index" item="item" open="(" separator="," close=")">  
+			        #{item}  
+			    </foreach>  
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">

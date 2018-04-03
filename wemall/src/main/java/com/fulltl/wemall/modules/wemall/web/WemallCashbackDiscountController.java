@@ -22,11 +22,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fulltl.wemall.common.config.Global;
 import com.fulltl.wemall.common.persistence.Page;
-import com.fulltl.wemall.common.web.BaseController;
 import com.fulltl.wemall.common.utils.StringUtils;
+import com.fulltl.wemall.common.web.BaseController;
 import com.fulltl.wemall.modules.wemall.entity.WemallCashbackDiscount;
 import com.fulltl.wemall.modules.wemall.entity.WemallItem;
 import com.fulltl.wemall.modules.wemall.entity.WemallItemActivity;
+import com.fulltl.wemall.modules.wemall.entity.WemallItemActivity.ActivityTypeEnum;
 import com.fulltl.wemall.modules.wemall.service.WemallCashbackDiscountService;
 import com.fulltl.wemall.modules.wemall.service.WemallItemActivityService;
 import com.fulltl.wemall.modules.wemall.service.WemallItemService;
@@ -74,7 +75,7 @@ public class WemallCashbackDiscountController extends BaseController {
 	@RequestMapping(value = "form")
 	public String form(WemallCashbackDiscount wemallCashbackDiscount, Model model,HttpServletRequest request, HttpServletResponse response) {
 		Page<WemallItem> page = wemallItemService.findPage(new Page<WemallItem>(request, response), new WemallItem()); 
-		List<WemallItem> actItems = wemallItemActivityService.findItemsByActId(wemallCashbackDiscount.getId(),1);
+		List<WemallItem> actItems = wemallItemActivityService.findItemsByActId(wemallCashbackDiscount.getId(), ActivityTypeEnum.CashbackDiscount);
 		String actIds = ",";
 		if(actItems.size()>0){
 			for(WemallItem w :actItems){
@@ -117,7 +118,7 @@ public class WemallCashbackDiscountController extends BaseController {
 			retainList = Lists.newArrayList();
 			retainList.addAll(newIdList);
 		}
-		List<WemallItem> actItems = wemallItemActivityService.findItemsByActId(actId,1);
+		List<WemallItem> actItems = wemallItemActivityService.findItemsByActId(actId, ActivityTypeEnum.CashbackDiscount);
 		List<String> oldIdList = Lists.newArrayList();
 		if(actItems.size()>0){
 			for(WemallItem w :actItems){
@@ -140,7 +141,7 @@ public class WemallCashbackDiscountController extends BaseController {
 				WemallItemActivity wemallItemActivity = new WemallItemActivity();
 				wemallItemActivity.setActivityId(Integer.valueOf(actId));
 				wemallItemActivity.setItemId(Integer.valueOf(addIdList.get(i)));
-				wemallItemActivity.setActivityType(1);
+				wemallItemActivity.setActivityType(ActivityTypeEnum.CashbackDiscount.getValue());
 				wemallItemActivityService.save(wemallItemActivity );
 			}
 		}
@@ -149,7 +150,7 @@ public class WemallCashbackDiscountController extends BaseController {
 				WemallItemActivity wemallItemActivity = new WemallItemActivity();
 				wemallItemActivity.setActivityId(Integer.valueOf(actId));
 				wemallItemActivity.setItemId(Integer.valueOf(removeIdList.get(i)));
-				wemallItemActivity.setActivityType(1);
+				wemallItemActivity.setActivityType(ActivityTypeEnum.CashbackDiscount.getValue());
 				wemallItemActivityService.delete(wemallItemActivity);
 			}
 		}

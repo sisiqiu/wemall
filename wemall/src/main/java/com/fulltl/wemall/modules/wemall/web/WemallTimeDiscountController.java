@@ -25,6 +25,7 @@ import com.fulltl.wemall.common.utils.StringUtils;
 import com.fulltl.wemall.modules.wemall.entity.WemallItem;
 import com.fulltl.wemall.modules.wemall.entity.WemallItemActivity;
 import com.fulltl.wemall.modules.wemall.entity.WemallTimeDiscount;
+import com.fulltl.wemall.modules.wemall.entity.WemallItemActivity.ActivityTypeEnum;
 import com.fulltl.wemall.modules.wemall.service.WemallItemActivityService;
 import com.fulltl.wemall.modules.wemall.service.WemallItemService;
 import com.fulltl.wemall.modules.wemall.service.WemallTimeDiscountService;
@@ -72,7 +73,7 @@ public class WemallTimeDiscountController extends BaseController {
 	@RequestMapping(value = "form")
 	public String form(WemallTimeDiscount wemallTimeDiscount, Model model,HttpServletRequest request, HttpServletResponse response) {
 		Page<WemallItem> page = wemallItemService.findPage(new Page<WemallItem>(request, response), new WemallItem()); 
-		List<WemallItem> actItems = wemallItemActivityService.findItemsByActId(wemallTimeDiscount.getId(),3);
+		List<WemallItem> actItems = wemallItemActivityService.findItemsByActId(wemallTimeDiscount.getId(), ActivityTypeEnum.TimeDiscount);
 		String actIds = ",";
 		if(actItems.size()>0){
 			for(WemallItem w :actItems){
@@ -104,7 +105,7 @@ public class WemallTimeDiscountController extends BaseController {
 			retainList = Lists.newArrayList();
 			retainList.addAll(newIdList);
 		}
-		List<WemallItem> actItems = wemallItemActivityService.findItemsByActId(actId,3);
+		List<WemallItem> actItems = wemallItemActivityService.findItemsByActId(actId, ActivityTypeEnum.TimeDiscount);
 		List<String> oldIdList = Lists.newArrayList();
 		if(actItems.size()>0){
 			for(WemallItem w :actItems){
@@ -127,7 +128,7 @@ public class WemallTimeDiscountController extends BaseController {
 				WemallItemActivity wemallItemActivity = new WemallItemActivity();
 				wemallItemActivity.setActivityId(Integer.valueOf(actId));
 				wemallItemActivity.setItemId(Integer.valueOf(addIdList.get(i)));
-				wemallItemActivity.setActivityType(3);
+				wemallItemActivity.setActivityType(ActivityTypeEnum.TimeDiscount.getValue());
 				wemallItemActivityService.save(wemallItemActivity );
 			}
 		}
@@ -136,7 +137,7 @@ public class WemallTimeDiscountController extends BaseController {
 				WemallItemActivity wemallItemActivity = new WemallItemActivity();
 				wemallItemActivity.setActivityId(Integer.valueOf(actId));
 				wemallItemActivity.setItemId(Integer.valueOf(removeIdList.get(i)));
-				wemallItemActivity.setActivityType(3);
+				wemallItemActivity.setActivityType(ActivityTypeEnum.TimeDiscount.getValue());
 				wemallItemActivityService.delete(wemallItemActivity);
 			}
 		}

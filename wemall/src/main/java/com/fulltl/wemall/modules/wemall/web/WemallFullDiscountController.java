@@ -20,11 +20,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fulltl.wemall.common.config.Global;
 import com.fulltl.wemall.common.persistence.Page;
-import com.fulltl.wemall.common.web.BaseController;
 import com.fulltl.wemall.common.utils.StringUtils;
+import com.fulltl.wemall.common.web.BaseController;
 import com.fulltl.wemall.modules.wemall.entity.WemallFullDiscount;
 import com.fulltl.wemall.modules.wemall.entity.WemallItem;
 import com.fulltl.wemall.modules.wemall.entity.WemallItemActivity;
+import com.fulltl.wemall.modules.wemall.entity.WemallItemActivity.ActivityTypeEnum;
 import com.fulltl.wemall.modules.wemall.service.WemallFullDiscountService;
 import com.fulltl.wemall.modules.wemall.service.WemallItemActivityService;
 import com.fulltl.wemall.modules.wemall.service.WemallItemService;
@@ -72,7 +73,7 @@ public class WemallFullDiscountController extends BaseController {
 	@RequestMapping(value = "form")
 	public String form(WemallFullDiscount wemallFullDiscount, Model model,HttpServletRequest request, HttpServletResponse response) {
 		Page<WemallItem> page = wemallItemService.findPage(new Page<WemallItem>(request, response), new WemallItem()); 
-		List<WemallItem> actItems = wemallItemActivityService.findItemsByActId(wemallFullDiscount.getId(),2);
+		List<WemallItem> actItems = wemallItemActivityService.findItemsByActId(wemallFullDiscount.getId(), ActivityTypeEnum.FullDiscount);
 		String actIds = ",";
 		if(actItems.size()>0){
 			for(WemallItem w :actItems){
@@ -104,7 +105,7 @@ public class WemallFullDiscountController extends BaseController {
 			retainList = Lists.newArrayList();
 			retainList.addAll(newIdList);
 		}
-		List<WemallItem> actItems = wemallItemActivityService.findItemsByActId(actId,2);
+		List<WemallItem> actItems = wemallItemActivityService.findItemsByActId(actId, ActivityTypeEnum.FullDiscount);
 		List<String> oldIdList = Lists.newArrayList();
 		if(actItems.size()>0){
 			for(WemallItem w :actItems){
@@ -127,7 +128,7 @@ public class WemallFullDiscountController extends BaseController {
 				WemallItemActivity wemallItemActivity = new WemallItemActivity();
 				wemallItemActivity.setActivityId(Integer.valueOf(actId));
 				wemallItemActivity.setItemId(Integer.valueOf(addIdList.get(i)));
-				wemallItemActivity.setActivityType(2);
+				wemallItemActivity.setActivityType(ActivityTypeEnum.FullDiscount.getValue());
 				wemallItemActivityService.save(wemallItemActivity );
 			}
 		}
@@ -136,7 +137,7 @@ public class WemallFullDiscountController extends BaseController {
 				WemallItemActivity wemallItemActivity = new WemallItemActivity();
 				wemallItemActivity.setActivityId(Integer.valueOf(actId));
 				wemallItemActivity.setItemId(Integer.valueOf(removeIdList.get(i)));
-				wemallItemActivity.setActivityType(2);
+				wemallItemActivity.setActivityType(ActivityTypeEnum.FullDiscount.getValue());
 				wemallItemActivityService.delete(wemallItemActivity);
 			}
 		}

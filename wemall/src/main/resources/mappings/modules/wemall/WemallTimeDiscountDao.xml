@@ -64,6 +64,26 @@
 		</choose>
 	</select>
 	
+	<select id="findListNotTimeout" resultType="WemallTimeDiscount">
+		SELECT 
+			<include refid="wemallTimeDiscountColumns"/>
+		FROM wemall_time_discount a
+		<include refid="wemallTimeDiscountJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.start_date &lt; now()
+			AND a.end_date &gt; now()
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
 	<select id="findAllList" resultType="WemallTimeDiscount">
 		SELECT 
 			<include refid="wemallTimeDiscountColumns"/>

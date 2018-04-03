@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fulltl.wemall.common.persistence.Page;
 import com.fulltl.wemall.common.service.CrudService;
+import com.fulltl.wemall.modules.wemall.entity.WemallFullDiscount;
 import com.fulltl.wemall.modules.wemall.entity.WemallTeamDiscount;
 import com.fulltl.wemall.modules.wemall.dao.WemallTeamDiscountDao;
 
@@ -44,4 +45,11 @@ public class WemallTeamDiscountService extends CrudService<WemallTeamDiscountDao
 		super.delete(wemallTeamDiscount);
 	}
 	
+	/**
+	 * 查询未过期的限时拼团活动列表
+	 * @return
+	 */
+	public List<WemallTeamDiscount> findListNotTimeout() {
+		return dao.findListNotTimeout(new WemallTeamDiscount());
+	}
 }

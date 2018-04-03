@@ -148,7 +148,12 @@ public class WemallOrderMgrService extends CrudService<WemallOrderDao, WemallOrd
 			}
 			
 			//根据活动的优惠方式，执行减价，更新订单价格，最小为0
-			Integer orderPrice = wemallItemActivityService.getPriceByOrderPrice(wemallOrder.getOrderPrice(), wemallItemActivity);
+			Integer orderPrice;
+			try {
+				orderPrice = wemallItemActivityService.getPriceByOrderPrice(wemallOrder.getOrderPrice(), wemallItemActivity);
+			} catch (Exception e) {
+				orderPrice = wemallOrder.getOrderPrice();
+			}
 			wemallOrder.setOrderPrice(orderPrice > 0 ? orderPrice : 0);
 			
 			//更新订单对象，设置参与了该活动
@@ -176,15 +181,9 @@ public class WemallOrderMgrService extends CrudService<WemallOrderDao, WemallOrd
 				return retMap;
 			}
 			
-			int deductPrice = 0;
 			//执行根据积分减价，更新订单价格，最小为0
-			OrderDict orderDict = OrderDictUtils.getOrderDictByTypeAndValue("orderPrice_about_set", "1");
-			if(orderDict != null) {
-				String price = orderDict.getPrice();
-				deductPrice = new BigDecimal(scoreUsageNum)
-					.multiply(new BigDecimal(100))
-					.divide(new BigDecimal(price), 0, RoundingMode.FLOOR)
-					.intValue();
+			Integer deductPrice = OrderDictUtils.scoreToPrice(scoreUsageNum);
+			if(deductPrice != null) {
 				int orderPrice = wemallOrder.getOrderPrice() - deductPrice;
 				wemallOrder.setOrderPrice(orderPrice > 0 ? orderPrice : 0);
 			}

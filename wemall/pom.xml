@@ -242,10 +242,16 @@
 			<version>1.2</version>
 			<type>jar</type>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
+			<scope>provided</scope>
+		</dependency> -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.0.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -253,6 +259,12 @@
 			<artifactId>jsp-api</artifactId>
 			<version>2.1</version>
 			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-websocket</artifactId>
+			<version>8.5.15</version>
 		</dependency>
 		<!-- <dependency> <groupId>javax.servlet</groupId> <artifactId>javax.servlet-api</artifactId> 
 			<version>3.0.1</version> <scope>provided</scope> </dependency> <dependency> 
@@ -691,6 +703,13 @@
 			<groupId>wsdl4j</groupId>
 			<artifactId>wsdl4j</artifactId>
 			<version>1.6.3</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/bsh/bsh -->
+		<dependency>
+		    <groupId>bsh</groupId>
+		    <artifactId>bsh</artifactId>
+		    <version>2.0b1</version>
 		</dependency>
 	</dependencies>
 

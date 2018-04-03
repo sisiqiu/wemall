@@ -25,11 +25,13 @@ import com.fulltl.wemall.modules.sys.service.SystemService;
 import com.fulltl.wemall.modules.sys.utils.OrderDictUtils;
 import com.fulltl.wemall.modules.sys.utils.UserUtils;
 import com.fulltl.wemall.modules.wemall.dao.WemallOrderDao;
+import com.fulltl.wemall.modules.wemall.entity.WemallItemActivity;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrder;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrder.OrderStatus;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrderAddress;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrderItem;
 import com.fulltl.wemall.modules.wemall.entity.WemallScoreInfo.ScoreFromType;
+import com.google.common.collect.Lists;
 
 /**
  * 订单管理Service
@@ -51,6 +53,8 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 	private WemallOrderAddressService wemallOrderAddressService;
 	@Autowired 
 	private WemallScoreInfoService wemallScoreInfoService;
+	@Autowired 
+	private WemallItemActivityService wemallItemActivityService;
 	
 	public WemallOrder get(String id) {
 		return super.get(id);
@@ -249,7 +253,6 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 			}
 		}
 		
-		
 		this.updateStatusByOrderNo(wemallOrder, status);
 		wemallOrderItemService.updateStatusByOrderNo(wemallOrder.getOrderNo(), status);
 	}
@@ -259,7 +262,7 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 	 * @param orderNo
 	 * @return
 	 */
-	public Map<String, Object> getOrderDetail(String orderNo) {
+	public Map<String, Object> getOrderDetail(String orderNo, boolean putActivityAndScore) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		//订单信息
 		WemallOrder wemallOrder = this.get(orderNo);
@@ -269,6 +272,24 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 		WemallOrderItem query = new WemallOrderItem();
 		query.setOrderNo(orderNo);
 		List<WemallOrderItem> orderItemList = wemallOrderItemService.findList(query);
+		
+		//判断是否需要添加可参与活动列表以及最大可使用积分数信息
+		if(putActivityAndScore) {
+			List<String> itemIds = Lists.newArrayList();
+			for(WemallOrderItem orderItem : orderItemList) {
+				itemIds.add(orderItem.getItemId());
+			}
+			//获取可参加的活动列表
+			List<WemallItemActivity> activityList = wemallItemActivityService.findListByItems(itemIds);
+			//获取最大可使用积分数
+			int canUseTotalScore = wemallScoreInfoService.getCanUseTotalScore(orderItemList);
+			map.put("activityList", activityList);
+			map.put("canUseTotalScore", canUseTotalScore);
+			
+			User u = UserUtils.getUser();
+			map.put("userCurScoreNum", u.getCurScoreNum());
+		}
+		
 		map.put("ret", "0");
 		map.put("retMsg", "获取成功！");
 		map.put("wemallOrder", wemallOrder);
@@ -276,7 +297,7 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 		map.put("orderItemList", orderItemList);
 		return map;
 	}
-
+	
 	/**
 	 * 用户申请退货
 	 * @param wemallOrder

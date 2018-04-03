@@ -85,10 +85,10 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">满减条件：</label>
+			<label class="control-label">满减表达式：</label>
 			<div class="controls">
 				<form:textarea path="discountCond" htmlEscape="false" rows="4" maxlength="1000" class="input-xxlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<span class="help-inline"><font color="red">*</font> 表达式中用变量orderPrice表示订单原价</span>
 			</div>
 		</div>
 		<div class="control-group">

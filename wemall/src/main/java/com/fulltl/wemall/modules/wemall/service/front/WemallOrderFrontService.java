@@ -698,7 +698,7 @@ public class WemallOrderFrontService extends BaseService {
 			map.put("retMsg", "订单号不能为空！");
 			return map;
 		}
-		map = wemallOrderService.getOrderDetail(orderNo);
+		map = wemallOrderService.getOrderDetail(orderNo, true);
 		return map;
 	}
 
@@ -736,7 +736,7 @@ public class WemallOrderFrontService extends BaseService {
 		}*/
 		List<Map<String, Object>> list = Lists.newArrayList();
 		for(WemallOrder entity : page.getList()) {
-			list.add(wemallOrderService.getOrderDetail(entity.getOrderNo()));
+			list.add(wemallOrderService.getOrderDetail(entity.getOrderNo(), false));
 		}
 		map.put("list", list);
 		map.put("count", page.getCount());

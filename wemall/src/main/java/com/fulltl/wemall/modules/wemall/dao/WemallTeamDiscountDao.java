@@ -3,6 +3,8 @@
  */
 package com.fulltl.wemall.modules.wemall.dao;
 
+import java.util.List;
+
 import com.fulltl.wemall.common.persistence.CrudDao;
 import com.fulltl.wemall.common.persistence.annotation.MyBatisDao;
 import com.fulltl.wemall.modules.wemall.entity.WemallTeamDiscount;
@@ -15,4 +17,5 @@ import com.fulltl.wemall.modules.wemall.entity.WemallTeamDiscount;
 @MyBatisDao
 public interface WemallTeamDiscountDao extends CrudDao<WemallTeamDiscount> {
 	
+	public List<WemallTeamDiscount> findListNotTimeout(WemallTeamDiscount wemallTeamDiscount);
 }

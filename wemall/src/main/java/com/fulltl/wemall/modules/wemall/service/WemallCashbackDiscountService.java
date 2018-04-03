@@ -10,8 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fulltl.wemall.common.persistence.Page;
 import com.fulltl.wemall.common.service.CrudService;
-import com.fulltl.wemall.modules.wemall.entity.WemallCashbackDiscount;
 import com.fulltl.wemall.modules.wemall.dao.WemallCashbackDiscountDao;
+import com.fulltl.wemall.modules.wemall.entity.WemallCashbackDiscount;
 
 /**
  * 限时返现活动管理Service
@@ -42,6 +42,14 @@ public class WemallCashbackDiscountService extends CrudService<WemallCashbackDis
 	@Transactional(readOnly = false)
 	public void delete(WemallCashbackDiscount wemallCashbackDiscount) {
 		super.delete(wemallCashbackDiscount);
+	}
+	
+	/**
+	 * 查询未过期的限时返现活动列表
+	 * @return
+	 */
+	public List<WemallCashbackDiscount> findListNotTimeout() {
+		return dao.findListNotTimeout(new WemallCashbackDiscount());
 	}
 	
 }
