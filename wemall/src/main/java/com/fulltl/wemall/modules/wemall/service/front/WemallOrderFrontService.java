@@ -379,7 +379,7 @@ public class WemallOrderFrontService extends BaseService {
 			//不免邮
 			totalFreightPrice = totalFreightPrice + wemallShopCar.getItem().getFreightPrice();
 		}
-		
+		orderPrice = orderPrice + totalFreightPrice;
 		//校验库存
 		WemallOrderItem wemallOrderItem = new WemallOrderItem();
 		wemallOrderItem.initBy(wemallShopCar, null, orderPrice);
