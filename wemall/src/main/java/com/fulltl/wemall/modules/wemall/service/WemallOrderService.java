@@ -300,7 +300,7 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 			//计算参加每种活动后的价格
 			for(WemallItemActivity entity : activityList) {
 				try {
-					Integer priceByOrderPrice = wemallItemActivityService.getPriceByOrderPrice(wemallOrder.getOrderPrice(), entity);
+					Integer priceByOrderPrice = wemallItemActivityService.getPriceByOrderPrice(wemallOrder.getOriginalOrderPrice(), entity);
 					entity.setJoinPrice(priceByOrderPrice);
 				} catch (Exception e) {
 				}

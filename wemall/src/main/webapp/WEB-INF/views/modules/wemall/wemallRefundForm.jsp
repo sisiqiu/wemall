@@ -113,7 +113,7 @@
 		<div class="form-actions">
 			<shiro:hasPermission name="wemall:wemallRefund:edit"><input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
-			<a id="btn_detail" target="_blank" class="btn btn-primary" type="button" href="${ctx}/wemall/wemallOrder/refundQuery?orderNo=${wemallRefund.platformOrderNo}&paymentType=0&refundId=${wemallRefund.refundId}" >查看第三方退款详情</a>
+			<%-- <a id="btn_detail" target="_blank" class="btn btn-primary" type="button" href="${ctx}/wemall/wemallOrder/refundQuery?orderNo=${wemallRefund.platformOrderNo}&paymentType=0&refundId=${wemallRefund.refundId}" >查看第三方退款详情</a> --%>
 		</div>
 	</form:form>
 </body>

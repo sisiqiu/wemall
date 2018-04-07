@@ -2,6 +2,8 @@ package com.fulltl.wemall.modules.wx.core.utils;
 
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.google.common.collect.Maps;
 import com.fulltl.wemall.common.security.Cryptos;
 import com.fulltl.wemall.common.security.Digests;
@@ -83,7 +85,9 @@ public class WeixinTradeSignature {
 		String[] keyArr = map.keySet().toArray(new String[]{});
 		sort(keyArr);
 		for(String key : keyArr) {
-			strBuilder.append(key).append("=").append(map.get(key)).append("&");
+			if(StringUtils.isNotBlank(map.get(key))) {
+				strBuilder.append(key).append("=").append(map.get(key)).append("&");
+			}
 		}
 		if(strBuilder.length() > 0) {
 			return strBuilder.substring(0, strBuilder.length()-1);

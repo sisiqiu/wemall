@@ -343,7 +343,7 @@
 			<if test="orderPrice != null and orderPrice != ''">
 			   	order_price = #{orderPrice},
 			</if>
-			<if test="paymentType != null and paymentType != ''">
+			<if test="paymentType != null">
 			  	payment_type = #{paymentType},
 			</if>
 			<if test="prepayId != null and prepayId != ''">

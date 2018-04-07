@@ -146,7 +146,10 @@ public class WemallItemActivityService extends CrudService<WemallItemActivityDao
 		WemallItemActivity query = new WemallItemActivity();
 		query.setItemIds(itemIds);
 		//获取所有商品id--活动id中间对象。
-		List<WemallItemActivity> itemActivityList = super.findList(query);
+		List<WemallItemActivity> itemActivityList = Lists.newArrayList();
+		if(itemIds != null && itemIds.size() > 0) {
+			itemActivityList = super.findList(query);
+		}
 		//定义商品id--商品活动中间对象的map
 		Map<Integer, List<WemallItemActivity>> itemResultMap = Maps.newHashMap(); 
 		for(WemallItemActivity entity : itemActivityList) {

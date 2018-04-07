@@ -35,10 +35,10 @@ public class WemallRefundController extends BaseController {
 	private WemallRefundService wemallRefundService;
 	
 	@ModelAttribute
-	public WemallRefund get(@RequestParam(required=false) String id) {
+	public WemallRefund get(@RequestParam(required=false) String refundId) {
 		WemallRefund entity = null;
-		if (StringUtils.isNotBlank(id)){
-			entity = wemallRefundService.get(id);
+		if (StringUtils.isNotBlank(refundId)){
+			entity = wemallRefundService.get(refundId);
 		}
 		if (entity == null){
 			entity = new WemallRefund();

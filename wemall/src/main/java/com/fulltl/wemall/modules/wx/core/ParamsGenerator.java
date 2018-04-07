@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fulltl.wemall.common.config.Global;
 import com.fulltl.wemall.common.service.BaseService;
 import com.fulltl.wemall.common.utils.DateUtils;
 import com.fulltl.wemall.common.utils.IdGen;
@@ -32,17 +33,15 @@ public class ParamsGenerator {
 	 * 为调用微信接口统一下单构建参数map
 	 * @return
 	 */
-	public static Map<String,String> generateParamsForUnifiedOrder(WemallOrder wemallOrder, HttpServletRequest request) {
+	public static Map<String,String> generateParamsForUnifiedOrder(WemallOrder wemallOrder, String openId, HttpServletRequest request) {
 		String basePath = BaseService.getBasePath(request);
 		Map<String, String> paramsMap = generateCommonParams();
 		
-		paramsMap.put("body", wemallOrder.getBody());
+		paramsMap.put("body", wemallOrder.getTitle());
 		//paramsMap.put("out_trade_no", wemallOrder.getOrderNo());
 		paramsMap.put("out_trade_no", wemallOrder.getPlatformOrderNo());
 		paramsMap.put("total_fee", wemallOrder.getOrderPrice().toString());//订单总金额，单位为分
-		logger.debug("请求微信下单的用户ip为：" + RequestUtil.getIpAddress(request));
-		logger.debug("请求微信下单的用户ip为：" + RequestUtil.getIP(request));
-		paramsMap.put("spbill_create_ip", RequestUtil.getIpAddress(request));//用户端实际ip
+		paramsMap.put("spbill_create_ip", Global.getConfig("weixin.ipAddress"));//用户端实际ip
 		Date curDate = new Date();
 		paramsMap.put("time_start", DateUtils.formatDate(curDate, "yyyyMMddHHmmss"));//订单生成时间，格式为yyyyMMddHHmmss
 		try {
@@ -52,7 +51,8 @@ public class ParamsGenerator {
 		}
 		//订单失效时间，格式为yyyyMMddHHmmss
 		paramsMap.put("notify_url", basePath + WeixinTradeConfig.notify_url);//接收微信支付异步通知回调地址
-		paramsMap.put("trade_type", "APP");//交易类型,支付类型
+		paramsMap.put("trade_type", WeixinTradeConfig.trade_type);//交易类型,支付类型
+		paramsMap.put("openid", openId);//交易类型,支付类型
 		
 		//最后根据参数map生成签名
 		generateSignForParams(paramsMap);
@@ -71,7 +71,7 @@ public class ParamsGenerator {
 		paramsMap.put("out_trade_no", wemallRefund.getPlatformOrderNo());
 		paramsMap.put("total_fee", wemallRefund.getOrderPrice().toString());//订单总金额，单位为分
 		paramsMap.put("refund_fee", wemallRefund.getRefundFee().toString());//退款金额，单位为分
-		paramsMap.put("refund_desc", wemallRefund.getRefundDesc());
+		//paramsMap.put("refund_desc", wemallRefund.getRefundDesc());
 		
 		//最后根据参数map生成签名
 		generateSignForParams(paramsMap);
@@ -174,8 +174,7 @@ public class ParamsGenerator {
 	public static Map<String, String> generateParamsByPrepayId(String prepayId) {
 		Map<String, String> paramsMap = Maps.newHashMap();
 		paramsMap.put("appId", WeixinTradeConfig.appid);
-		Calendar calendar = Calendar.getInstance();
-		paramsMap.put("timeStamp", Integer.toString(calendar.get(Calendar.SECOND)));
+		paramsMap.put("timeStamp", Long.toString((long)(System.currentTimeMillis()/1000)));
 		paramsMap.put("nonceStr", IdGen.randomBase62(15));
 		paramsMap.put("package", "prepay_id=" + prepayId);
 		paramsMap.put("nonceStr", IdGen.randomBase62(15));
@@ -189,4 +188,23 @@ public class ParamsGenerator {
 		return paramsMap;
 	}
 
+	/**
+	 * map转xml
+	 * @return
+	 */
+	public static String mapToXML(Map<String, String> map) {
+		StringBuffer result = new StringBuffer();
+		result.append("<xml>");
+		for(String key : map.keySet()) {
+			result.append("<");
+			result.append(key);
+			result.append(">");
+			result.append(map.get(key));
+			result.append("</");
+			result.append(key);
+			result.append(">");
+		}
+		result.append("</xml>");
+		return result.toString();
+	}
 }

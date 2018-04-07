@@ -59,7 +59,11 @@ public class WemallScoreInfo extends DataEntity<WemallScoreInfo> {
 		/**
 		 * 商品积分兑换
 		 */
-		itemScoreExchange("7");
+		itemScoreExchange("7"),
+		/**
+		 * 新用户获取积分
+		 */
+		initGetScore("8");
 		
 		private String value;
 		private ScoreFromType(String value) {

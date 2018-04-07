@@ -136,7 +136,7 @@ public class WemallOrderMgrService extends CrudService<WemallOrderDao, WemallOrd
 		//参加活动id和活动类型
 		String activityId = WebUtils.getCleanParam(request, "activityId");
 		String activityType = WebUtils.getCleanParam(request, "activityType");
-		
+		Integer orderPrice = wemallOrder.getOriginalOrderPrice();
 		//根据活动id和活动类型
 		if(StringUtils.isNotBlank(activityId) && StringUtils.isNotBlank(activityType)) {
 			//校验所有商品是否都可参加该活动
@@ -148,11 +148,10 @@ public class WemallOrderMgrService extends CrudService<WemallOrderDao, WemallOrd
 			}
 			
 			//根据活动的优惠方式，执行减价，更新订单价格，最小为0
-			Integer orderPrice;
 			try {
-				orderPrice = wemallItemActivityService.getPriceByOrderPrice(wemallOrder.getOrderPrice(), wemallItemActivity);
+				orderPrice = wemallItemActivityService.getPriceByOrderPrice(orderPrice, wemallItemActivity);
 			} catch (Exception e) {
-				orderPrice = wemallOrder.getOrderPrice();
+				//orderPrice = orderPrice;
 			}
 			wemallOrder.setOrderPrice(orderPrice > 0 ? orderPrice : 0);
 			
@@ -184,7 +183,7 @@ public class WemallOrderMgrService extends CrudService<WemallOrderDao, WemallOrd
 			//执行根据积分减价，更新订单价格，最小为0
 			Integer deductPrice = OrderDictUtils.scoreToPrice(scoreUsageNum);
 			if(deductPrice != null) {
-				int orderPrice = wemallOrder.getOrderPrice() - deductPrice;
+				orderPrice = orderPrice - deductPrice;
 				wemallOrder.setOrderPrice(orderPrice > 0 ? orderPrice : 0);
 			}
 			
@@ -255,7 +254,7 @@ public class WemallOrderMgrService extends CrudService<WemallOrderDao, WemallOrd
 			} catch (AlipayApiException e) {
 				logger.error("查看支付宝订单详情错误！" + e);
 			}
-		} else if(PaymentType.weixin.getValue().equals(paymentType)) {
+		} else if(PaymentType.weixin.getValue().toString().equals(paymentType)) {
 			result = weixinTradeService.refundQuery(orderNo, trade_no, refundId);
 		}
 		return result;

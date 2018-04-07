@@ -9,6 +9,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -93,6 +94,8 @@ public class WemallFullDiscountController extends BaseController {
 		if (!beanValidator(model, wemallFullDiscount)){
 			return form(wemallFullDiscount, model, null, null);
 		}
+		wemallFullDiscount.setDiscountCond(StringEscapeUtils.unescapeHtml4(wemallFullDiscount.getDiscountCond()));
+		
 		wemallFullDiscountService.save(wemallFullDiscount);
 		String actId = wemallFullDiscount.getId();
 		String itemIds = request.getParameter("itemIds");

@@ -6,8 +6,16 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;  
+import java.util.Map;
+
+import com.fulltl.wemall.modules.wx.core.pojo.trade.WeixinTradeAllEntity;
+import com.google.common.collect.Maps;
+
   
 /**
  * bean和map相互转换工具类

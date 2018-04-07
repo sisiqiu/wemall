@@ -175,8 +175,8 @@
 			<li class="btns">
 				<input id="btn_reset" class="btn btn-primary" type="button" value="重置"/>
 				<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
-				<input id="btn_downloadBill" class="btn btn-primary" type="button" value="下载对账单" onclick="downloadBill()"/>
-			</li>
+<!-- 				<input id="btn_downloadBill" class="btn btn-primary" type="button" value="下载对账单" onclick="downloadBill()"/>
+ -->			</li>
 			<li class="clearfix"></li>
 		</ul>
 	</form:form>

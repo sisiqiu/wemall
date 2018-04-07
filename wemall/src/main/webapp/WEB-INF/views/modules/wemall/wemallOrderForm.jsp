@@ -247,7 +247,7 @@
 		</div>
 		<div class="form-actions">
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
-			<a id="btn_detail" target="_blank" class="btn btn-primary" type="button" href="${ctx}/wemall/wemallOrder/orderQuery?orderNo=${wemallOrder.platformOrderNo}&paymentType=0" >查看第三方订单详情</a>
+			<a id="btn_detail" target="_blank" class="btn btn-primary" type="button" href="${ctx}/wemall/wemallOrder/orderQuery?orderNo=${allData['wemallOrder'].platformOrderNo}&paymentType=0" >查看第三方订单详情</a>
 		</div>
 	</form:form>
 	<div>

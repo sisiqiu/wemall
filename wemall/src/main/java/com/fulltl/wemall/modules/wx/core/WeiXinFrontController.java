@@ -22,8 +22,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fulltl.wemall.common.config.Global;
+import com.fulltl.wemall.common.utils.CacheUtils;
 import com.fulltl.wemall.common.utils.StringUtils;
 import com.fulltl.wemall.common.web.BaseController;
+import com.fulltl.wemall.modules.sys.entity.User;
+import com.fulltl.wemall.modules.sys.service.SystemService;
 import com.fulltl.wemall.modules.wx.core.pojo.OAuth2AccessToken;
 import com.fulltl.wemall.modules.wx.core.pojo.WXOAuthUserInfo;
 import com.fulltl.wemall.modules.wx.core.utils.SignUtil;
@@ -57,6 +60,8 @@ public class WeiXinFrontController extends BaseController {
 	private ObtainAccessTokenScheduler obtainAccessTokenScheduler;
 	@Autowired
 	private WxUserInfoService wxUserInfoService;
+	@Autowired
+	private SystemService systemService;
 
 	/**
 	 * 服务端接入微信初始握手认证接口
@@ -213,13 +218,42 @@ public class WeiXinFrontController extends BaseController {
 			oauth2AccessToken = WXOAuth2AuthorizeUtil.getOpenIdAndAccessToken(Global.getConfig("weixin.appId"), Global.getConfig("weixin.secret"), code);
 			openId = oauth2AccessToken.getOpenid();
 			
+			synchronized(this) {
+				Object value = CacheUtils.get("hisTempCache", openId);
+				if(value != null && (System.currentTimeMillis() - Long.parseLong(value.toString())) < 1000) {
+					//执行登录
+					User user = systemService.getUserByLoginName(openId);
+					systemService.loginByUser(user, false);
+					System.err.println(user.getLoginName() + "用户登录！");
+					//执行跳转
+					String redirectUrl = StringUtils.EMPTY;
+					if(redirect.contains("http://")) {
+						redirectUrl = redirect;
+					} else {
+						redirectUrl = Global.getConfig("weixin.appUrl") + redirect;
+					}
+					//System.err.println(redirectUrl);
+					try {
+						if(redirectUrl.contains("?")) {
+							response.sendRedirect(redirectUrl + "&openId=" + openId);
+						} else {
+							response.sendRedirect(redirectUrl);
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					return new Gson().toJson(retMap);
+				}
+				CacheUtils.put("hisTempCache", openId, System.currentTimeMillis());
+			}
+			
 			WxUserInfo curWxUserInfo = wxUserInfoService.getWxUserInfoBy(openId, serviceId);
 			//获取用户信息
 			WXOAuthUserInfo userInfo = WXOAuth2AuthorizeUtil.getUserInfo(oauth2AccessToken.getAccess_token(), oauth2AccessToken.getOpenid());
 			//根据openId查询关注用户表，若查到了，则更新其中的信息字段后执行授权行为。若没有查到，新建一个，执行关注行为
 			curWxUserInfo.initByOAuthUserInfo(userInfo);
 			curWxUserInfo.setOpenId(openId);
-			//更新微信用户的基础信息
+			
 			wxUserInfoService.updateInfoAndLoginByOpenId(curWxUserInfo);
 			
 			model.addAttribute("userInfo", userInfo);
@@ -245,7 +279,7 @@ public class WeiXinFrontController extends BaseController {
 				if(redirectUrl.contains("?")) {
 					response.sendRedirect(redirectUrl + "&openId=" + openId);
 				} else {
-					response.sendRedirect(redirectUrl + "?openId=" + openId);
+					response.sendRedirect(redirectUrl);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

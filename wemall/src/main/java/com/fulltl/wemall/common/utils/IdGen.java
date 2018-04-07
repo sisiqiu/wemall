@@ -130,7 +130,7 @@ public class IdGen implements IdGenerator, SessionIdGenerator {
 		return refundId;
 	}
 	
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		Set<String> set1 = Sets.newConcurrentHashSet();
 		long l1 = System.currentTimeMillis();
 		Thread t1 = new Thread(new Runnable() {
@@ -159,7 +159,7 @@ public class IdGen implements IdGenerator, SessionIdGenerator {
 		});
 		t1.start();
 		t2.start();
-	}
+	}*/
 	
 	/*public static void main(String[] args) {
 		System.out.println(IdGen.uuid());
@@ -169,5 +169,7 @@ public class IdGen implements IdGenerator, SessionIdGenerator {
 			System.out.println(IdGen.randomLong() + "  " + IdGen.randomBase62(5));
 		}
 	}*/
-
+	public static void main(String[] args) {
+		System.err.println(IdGen.getOrderNoByPlatformOrderNo("15230788067630000_LkGpvT"));
+	}
 }

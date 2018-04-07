@@ -36,6 +36,9 @@ public class WeixinTradeConfig {
 
 	// 订单超时时间，m-分钟，h-小时，d-天
 	public static String timeoutExpress = "30m";
+
+	//交易类型,支付类型
+	public static String trade_type = "JSAPI";
 	
 	// ↑↑↑↑↑↑↑↑↑↑请在这里配置您的基本信息↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 

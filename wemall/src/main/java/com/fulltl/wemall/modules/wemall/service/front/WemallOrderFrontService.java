@@ -503,6 +503,7 @@ public class WemallOrderFrontService extends BaseService {
     		map.put("retMsg", "订单不存在。");
         	return map;
     	}
+		wemallOrder.setPaymentType(Integer.parseInt(paymentType));
 		//更新订单状态值时，对状态做校验
 		map = wemallOrder.checkUpdateStatus(OrderStatus.alreadyPaid);
 		if(!"0".equals(map.get("ret"))) return map;

@@ -16,11 +16,16 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fulltl.wemall.common.persistence.Page;
 import com.fulltl.wemall.common.service.CrudService;
 import com.fulltl.wemall.common.utils.IdGen;
+import com.fulltl.wemall.common.utils.RegExpValidatorUtil;
 import com.fulltl.wemall.common.utils.StringUtils;
+import com.fulltl.wemall.modules.sys.entity.OrderDict;
 import com.fulltl.wemall.modules.sys.entity.User;
 import com.fulltl.wemall.modules.sys.security.UsernamePasswordToken;
 import com.fulltl.wemall.modules.sys.service.SystemService;
+import com.fulltl.wemall.modules.sys.utils.OrderDictUtils;
 import com.fulltl.wemall.modules.sys.utils.UserUtils;
+import com.fulltl.wemall.modules.wemall.entity.WemallScoreInfo.ScoreFromType;
+import com.fulltl.wemall.modules.wemall.service.WemallScoreInfoService;
 import com.fulltl.wemall.modules.wx.core.pojo.ReceiveXmlEntity;
 import com.fulltl.wemall.modules.wx.dao.WxUserInfoDao;
 import com.fulltl.wemall.modules.wx.entity.UserBehavior;
@@ -41,6 +46,8 @@ public class WxUserInfoService extends CrudService<WxUserInfoDao, WxUserInfo> {
 	private SystemService systemService;
 	@Autowired
 	private WxServiceaccountService wxServiceaccountService;
+	@Autowired
+	private WemallScoreInfoService wemallScoreInfoService;
 	
 	public WxUserInfo get(String id) {
 		return super.get(id);
@@ -117,6 +124,7 @@ public class WxUserInfoService extends CrudService<WxUserInfoDao, WxUserInfo> {
 		User administrator = new User();
 		administrator.setId("1");
 		WxUserInfo curWxUserInfo = this.getWxUserInfoBy(wxUserInfo.getOpenId(), wxUserInfo.getServiceId());
+		if(StringUtils.isBlank(wxUserInfo.getNickName())) return;
 		if(curWxUserInfo != null && StringUtils.isNotBlank(curWxUserInfo.getId())) {
 			//不是新增
 			switch(userBehavior) {
@@ -178,20 +186,25 @@ public class WxUserInfoService extends CrudService<WxUserInfoDao, WxUserInfo> {
 				this.save(wxUserInfo);
 				break;
 			}
+			
+			//添加用户积分
+			OrderDict orderDict = OrderDictUtils.getOrderDictByTypeAndValue("score_about_set", "1");
+			wemallScoreInfoService.updateUserScore(user.getId(), Integer.parseInt(orderDict.getPrice()), ScoreFromType.initGetScore);
 		}
 	}
 
 	@Transactional(readOnly = false)
 	public void updateInfoAndLoginByOpenId(WxUserInfo curWxUserInfo) {
+		boolean containsEmoji = RegExpValidatorUtil.isMessyCode(curWxUserInfo.getNickName());
 		if(StringUtils.isNotBlank(curWxUserInfo.getId())) {
 			//更新，并登陆用户
-			if(!Objects.equals(curWxUserInfo.getIsGetUserInfo(),1)) {
+			if(!Objects.equals(curWxUserInfo.getIsGetUserInfo(),1) && !containsEmoji) {
 				//如果不相等，则需要更新
 				curWxUserInfo.setIsGetUserInfo(1);
 				dao.updateInfoByOpenId(curWxUserInfo);
 			}
 			User user = systemService.getUserByLoginName(curWxUserInfo.getOpenId());
-			if(StringUtils.isNotBlank(curWxUserInfo.getNickName())) {
+			if(StringUtils.isNotBlank(curWxUserInfo.getNickName()) && !containsEmoji) {
 				//更新系统用户的属性
 				if(!Objects.equals(user.getName(), curWxUserInfo.getNickName())) {
 					user.setName(curWxUserInfo.getNickName());
@@ -202,6 +215,9 @@ public class WxUserInfoService extends CrudService<WxUserInfoDao, WxUserInfo> {
 			System.err.println(user.getLoginName() + "用户登录！");
 			
 		} else {
+			if(containsEmoji) {
+				curWxUserInfo.setNickName("JiaWo_" + IdGen.randomBase62(6));
+			}
 			String password = IdGen.randomBase62(8);
 			//添加
 			User user = systemService.saveUserByTypeAndLoginName(curWxUserInfo.getOpenId(), curWxUserInfo.getOpenId(), password);
@@ -213,6 +229,10 @@ public class WxUserInfoService extends CrudService<WxUserInfoDao, WxUserInfo> {
             curWxUserInfo.initUserInfo();
             curWxUserInfo.setUser(user);
             this.save(curWxUserInfo);
+            
+            //添加用户积分
+			OrderDict orderDict = OrderDictUtils.getOrderDictByTypeAndValue("score_about_set", "1");
+			wemallScoreInfoService.updateUserScore(user.getId(), Integer.parseInt(orderDict.getPrice()), ScoreFromType.initGetScore);
 		}
 	}
 

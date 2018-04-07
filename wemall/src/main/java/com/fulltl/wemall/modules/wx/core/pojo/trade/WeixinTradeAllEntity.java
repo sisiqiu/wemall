@@ -1,6 +1,5 @@
 package com.fulltl.wemall.modules.wx.core.pojo.trade;
 
-import java.math.BigDecimal;
 import java.util.Map;
 
 import com.fulltl.wemall.modules.wx.core.pojo.trade.base.WeixinTradeBaseEntity;
@@ -33,38 +32,38 @@ public class WeixinTradeAllEntity extends WeixinTradeBaseEntity {
 	private String openid; //用户在商户appid下的唯一标识
 	private String is_subscribe; //用户是否关注公众账号，Y-关注，N-未关注，仅在公众账号类型支付有效
 	private String bank_type; //银行类型，采用字符串类型的银行标识
-	private BigDecimal total_fee; //订单总金额，单位为分
+	private String total_fee; //订单总金额，单位为分
 	private String fee_type; //货币类型，符合ISO4217标准的三位字母代码，默认人民币：CNY
-	private BigDecimal cash_fee; //现金支付金额订单现金支付金额
+	private String cash_fee; //现金支付金额订单现金支付金额
 	private String cash_fee_type; //货币类型，符合ISO4217标准的三位字母代码，默认人民币：CNY
-	private BigDecimal coupon_fee; //代金券金额
+	private String coupon_fee; //代金券金额
 	private String coupon_count; //代金券使用数量
 	//private String coupon_id_$n; //代金券或立减优惠ID,$n为下标，从0开始编号
 	//private String coupon_type_$n; //代金券类型，开通免充值券功能，并且订单使用了优惠券后有返回（取值：CASH、NO_CASH）。$n为下标,从0开始编号
 	//private String coupon_type_$n_$m; //代金券类型，开通免充值券功能，并且订单使用了优惠券后有返回（取值：CASH、NO_CASH）。$n为下标,$m为下标,从0开始编号
-	//private BigDecimal coupon_fee_$n; //单个代金券或立减优惠支付金额,$n为下标，从0开始编号
+	//private String coupon_fee_$n; //单个代金券或立减优惠支付金额,$n为下标，从0开始编号
 	private String attach; //商家数据包，原样返回
 	private String time_end; //支付完成时间，格式为yyyyMMddHHmmss
 	private String trade_state_desc; //交易状态描述
 	private String device_info; //设备号
-	private BigDecimal settlement_total_fee; //应结订单金额
+	private String settlement_total_fee; //应结订单金额
 	
 	private String out_refund_no; //商户退款单号
 	private String refund_id; //微信退款单号
-	private BigDecimal refund_fee; //退款金额
+	private String refund_fee; //退款金额
 	private String refund_status; //SUCCESS-退款成功,CHANGE-退款异常,REFUNDCLOSE—退款关闭
 	//private String refund_status_$n; //退款状态：SUCCESS—退款成功，REFUNDCLOSE—退款关闭。，PROCESSING—退款处理中，CHANGE—退款异常，$n为下标，从0开始编号
-	private BigDecimal settlement_refund_fee; //应结退款金额
-	private BigDecimal cash_refund_fee; //现金退款金额
-	private BigDecimal coupon_refund_fee; //代金券退款总金额
-	//private BigDecimal coupon_refund_fee_$n; //单个代金券退款金额
-	//private BigDecimal coupon_refund_fee_$n_$m; //单个代金券或立减优惠退款金额, $n为下标，$m为下标，从0开始编号
+	private String settlement_refund_fee; //应结退款金额
+	private String cash_refund_fee; //现金退款金额
+	private String coupon_refund_fee; //代金券退款总金额
+	//private String coupon_refund_fee_$n; //单个代金券退款金额
+	//private String coupon_refund_fee_$n_$m; //单个代金券或立减优惠退款金额, $n为下标，$m为下标，从0开始编号
 	//private String coupon_refund_id_$n; //退款代金券ID, $n为下标，从0开始编号
 	//private String coupon_refund_id_$n_$m; //代金券或立减优惠ID, $n为下标，$m为下标，从0开始编号
 	//private String coupon_refund_count_$n; //代金券或立减优惠使用数量 ,$n为下标,从0开始编号
 	//private String out_refund_no_$n; //商户退款单号
 	//private String refund_id_$n; //微信退款单号
-	//private BigDecimal refund_fee_$n; //退款金额
+	//private String refund_fee_$n; //退款金额
 	//private String refund_channel_$n; //退款渠道,ORIGINAL—原路退款,BALANCE—退回到余额,OTHER_BALANCE—原账户异常退到其他余额账户,OTHER_BANKCARD—原银行卡异常退到其他银行卡
 	private String coupon_refund_count; //退款代金券使用数量
 	private String total_refund_count; //订单总退款次数
@@ -155,10 +154,10 @@ public class WeixinTradeAllEntity extends WeixinTradeBaseEntity {
 	public void setBank_type(String bank_type) {
 		this.bank_type = bank_type;
 	}
-	public BigDecimal getTotal_fee() {
+	public String getTotal_fee() {
 		return total_fee;
 	}
-	public void setTotal_fee(BigDecimal total_fee) {
+	public void setTotal_fee(String total_fee) {
 		this.total_fee = total_fee;
 	}
 	public String getFee_type() {
@@ -167,10 +166,10 @@ public class WeixinTradeAllEntity extends WeixinTradeBaseEntity {
 	public void setFee_type(String fee_type) {
 		this.fee_type = fee_type;
 	}
-	public BigDecimal getCash_fee() {
+	public String getCash_fee() {
 		return cash_fee;
 	}
-	public void setCash_fee(BigDecimal cash_fee) {
+	public void setCash_fee(String cash_fee) {
 		this.cash_fee = cash_fee;
 	}
 	public String getCash_fee_type() {
@@ -179,10 +178,10 @@ public class WeixinTradeAllEntity extends WeixinTradeBaseEntity {
 	public void setCash_fee_type(String cash_fee_type) {
 		this.cash_fee_type = cash_fee_type;
 	}
-	public BigDecimal getCoupon_fee() {
+	public String getCoupon_fee() {
 		return coupon_fee;
 	}
-	public void setCoupon_fee(BigDecimal coupon_fee) {
+	public void setCoupon_fee(String coupon_fee) {
 		this.coupon_fee = coupon_fee;
 	}
 	public String getCoupon_count() {
@@ -215,10 +214,10 @@ public class WeixinTradeAllEntity extends WeixinTradeBaseEntity {
 	public void setDevice_info(String device_info) {
 		this.device_info = device_info;
 	}
-	public BigDecimal getSettlement_total_fee() {
+	public String getSettlement_total_fee() {
 		return settlement_total_fee;
 	}
-	public void setSettlement_total_fee(BigDecimal settlement_total_fee) {
+	public void setSettlement_total_fee(String settlement_total_fee) {
 		this.settlement_total_fee = settlement_total_fee;
 	}
 	public String getOut_refund_no() {
@@ -233,10 +232,10 @@ public class WeixinTradeAllEntity extends WeixinTradeBaseEntity {
 	public void setRefund_id(String refund_id) {
 		this.refund_id = refund_id;
 	}
-	public BigDecimal getRefund_fee() {
+	public String getRefund_fee() {
 		return refund_fee;
 	}
-	public void setRefund_fee(BigDecimal refund_fee) {
+	public void setRefund_fee(String refund_fee) {
 		this.refund_fee = refund_fee;
 	}
 	public String getRefund_status() {
@@ -245,22 +244,22 @@ public class WeixinTradeAllEntity extends WeixinTradeBaseEntity {
 	public void setRefund_status(String refund_status) {
 		this.refund_status = refund_status;
 	}
-	public BigDecimal getSettlement_refund_fee() {
+	public String getSettlement_refund_fee() {
 		return settlement_refund_fee;
 	}
-	public void setSettlement_refund_fee(BigDecimal settlement_refund_fee) {
+	public void setSettlement_refund_fee(String settlement_refund_fee) {
 		this.settlement_refund_fee = settlement_refund_fee;
 	}
-	public BigDecimal getCash_refund_fee() {
+	public String getCash_refund_fee() {
 		return cash_refund_fee;
 	}
-	public void setCash_refund_fee(BigDecimal cash_refund_fee) {
+	public void setCash_refund_fee(String cash_refund_fee) {
 		this.cash_refund_fee = cash_refund_fee;
 	}
-	public BigDecimal getCoupon_refund_fee() {
+	public String getCoupon_refund_fee() {
 		return coupon_refund_fee;
 	}
-	public void setCoupon_refund_fee(BigDecimal coupon_refund_fee) {
+	public void setCoupon_refund_fee(String coupon_refund_fee) {
 		this.coupon_refund_fee = coupon_refund_fee;
 	}
 	public String getCoupon_refund_count() {
