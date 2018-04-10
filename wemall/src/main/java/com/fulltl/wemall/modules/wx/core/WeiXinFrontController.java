@@ -218,13 +218,22 @@ public class WeiXinFrontController extends BaseController {
 			oauth2AccessToken = WXOAuth2AuthorizeUtil.getOpenIdAndAccessToken(Global.getConfig("weixin.appId"), Global.getConfig("weixin.secret"), code);
 			openId = oauth2AccessToken.getOpenid();
 			
+			WxUserInfo curWxUserInfo = wxUserInfoService.getWxUserInfoBy(openId, serviceId);
+			//获取用户信息
+			WXOAuthUserInfo userInfo = WXOAuth2AuthorizeUtil.getUserInfo(oauth2AccessToken.getAccess_token(), oauth2AccessToken.getOpenid());
+			//根据openId查询关注用户表，若查到了，则更新其中的信息字段后执行授权行为。若没有查到，新建一个，执行关注行为
+			curWxUserInfo.initByOAuthUserInfo(userInfo);
+			curWxUserInfo.setOpenId(openId);
+			
 			synchronized(this) {
 				Object value = CacheUtils.get("hisTempCache", openId);
-				if(value != null && (System.currentTimeMillis() - Long.parseLong(value.toString())) < 1000) {
+				if(!curWxUserInfo.isAlreadyGetUserInfo() || (value != null && (System.currentTimeMillis() - Long.parseLong(value.toString())) < 1000)) {
 					//执行登录
 					User user = systemService.getUserByLoginName(openId);
-					systemService.loginByUser(user, false);
-					System.err.println(user.getLoginName() + "用户登录！");
+					if(user != null && StringUtils.isNotBlank(user.getId())) {
+						systemService.loginByUser(user, false);
+						System.err.println(user.getLoginName() + "用户登录！");
+					}
 					//执行跳转
 					String redirectUrl = StringUtils.EMPTY;
 					if(redirect.contains("http://")) {
@@ -246,13 +255,6 @@ public class WeiXinFrontController extends BaseController {
 				}
 				CacheUtils.put("hisTempCache", openId, System.currentTimeMillis());
 			}
-			
-			WxUserInfo curWxUserInfo = wxUserInfoService.getWxUserInfoBy(openId, serviceId);
-			//获取用户信息
-			WXOAuthUserInfo userInfo = WXOAuth2AuthorizeUtil.getUserInfo(oauth2AccessToken.getAccess_token(), oauth2AccessToken.getOpenid());
-			//根据openId查询关注用户表，若查到了，则更新其中的信息字段后执行授权行为。若没有查到，新建一个，执行关注行为
-			curWxUserInfo.initByOAuthUserInfo(userInfo);
-			curWxUserInfo.setOpenId(openId);
 			
 			wxUserInfoService.updateInfoAndLoginByOpenId(curWxUserInfo);
 			

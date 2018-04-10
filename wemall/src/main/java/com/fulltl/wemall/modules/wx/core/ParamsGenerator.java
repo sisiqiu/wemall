@@ -41,7 +41,7 @@ public class ParamsGenerator {
 		//paramsMap.put("out_trade_no", wemallOrder.getOrderNo());
 		paramsMap.put("out_trade_no", wemallOrder.getPlatformOrderNo());
 		paramsMap.put("total_fee", wemallOrder.getOrderPrice().toString());//订单总金额，单位为分
-		paramsMap.put("spbill_create_ip", Global.getConfig("weixin.ipAddress"));//用户端实际ip
+		paramsMap.put("spbill_create_ip", RequestUtil.getIpAddress(request));//用户端实际ip
 		Date curDate = new Date();
 		paramsMap.put("time_start", DateUtils.formatDate(curDate, "yyyyMMddHHmmss"));//订单生成时间，格式为yyyyMMddHHmmss
 		try {

@@ -9,6 +9,7 @@ import com.fulltl.wemall.modules.wx.core.pojo.WXOAuthUserInfo;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.Length;
 
 import com.fulltl.wemall.common.persistence.DataEntity;
@@ -213,4 +214,17 @@ public class WxUserInfo extends DataEntity<WxUserInfo> {
 		this.headImgUrl = userInfo.getHeadimgurl();
 	}
 	
+	public boolean isAlreadyGetUserInfo() {
+		if(StringUtils.isNotBlank(this.nickName) ||
+				StringUtils.isNotBlank(this.sex) ||
+				StringUtils.isNotBlank(this.language) ||
+				StringUtils.isNotBlank(this.country) ||
+				StringUtils.isNotBlank(this.province) ||
+				StringUtils.isNotBlank(this.city) ||
+				StringUtils.isNotBlank(this.headImgUrl)
+				) {
+			return true;
+		} 
+		return false;
+	}
 }

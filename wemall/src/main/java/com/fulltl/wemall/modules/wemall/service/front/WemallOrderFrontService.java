@@ -307,7 +307,6 @@ public class WemallOrderFrontService extends BaseService {
 				wemallOrderItemList.add(wemallOrderItem);
 			}
 		}
-		orderPrice = orderPrice + totalFreightPrice;
 		
 		//校验库存
 		boolean checkStorage = wemallItemService.checkStorage(wemallOrderItemList);
@@ -317,6 +316,7 @@ public class WemallOrderFrontService extends BaseService {
 			return map;
 		}
 		
+		orderPrice = orderPrice + totalFreightPrice;
 		map = wemallOrderMgrService.generateOrderByType("购物车购买商品", orderPrice, totalFreightPrice, null, shopCarIdStr);
 		
 		WemallOrder wemallOrder = null;
@@ -379,7 +379,6 @@ public class WemallOrderFrontService extends BaseService {
 			//不免邮
 			totalFreightPrice = totalFreightPrice + wemallShopCar.getItem().getFreightPrice();
 		}
-		orderPrice = orderPrice + totalFreightPrice;
 		//校验库存
 		WemallOrderItem wemallOrderItem = new WemallOrderItem();
 		wemallOrderItem.initBy(wemallShopCar, null, orderPrice);
@@ -393,6 +392,7 @@ public class WemallOrderFrontService extends BaseService {
 			return map;
 		}
 		
+		orderPrice = orderPrice + totalFreightPrice;
 		map = wemallOrderMgrService.generateOrderByType("购买商品：" + wemallItem.getName(), orderPrice, totalFreightPrice, null, null);
 		
 		WemallOrder wemallOrder = null;
