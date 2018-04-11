@@ -86,7 +86,7 @@
 					${wemallOrderItem.title}
 				</td>
 				<td>
-					${wemallOrderItem.totalFee}
+					￥<fmt:formatNumber type="number" value="${wemallOrderItem.totalFee/100}" pattern="0.00" maxFractionDigits="2"/>
 				</td>
 				<td>
 					${fns:getDictLabel(wemallOrderItem.status, 'order_status', '')}

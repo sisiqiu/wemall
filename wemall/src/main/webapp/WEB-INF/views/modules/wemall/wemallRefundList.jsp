@@ -90,13 +90,13 @@
 					${wemallRefund.user.name}
 				</td>
 				<td>
-					${wemallRefund.orderPrice}
+					￥<fmt:formatNumber type="number" value="${wemallRefund.orderPrice/100}" pattern="0.00" maxFractionDigits="2"/>
 				</td>
 				<td>
-					${wemallRefund.payment}
+					￥<fmt:formatNumber type="number" value="${wemallRefund.payment/100}" pattern="0.00" maxFractionDigits="2"/>
 				</td>
 				<td>
-					${wemallRefund.refundFee}
+					￥<fmt:formatNumber type="number" value="${wemallRefund.refundFee/100}" pattern="0.00" maxFractionDigits="2"/>
 				</td>
 				<td>
 					${fns:getDictLabel(wemallRefund.refundStatus, 'refund_status', '')}

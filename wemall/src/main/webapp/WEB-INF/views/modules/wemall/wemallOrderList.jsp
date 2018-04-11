@@ -20,7 +20,7 @@
 		
 		function refund(href) {
 			href = href + "&refundFee=";
-			promptx("填写退款金额", "退款金额", href, null);
+			promptx("填写退款金额（单位/分）", "退款金额（单位/分）", href, null);
 		}
 		
 		function delivery(href) {
@@ -205,19 +205,19 @@
 					${wemallOrder.orderNo}
 				</a></td>
 				<td>
-					${wemallOrder.originalOrderPrice}
+					￥<fmt:formatNumber type="number" value="${wemallOrder.originalOrderPrice/100}" pattern="0.00" maxFractionDigits="2"/>
 				</td>
 				<td>
-					${wemallOrder.orderPrice}
+					￥<fmt:formatNumber type="number" value="${wemallOrder.orderPrice/100}" pattern="0.00" maxFractionDigits="2"/>
 				</td>
 				<td>
-					${wemallOrder.payment}
+					￥<fmt:formatNumber type="number" value="${wemallOrder.payment/100}" pattern="0.00" maxFractionDigits="2"/>
 				</td>
 				<td>
 					${fns:getDictLabel(wemallOrder.paymentType, 'payment_type', '')}
 				</td>
 				<td>
-					${wemallOrder.totalRefundFee}
+					￥<fmt:formatNumber type="number" value="${wemallOrder.totalRefundFee/100}" pattern="0.00" maxFractionDigits="2"/>
 				</td>
 				<td>
 					${wemallOrder.title}
