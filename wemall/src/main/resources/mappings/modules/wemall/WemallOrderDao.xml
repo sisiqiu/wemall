@@ -14,6 +14,7 @@
 		a.total_refund_fee AS "totalRefundFee",
 		a.title AS "title",
 		a.body AS "body",
+		a.order_category AS "orderCategory",
 		a.status AS "status",
 		a.apply_for_reject AS "applyForReject",
 		a.create_date AS "createDate",
@@ -81,6 +82,9 @@
 					<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
 					<if test="dbName == 'mssql'">'%'+#{title}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{title},'%')</if>
+			</if>
+			<if test="orderCategory != null and orderCategory != ''">
+				AND a.order_category = #{orderCategory}
 			</if>
 			<if test="status != null and status != ''">
 				AND a.status = #{status}
@@ -173,6 +177,7 @@
 			total_refund_fee,
 			title,
 			body,
+			order_category,
 			status,
 			apply_for_reject,
 			create_date,
@@ -203,6 +208,7 @@
 			#{totalRefundFee},
 			#{title},
 			#{body},
+			#{orderCategory},
 			#{status},
 			#{applyForReject},
 			#{createDate},
@@ -255,6 +261,9 @@
 			</if>
 			<if test="body != null and body != ''">
 			    body = #{body},
+			</if>
+			<if test="orderCategory != null and orderCategory != ''">
+			    order_category = #{orderCategory},
 			</if>
 			<if test="status != null and status != ''">
 			    status = #{status},

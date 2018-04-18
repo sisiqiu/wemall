@@ -170,11 +170,21 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">类别：</label>
+			<label class="control-label">优惠类别：</label>
 			<div class="controls">
 				<form:select path="type" class="input-xlarge required">
 					<form:option value="" label=""/>
 					<form:options items="${fns:getDictList('order_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">订单类别：</label>
+			<div class="controls">
+				<form:select path="orderCategory" class="input-xlarge required">
+					<form:option value="" label=""/>
+					<form:options items="${fns:getDictList('order_category')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>

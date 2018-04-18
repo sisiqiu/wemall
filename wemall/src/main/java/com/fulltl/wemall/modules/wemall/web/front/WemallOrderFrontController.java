@@ -245,6 +245,30 @@ public class WemallOrderFrontController extends BaseController {
 	}
 	
 	/**
+	 * 根据单个商品生成订单的接口。
+	 * 
+	 * 测试用例：
+	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/order/generateOrderByRecharge
+	 *	参数：
+	 *		rechargeId（*）=充值设定id
+	 *
+	 * 	例：
+	 * 
+	 * 结果示例：{"ret":"0","data":{},"retMsg":"生成成功！"}
+	 * 		或
+	 * 		{"ret":"-1","data":{},"retMsg":"充值设定id不能为空！"}
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = {"generateOrderByRecharge"})
+	@ResponseBody
+	public String generateOrderByRecharge(HttpServletRequest request, HttpServletResponse response) {
+		Map<String, Object> map = slHisOrderFrontService.generateOrderByRecharge(request);
+		return gson.toJson(formatReturnMsg(map));
+	}
+	
+	/**
 	 * 更新订单地址的接口。
 	 * 
 	 * 测试用例：
@@ -281,6 +305,7 @@ public class WemallOrderFrontController extends BaseController {
 	 *		activityId=活动id
 	 *		activityType=活动类别
 	 *		scoreUsageNum=使用积分数
+	 *		bountyUsageNum=使用奖励金数
 	 *
 	 * 	例：
 	 * 
@@ -295,6 +320,33 @@ public class WemallOrderFrontController extends BaseController {
 	@ResponseBody
 	public String getPrepareIdForPay(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> map = slHisOrderFrontService.getPrepareIdForPay(request);
+		return gson.toJson(formatReturnMsg(map));
+	}
+	
+	/**
+	 * 根据订单号和付款方式获取预付款id的接口。
+	 * 
+	 * 测试用例：
+	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/order/getPrepareIdForRechargePay
+	 *	参数：
+	 *		paymentType（*）=付款方式
+	 *		orderNo（*）=订单号
+	 *		buyerMessage=买家留言
+	 *		needAddress=是否需要收货地址
+	 *
+	 * 	例：
+	 * 
+	 * 结果示例：{"ret":"0","data":{},"retMsg":"生成成功！"}
+	 * 		或
+	 * 		{"ret":"-1","data":{},"retMsg":"商品id不能为空！"}
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = {"getPrepareIdForRechargePay"})
+	@ResponseBody
+	public String getPrepareIdForRechargePay(HttpServletRequest request, HttpServletResponse response) {
+		Map<String, Object> map = slHisOrderFrontService.getPrepareIdForRechargePay(request);
 		return gson.toJson(formatReturnMsg(map));
 	}
 	

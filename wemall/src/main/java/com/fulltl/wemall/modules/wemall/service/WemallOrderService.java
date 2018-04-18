@@ -30,6 +30,7 @@ import com.fulltl.wemall.modules.wemall.entity.WemallOrder;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrder.OrderStatus;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrderAddress;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrderItem;
+import com.fulltl.wemall.modules.wemall.entity.WemallBountyInfo.BountyFromType;
 import com.fulltl.wemall.modules.wemall.entity.WemallScoreInfo.ScoreFromType;
 import com.google.common.collect.Lists;
 
@@ -53,6 +54,8 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 	private WemallOrderAddressService wemallOrderAddressService;
 	@Autowired 
 	private WemallScoreInfoService wemallScoreInfoService;
+	@Autowired 
+	private WemallBountyInfoService wemallBountyInfoService;
 	@Autowired 
 	private WemallItemActivityService wemallItemActivityService;
 	
@@ -168,20 +171,29 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 	 */
 	@Transactional(readOnly = false)
 	public void updateOrderRefundFee(WemallOrder wemallOrder, String refundFee) {
-		//若是全额退款，更新用户的累计订单数及累计消费额（撤回）
-		if(wemallOrder.getPayment().toString().equals(refundFee) && 
-				!OrderStatus.alreadyCancelled_alreadyPaid.getValue().equals(wemallOrder.getStatus())) {
-			User user = UserUtils.get(wemallOrder.getUser().getId());
-			user.setTotalOrderNum((user.getTotalOrderNum()==null?0:user.getTotalOrderNum())-1);
-			user.setTotalConsumeNum(user.getTotalConsumeNum() - wemallOrder.getPayment());
-			systemService.updateUserInfo(user);
-		}
-		
 		//更新退款
 		wemallOrder.setTotalRefundFee(new BigDecimal(wemallOrder.getTotalRefundFee()).add(new BigDecimal(refundFee)).intValue());
 		wemallOrder.setStatus(OrderStatus.alreadyRejected.getValue());
 		dao.updateTotalRefundFee(wemallOrder);
 		
+		//若是全额退款，更新用户的累计订单数及累计消费额（撤回）
+		if(wemallOrder.getPayment().toString().equals(wemallOrder.getTotalRefundFee())
+			// && !OrderStatus.alreadyCancelled_alreadyPaid.getValue().equals(wemallOrder.getStatus())
+				) {
+			User user = UserUtils.get(wemallOrder.getUser().getId());
+			user.setTotalOrderNum((user.getTotalOrderNum()==null?0:user.getTotalOrderNum())-1);
+			user.setTotalConsumeNum(user.getTotalConsumeNum() - wemallOrder.getPayment());
+			systemService.updateUserInfo(user);
+			
+			//将该订单消耗的积分退回给用户
+			if(wemallOrder.getScoreUsageNum() != null && wemallOrder.getScoreUsageNum() != 0) {
+				wemallScoreInfoService.updateUserScore(wemallOrder.getUser().getId(), wemallOrder.getScoreUsageNum(), ScoreFromType.rollback);
+			}
+			//将该订单消耗的奖励金退回给用户
+			if(wemallOrder.getBountyUsageNum() != null && wemallOrder.getBountyUsageNum() != 0) {
+				wemallBountyInfoService.updateUserBounty(wemallOrder.getUser().getId(), wemallOrder.getBountyUsageNum(), BountyFromType.rollback);
+			}
+		}
 	}
 
 	/**
@@ -215,31 +227,42 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 		if(OrderStatus.alreadyPaid.getValue().equals(status)) {
 			wemallOrder.setPaymentDate(new Date());
 			//付款成功
-			if(StringUtils.isNotBlank(wemallOrder.getShopCarIds())) {
-				//删除对应的购物车项
-				List<String> shopCarIdList = Arrays.asList(wemallOrder.getShopCarIds().split(","));
-				wemallShopCarService.delete(shopCarIdList);
+			if(wemallOrder.getOrderCategory().equals("1")) {
+				//商品订单
+				if(StringUtils.isNotBlank(wemallOrder.getShopCarIds())) {
+					//删除对应的购物车项
+					List<String> shopCarIdList = Arrays.asList(wemallOrder.getShopCarIds().split(","));
+					wemallShopCarService.delete(shopCarIdList);
+				}
+				//添加商品销量
+				wemallItemService.increaseSalesNum(wemallOrder.getOrderNo());
+				//对用户的积分执行扣除操作
+				if(wemallOrder.getScoreUsageNum() != null && wemallOrder.getScoreUsageNum() != 0) {
+					wemallScoreInfoService.updateUserScore(wemallOrder.getUser().getId(), wemallOrder.getScoreUsageNum()*(-1), ScoreFromType.itemScoreDeduction);
+				}
+				//对用户的奖励金执行扣除操作
+				if(wemallOrder.getBountyUsageNum() != null && wemallOrder.getBountyUsageNum() != 0) {
+					wemallBountyInfoService.updateUserBounty(wemallOrder.getUser().getId(), wemallOrder.getBountyUsageNum()*(-1), BountyFromType.buyItems);
+				}
+				//更新用户的累计订单数及累计消费额
+				User user = UserUtils.get(wemallOrder.getUser().getId());
+				user.setTotalOrderNum((user.getTotalOrderNum()==null?0:user.getTotalOrderNum())+1);
+				user.setTotalConsumeNum(user.getTotalConsumeNum() + wemallOrder.getPayment());
+				systemService.updateUserInfo(user);
+			} else if(wemallOrder.getOrderCategory().equals("2")) {
+				//充值订单
+				//对用户的奖励金执行添加操作
+				wemallBountyInfoService.updateUserBounty(wemallOrder.getUser().getId(), wemallOrder.getOrderPrice(), BountyFromType.recharge);
 			}
-			//添加商品销量
-			wemallItemService.increaseSalesNum(wemallOrder.getOrderNo());
-			//对用户的积分执行扣除操作
-			if(wemallOrder.getScoreUsageNum() != null && wemallOrder.getScoreUsageNum() != 0) {
-				wemallScoreInfoService.updateUserScore(wemallOrder.getUser().getId(), wemallOrder.getScoreUsageNum()*(-1), ScoreFromType.itemScoreDeduction);
-			}
-			//更新用户的累计订单数及累计消费额
-			User user = UserUtils.get(wemallOrder.getUser().getId());
-			user.setTotalOrderNum((user.getTotalOrderNum()==null?0:user.getTotalOrderNum())+1);
-			user.setTotalConsumeNum(user.getTotalConsumeNum() + wemallOrder.getPayment());
-			systemService.updateUserInfo(user);
 		}
 		if(OrderStatus.alreadyCancelled_alreadyPaid.getValue().equals(status)) {
 			//订单已付款，已取消
 			//释放库存
 			wemallItemService.releaseStorage(wemallOrder.getOrderNo());
 			//将该订单消耗的积分退回给用户
-			if(wemallOrder.getScoreUsageNum() != null && wemallOrder.getScoreUsageNum() != 0) {
+			/*if(wemallOrder.getScoreUsageNum() != null && wemallOrder.getScoreUsageNum() != 0) {
 				wemallScoreInfoService.updateUserScore(wemallOrder.getUser().getId(), wemallOrder.getScoreUsageNum(), ScoreFromType.rollback);
-			}
+			}*/
 		}
 		if(OrderStatus.alreadyReceived.getValue().equals(status)) {
 			//订单已收货
@@ -312,6 +335,7 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 			
 			User u = UserUtils.getUser();
 			map.put("userCurScoreNum", u.getCurScoreNum());
+			map.put("userCurBountyNum", u.getCurBountyNum());
 			//获取积分和人民币的兑换比率
 			OrderDict orderDict = OrderDictUtils.getOrderDictByTypeAndValue("orderPrice_about_set", "1");
 			if(orderDict != null) {

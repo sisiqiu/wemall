@@ -28,6 +28,7 @@ import com.fulltl.wemall.modules.wemall.entity.WemallOrder.OrderStatus;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrder.PaymentType;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrderAddress;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrderItem;
+import com.fulltl.wemall.modules.wemall.entity.WemallRecharge;
 import com.fulltl.wemall.modules.wemall.entity.WemallShopCar;
 import com.fulltl.wemall.modules.wemall.entity.WemallUserAddress;
 import com.fulltl.wemall.modules.wemall.service.WemallFreightInfoService;
@@ -35,6 +36,7 @@ import com.fulltl.wemall.modules.wemall.service.WemallItemService;
 import com.fulltl.wemall.modules.wemall.service.WemallOrderAddressService;
 import com.fulltl.wemall.modules.wemall.service.WemallOrderItemService;
 import com.fulltl.wemall.modules.wemall.service.WemallOrderService;
+import com.fulltl.wemall.modules.wemall.service.WemallRechargeService;
 import com.fulltl.wemall.modules.wemall.service.WemallShopCarService;
 import com.fulltl.wemall.modules.wemall.service.WemallUserAddressService;
 import com.fulltl.wemall.modules.wx.entity.WxUserInfo;
@@ -73,6 +75,8 @@ public class WemallOrderFrontService extends BaseService {
 	private WeixinTradeService weixinTradeService;
 	@Autowired
 	private WxUserInfoService wxUserInfoService;
+	@Autowired
+	private WemallRechargeService wemallRechargeService;
 	
 	/**
 	 * 获取订单商品列表
@@ -317,7 +321,7 @@ public class WemallOrderFrontService extends BaseService {
 		}
 		
 		orderPrice = orderPrice + totalFreightPrice;
-		map = wemallOrderMgrService.generateOrderByType("购物车购买商品", orderPrice, totalFreightPrice, null, shopCarIdStr);
+		map = wemallOrderMgrService.generateOrderByType("购物车购买商品", orderPrice, totalFreightPrice, null, shopCarIdStr, "1");
 		
 		WemallOrder wemallOrder = null;
 		if(!"0".equals(map.get("ret"))) return map;
@@ -393,7 +397,7 @@ public class WemallOrderFrontService extends BaseService {
 		}
 		
 		orderPrice = orderPrice + totalFreightPrice;
-		map = wemallOrderMgrService.generateOrderByType("购买商品：" + wemallItem.getName(), orderPrice, totalFreightPrice, null, null);
+		map = wemallOrderMgrService.generateOrderByType("购买商品：" + wemallItem.getName(), orderPrice, totalFreightPrice, null, null, "1");
 		
 		WemallOrder wemallOrder = null;
 		if(!"0".equals(map.get("ret"))) return map;
@@ -405,6 +409,52 @@ public class WemallOrderFrontService extends BaseService {
 		
 		//3.根据默认收货地址id保存订单地址。
 		saveDefaultAddressForOrder(user, wemallOrder.getOrderNo());
+		
+		map.put("ret", "0");
+		map.put("retMsg", "生成成功！");
+		map.put("orderNo", wemallOrder.getOrderNo());
+		return map;
+	}
+	
+	/**
+	 * 根据充值设定表id生成充值订单的接口。
+	 * @param wemallShopCar
+	 * @return
+	 */
+	@Transactional(readOnly = false)
+	public Map<String, Object> generateOrderByRecharge(HttpServletRequest request) {
+		Map<String ,Object> map=new HashMap<String, Object>();
+		String rechargeId = WebUtils.getCleanParam(request, "rechargeId");
+		//校验数据
+		if(StringUtils.isBlank(rechargeId)) {
+			map.put("ret", "-1");
+			map.put("retMsg", "充值设定id不能为空！");
+			return map;
+		}
+		
+		// 校验当前用户是否已登录
+		User user = UserUtils.getUser();
+		map = systemService.checkCurrentUser(user);
+		if(!"0".equals(map.get("ret"))) return map;
+		
+		//1.先计算总价，生成一个订单。
+		WemallRecharge wemallRecharge = wemallRechargeService.get(rechargeId);
+		
+		//获取价格
+		Integer orderPrice = wemallRecharge.getOriginalPrice();
+		Integer totalFreightPrice = 0;
+		
+		orderPrice = orderPrice + totalFreightPrice;
+		map = wemallOrderMgrService.generateOrderByType("充值：" + wemallRecharge.getName(), orderPrice, totalFreightPrice, null, null, "2");
+		
+		WemallOrder wemallOrder = null;
+		if(!"0".equals(map.get("ret"))) return map;
+		else wemallOrder = (WemallOrder)map.get("wemallOrder");
+		
+		//2.如果需要设定地址，根据默认收货地址id保存订单地址。
+		if(wemallRecharge.getNeedaddress().equals("1")) {
+			saveDefaultAddressForOrder(user, wemallOrder.getOrderNo());
+		}
 		
 		map.put("ret", "0");
 		map.put("retMsg", "生成成功！");
@@ -525,6 +575,76 @@ public class WemallOrderFrontService extends BaseService {
 			//执行减库存
         	wemallItemService.reduceStorage(wemallOrder.getOrderNo());
         	
+        	String buyerMessage = WebUtils.getCleanParam(request, "buyerMessage");//订单号
+    		wemallOrder.setBuyerMessage(buyerMessage);
+    		wemallOrderService.updatePrepayIdAndPayMethod(wemallOrder);
+    		wemallOrderService.updateAllStatusByOrderNo(wemallOrder, OrderStatus.alreadyPaid.getValue());
+    		
+    		map.put("ret", "0");
+    		map.put("retMsg", "生成成功！");
+    		map.put("needPay", "0");
+    		return map;
+		}
+		
+		//生成订单信息，获取要进行付款所需要的相关支付信息
+		if(PaymentType.alipay.getValue().toString().equals(paymentType)) {
+			map = alipayTradeService.generatePrepareIdByType(wemallOrder, request);
+		} else if(PaymentType.weixin.getValue().toString().equals(paymentType)) {
+			map = weixinTradeService.generatePrepareIdByType(wemallOrder, request);
+		} else {
+			map.put("ret", "-1");
+			map.put("retMsg", "支付方式格式错误！");
+			return map;
+		}
+		
+		if(!"0".equals(map.get("ret"))) {
+			logger.error("订单生成错误！错误码：" + map.get("ret") + "。错误信息：" + map.get("retMsg"));
+			throw new RuntimeException();
+		}
+		
+		map.put("ret", "0");
+		map.put("retMsg", "生成成功！");
+		return map;
+	}
+	
+	/**
+	 * 充值订单，根据订单号，付款方式生成并返回预付款id。
+	 * @param request
+	 * @return
+	 */
+	@Transactional(readOnly = false)
+	public Map<String, Object> getPrepareIdForRechargePay(HttpServletRequest request) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		String paymentType = WebUtils.getCleanParam(request, "paymentType");//付款方式
+		String orderNo = WebUtils.getCleanParam(request, "orderNo");//订单号
+		String needAddress = WebUtils.getCleanParam(request, "needAddress");//是否需要收货地址
+		// 校验当前用户是否已登录
+		User user = UserUtils.getUser();
+		map = systemService.checkCurrentUser(user);
+		if(!"0".equals(map.get("ret"))) return map;
+		
+		WemallOrder wemallOrder = wemallOrderService.get(orderNo);
+		if(wemallOrder == null) {
+    		map.put("ret", "-1");
+    		map.put("retMsg", "订单不存在。");
+        	return map;
+    	}
+		wemallOrder.setPaymentType(Integer.parseInt(paymentType));
+		//更新订单状态值时，对状态做校验
+		map = wemallOrder.checkUpdateStatus(OrderStatus.alreadyPaid);
+		if(!"0".equals(map.get("ret"))) return map;
+		
+		if("1".equals(needAddress)) {
+			WemallOrderAddress wemallOrderAddress = wemallOrderAddressService.get(orderNo);
+			if(wemallOrderAddress == null) {
+				map.put("ret", "-1");
+				map.put("retMsg", "请选择订单收货地址。");
+				return map;
+			}
+		}
+		
+		//判断金额是否为0，若为0，则直接成功。
+		if(wemallOrder.getOrderPrice().equals(0)) {
         	String buyerMessage = WebUtils.getCleanParam(request, "buyerMessage");//订单号
     		wemallOrder.setBuyerMessage(buyerMessage);
     		wemallOrderService.updatePrepayIdAndPayMethod(wemallOrder);

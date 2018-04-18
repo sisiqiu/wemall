@@ -5,7 +5,6 @@ package com.fulltl.wemall.modules.pay.service;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,18 +20,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alipay.api.AlipayApiException;
 import com.fulltl.wemall.common.service.CrudService;
-import com.fulltl.wemall.modules.sys.entity.OrderDict;
 import com.fulltl.wemall.modules.sys.utils.OrderDictUtils;
 import com.fulltl.wemall.modules.wemall.dao.WemallOrderDao;
 import com.fulltl.wemall.modules.wemall.entity.WemallItemActivity;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrder;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrder.PaymentType;
 import com.fulltl.wemall.modules.wemall.entity.WemallOrderItem;
+import com.fulltl.wemall.modules.wemall.service.WemallBountyInfoService;
 import com.fulltl.wemall.modules.wemall.service.WemallItemActivityService;
 import com.fulltl.wemall.modules.wemall.service.WemallOrderItemService;
 import com.fulltl.wemall.modules.wemall.service.WemallOrderService;
 import com.fulltl.wemall.modules.wemall.service.WemallScoreInfoService;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -50,6 +48,8 @@ public class WemallOrderMgrService extends CrudService<WemallOrderDao, WemallOrd
 	@Autowired 
 	private WemallScoreInfoService wemallScoreInfoService;
 	@Autowired 
+	private WemallBountyInfoService wemallBountyInfoService;
+	@Autowired 
 	private WemallItemActivityService wemallItemActivityService;
 	@Autowired 
 	private AlipayTradeService alipayTradeService;
@@ -64,7 +64,7 @@ public class WemallOrderMgrService extends CrudService<WemallOrderDao, WemallOrd
 	 * @return key值为wemallOrder的value为订单对象
 	 */
 	@Transactional(readOnly = false)
-	public Map<String, Object> generateOrderByType(String title, Integer orderPrice, Integer freightPrice, Integer paymentType, String shopCarIds) {
+	public Map<String, Object> generateOrderByType(String title, Integer orderPrice, Integer freightPrice, Integer paymentType, String shopCarIds, String orderCategory) {
     	//构造订单对象
 		Map<String, Object> resultMap = Maps.newHashMap();
 		if(StringUtils.isBlank(title) || orderPrice == null) {
@@ -80,6 +80,7 @@ public class WemallOrderMgrService extends CrudService<WemallOrderDao, WemallOrd
 		if(!"0".equals(resultMap.get("ret"))) return resultMap;
 		else wemallOrder = (WemallOrder)resultMap.get("wemallOrder");
 		wemallOrder.setShopCarIds(shopCarIds);
+		wemallOrder.setOrderCategory(orderCategory);
 		wemallOrderService.saveOrder(wemallOrder);
 		
 		return resultMap;
@@ -163,7 +164,6 @@ public class WemallOrderMgrService extends CrudService<WemallOrderDao, WemallOrd
 		//使用积分数
 		String scoreUsageNumStr = WebUtils.getCleanParam(request, "scoreUsageNum");
 		
-		
 		if(StringUtils.isNotBlank(scoreUsageNumStr)) {
 			Integer scoreUsageNum;
 			try {
@@ -196,6 +196,29 @@ public class WemallOrderMgrService extends CrudService<WemallOrderDao, WemallOrd
 			
 			//更新订单对象，设置使用积分数
 			wemallOrder.setScoreUsageNum(scoreUsageNum);
+		}
+		
+		//使用奖励金数
+		String bountyUsageNumStr = WebUtils.getCleanParam(request, "bountyUsageNum");
+		if(StringUtils.isNotBlank(bountyUsageNumStr)) {
+			BigDecimal bountyUsageNum = new BigDecimal(bountyUsageNumStr);
+			Integer deductPrice = bountyUsageNum.multiply(new BigDecimal(100)).intValue();
+			
+			//校验所用奖励金数是否超过当前用户剩余奖励金数
+			if(!wemallBountyInfoService.checkUserBounty(deductPrice)) {
+				retMap.put("ret", "-1");
+				retMap.put("retMsg", "抱歉，用户当前奖励金数不足！");
+				return retMap;
+			}
+			
+			//执行根据奖励金减价，更新订单价格，最小为0
+			if(deductPrice != null) {
+				orderPrice = orderPrice - deductPrice;
+				wemallOrder.setOrderPrice(orderPrice > 0 ? orderPrice : 0);
+			}
+			
+			//更新订单对象，设置使用奖励金数
+			wemallOrder.setBountyUsageNum(deductPrice);
 		}
 		
 		retMap.put("ret", "0");

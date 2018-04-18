@@ -160,10 +160,16 @@
 					value="<fmt:formatDate value="${wemallOrder.endPaymentDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
 			</li>
-			<li><label>类别：</label>
+			<li><label>优惠类别：</label>
 				<form:select path="type" class="input-medium">
 					<form:option value="" label=""/>
 					<form:options items="${fns:getDictList('order_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+			</li>
+			<li><label>订单类别：</label>
+				<form:select path="orderCategory" class="input-medium">
+					<form:option value="" label=""/>
+					<form:options items="${fns:getDictList('order_category')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label>会员卡id：</label>
@@ -193,7 +199,8 @@
 				<th>订单名称</th>
 				<th>状态</th>
 				<th>付款时间</th>
-				<th>类别</th>
+				<th>优惠类别</th>
+				<th>订单类别</th>
 				<th>申请退货</th>
 				<shiro:hasPermission name="wemall:wemallOrder:edit"><th>操作</th></shiro:hasPermission>
 			</tr>
@@ -230,6 +237,9 @@
 				</td>
 				<td>
 					${fns:getDictLabel(wemallOrder.type, 'order_type', '')}
+				</td>
+				<td>
+					${fns:getDictLabel(wemallOrder.orderCategory, 'order_category', '')}
 				</td>
 				<td>
 					${fns:getDictLabel(wemallOrder.applyForReject, 'yes_no', '')}

@@ -33,6 +33,34 @@ public class WemallBountyInfo extends DataEntity<WemallBountyInfo> {
 	private Date beginCreateDate;		// 开始 创建时间
 	private Date endCreateDate;		// 结束 创建时间
 	
+	public enum BountyFromType {
+		/**
+		 * 充值
+		 */
+		recharge("1"),
+		/**
+		 * 购买商品
+		 */
+		buyItems("2"),
+		/**
+		 * 奖励金撤回
+		 */
+		rollback("3")
+		;
+		
+		private String value;
+		private BountyFromType(String value) {
+			this.value = value;
+		}
+		
+		public String getValue() {
+			return value;
+		}
+		public void setValue(String value) {
+			this.value = value;
+		}
+	}
+	
 	public WemallBountyInfo() {
 		super();
 	}

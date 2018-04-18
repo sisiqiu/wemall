@@ -37,6 +37,7 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 	private Integer totalRefundFee;		// 总退款金额
 	private String title;		// 订单名称
 	private String body;		// 订单描述
+	private String orderCategory;		// 订单类别（1--商品订单，2--充值订单）
 	private Integer status;		// 状态（1、未付款，2、已付款，3、已发货，4、已收货，5、已评论，6、交易退货，7、交易关闭，8、未付款，已取消，9、已付款，已取消）
 	private Integer applyForReject;		// 是否提交退货申请（1、是，0、否）
 	private Date paymentDate;		// 付款时间
@@ -515,6 +516,14 @@ public class WemallOrder extends DataEntity<WemallOrder> {
 
 	public void setStatusList(List<String> statusList) {
 		this.statusList = statusList;
+	}
+	
+	public String getOrderCategory() {
+		return orderCategory;
+	}
+
+	public void setOrderCategory(String orderCategory) {
+		this.orderCategory = orderCategory;
 	}
 
 	/**
