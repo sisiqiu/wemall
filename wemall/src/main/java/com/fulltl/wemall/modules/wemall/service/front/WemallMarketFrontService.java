@@ -16,7 +16,9 @@ import com.fulltl.wemall.common.persistence.DataEntity;
 import com.fulltl.wemall.common.service.BaseService;
 import com.fulltl.wemall.modules.wemall.entity.WemallItem;
 import com.fulltl.wemall.modules.wemall.entity.WemallItemActivity.ActivityTypeEnum;
+import com.fulltl.wemall.modules.wemall.entity.WemallRecharge;
 import com.fulltl.wemall.modules.wemall.service.WemallItemActivityService;
+import com.fulltl.wemall.modules.wemall.service.WemallRechargeService;
 import com.google.common.collect.Lists;
 
 /**
@@ -30,6 +32,8 @@ public class WemallMarketFrontService extends BaseService {
 
 	@Autowired
 	private WemallItemActivityService wemallItemActivityService;
+	@Autowired
+	private WemallRechargeService wemallRechargeService;
 	
 	/**
 	 * 根据活动类别，获取当前未过期的活动列表的接口。
@@ -87,6 +91,22 @@ public class WemallMarketFrontService extends BaseService {
 		}
 		map.put("list", dataList);
 		map.put("count", dataList.size());
+		map.put("ret", "0");
+		map.put("retMsg", "获取成功");
+		return map;
+	}
+
+	/**
+	 * 获取充值设置列表
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> getRechargeList(HttpServletRequest request) {
+		Map<String ,Object> map=new HashMap<String, Object>();
+		List<WemallRecharge> list = wemallRechargeService.findList(new WemallRecharge());
+		
+		map.put("list", list);
+		map.put("count", list.size());
 		map.put("ret", "0");
 		map.put("retMsg", "获取成功");
 		return map;

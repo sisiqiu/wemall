@@ -324,7 +324,7 @@ public class WemallOrderFrontController extends BaseController {
 	}
 	
 	/**
-	 * 根据订单号和付款方式获取预付款id的接口。
+	 * 充值订单，根据订单号，付款方式生成并返回预付款id。
 	 * 
 	 * 测试用例：
 	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/order/getPrepareIdForRechargePay

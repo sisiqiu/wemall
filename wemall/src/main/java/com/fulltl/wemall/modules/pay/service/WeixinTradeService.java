@@ -281,6 +281,10 @@ public class WeixinTradeService extends BaseService {
         	retMap.put("needPay", "1");
         	retMap.put("prepay_id", weixinTradeAllEntity.getPrepay_id());
         	retMap.put("payRequestParams", ParamsGenerator.generateParamsByPrepayId(weixinTradeAllEntity.getPrepay_id()));
+		} else {
+			retMap.put("ret", "-1");
+        	retMap.put("retMsg", "微信验签失败。");
+        	return retMap;
 		}
 		return retMap;
 	}

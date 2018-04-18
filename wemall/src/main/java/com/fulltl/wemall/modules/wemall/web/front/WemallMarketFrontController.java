@@ -72,4 +72,26 @@ public class WemallMarketFrontController extends BaseController {
 		return gson.toJson(formatReturnMsg(map));
 	}
 	
+	/**
+	 * 获取充值设置列表。
+	 * 
+	 * 测试用例：
+	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/market/getRechargeList
+	 *	参数：
+	 *
+	 * 	例：
+	 * 
+	 * 结果示例：{"ret":"0","data":{},"retMsg":"获取成功！"}
+	 * 		或
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = {"getRechargeList"})
+	@ResponseBody
+	public String getRechargeList(HttpServletRequest request, HttpServletResponse response) {
+		Map<String, Object> map = slHisMarketServiceFrontService.getRechargeList(request);
+		return gson.toJson(formatReturnMsg(map));
+	}
+	
 }
