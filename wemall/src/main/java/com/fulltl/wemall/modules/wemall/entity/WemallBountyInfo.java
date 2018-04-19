@@ -43,7 +43,7 @@ public class WemallBountyInfo extends DataEntity<WemallBountyInfo> {
 		 */
 		buyItems("2"),
 		/**
-		 * 奖励金撤回
+		 * 余额撤回
 		 */
 		rollback("3")
 		;
