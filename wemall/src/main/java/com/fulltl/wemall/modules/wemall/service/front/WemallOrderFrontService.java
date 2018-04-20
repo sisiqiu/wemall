@@ -158,24 +158,19 @@ public class WemallOrderFrontService extends BaseService {
 	 */
 	public Map<String, Object> getOrderItemDetail(WemallOrderItem wemallOrderItem, HttpServletRequest request) {
 		Map<String ,Object> map=new HashMap<String, Object>();
-		if(StringUtils.isBlank(wemallOrderItem.getOrderNo())) {
+		/*if(StringUtils.isBlank(wemallOrderItem.getOrderNo())) {
 			map.put("ret", "-1");
 			map.put("retMsg", "订单号不能为空！");
 			return map;
-		}
-		if(StringUtils.isBlank(wemallOrderItem.getItemId())) {
-			map.put("ret", "-1");
-			map.put("retMsg", "商品id不能为空！");
-			return map;
-		}
+		}*/
 		
 		Map<String, Object> data = Maps.newHashMap();
 		//查询订单商品对象
 		WemallOrderItem entity = wemallOrderItemService.get(wemallOrderItem);
 		data.put("orderItemInfo", entity);
 		//查询订单地址
-		WemallOrderAddress orderAddr = wemallOrderAddressService.get(wemallOrderItem.getOrderNo());
-		data.put("orderAddrInfo", orderAddr);
+		/*WemallOrderAddress orderAddr = wemallOrderAddressService.get(wemallOrderItem.getOrderNo());
+		data.put("orderAddrInfo", orderAddr);*/
 		//查询订单商品物流明细信息
 		/*if(StringUtils.isNotBlank(entity.getFreightNo())) {
 			WemallFreightInfo queryFreightInfo = new WemallFreightInfo();
@@ -764,15 +759,9 @@ public class WemallOrderFrontService extends BaseService {
 	public Map<String, Object> commentItem(WemallOrderItem wemallOrderItem, HttpServletRequest request) {
 		Map<String, Object> map = new HashMap<String, Object>();
 
-		if(StringUtils.isBlank(wemallOrderItem.getOrderNo()) || StringUtils.isBlank(wemallOrderItem.getItemId())) {
+		if(StringUtils.isBlank(wemallOrderItem.getId())) {
 			map.put("ret", "-1");
-			map.put("retMsg", "订单号和商品id不能为空！");
-			return map;
-		}
-		
-		if(StringUtils.isBlank(wemallOrderItem.getOrderNo()) || StringUtils.isBlank(wemallOrderItem.getItemId())) {
-			map.put("ret", "-1");
-			map.put("retMsg", "订单号和商品id不能为空！");
+			map.put("retMsg", "订单商品id不能为空！");
 			return map;
 		}
 		

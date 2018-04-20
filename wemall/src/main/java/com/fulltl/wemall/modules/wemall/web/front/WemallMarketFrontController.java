@@ -91,6 +91,7 @@ public class WemallMarketFrontController extends BaseController {
 	@ResponseBody
 	public String getRechargeList(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> map = slHisMarketServiceFrontService.getRechargeList(request);
+		System.err.println(map);
 		return gson.toJson(formatReturnMsg(map));
 	}
 	

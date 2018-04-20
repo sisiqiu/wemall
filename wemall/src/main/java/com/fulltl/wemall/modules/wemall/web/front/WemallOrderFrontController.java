@@ -431,8 +431,7 @@ public class WemallOrderFrontController extends BaseController {
 	 * 测试用例：
 	 * 	url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/order/commentItem
 	 *	参数：
-	 *		orderNo（*）=订单号
-	 *		itemId（*）=商品id
+	 *		Id（*）=订单商品id
 	 *		buyerMessage=买家留言
 	 *		buyerScore（*）=买家评分
 	 *
