@@ -5,10 +5,12 @@ package com.fulltl.wemall.modules.cms.entity;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.validator.constraints.Length;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.fulltl.wemall.common.config.Global;
 import com.fulltl.wemall.common.persistence.TreeEntity;
 import com.fulltl.wemall.modules.cms.utils.CmsUtils;
@@ -326,4 +328,18 @@ public class Category extends TreeEntity<Category> {
    	public String getUrl() {
         return CmsUtils.getUrlDynamic(this);
    	}
+   	
+   	/**
+	 * 获取列表接口展示使用的小型数据map
+	 * @return
+	 */
+	public Map<String, Object> getSmallEntityMap() {
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("id", this.getId());
+		map.put("name", this.getName());
+		map.put("image", this.getImage());
+		map.put("description", this.getDescription());
+		super.formatEmptyString(map);
+		return map;
+	}
 }

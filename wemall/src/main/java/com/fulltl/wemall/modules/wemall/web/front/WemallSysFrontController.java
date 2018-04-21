@@ -79,6 +79,27 @@ public class WemallSysFrontController extends BaseController {
 	}
 	
 	/**
+	 * 获取公司宣传文章类别列表获取接口
+	 * http://ldkadmin.viphk.ngrok.org/f/interface/wemall/sys/getIntroduceData
+	 * 参数：
+	 *	例：{
+	 *		}
+	 *
+	 * 结果示例：{
+	 *		    "ret": "0",
+	 *		    "data": {
+	 *		    },
+	 *		    "retMsg": "获取成功"
+	 *		}
+	 */
+	@RequestMapping(value = {"getIntroduceData"})
+	@ResponseBody
+	public String getIntroduceData(HttpServletRequest request, HttpServletResponse response, Model model) {
+		Map<String ,Object> retMap=slHisSysFrontService.getIntroduceData(request, response);
+		return new Gson().toJson(formatReturnMsg(retMap));
+	}
+	
+	/**
 	 * 文件上传接口
 	 * url：http://ldkadmin.viphk.ngrok.org/f/interface/wemall/sys/uploadFile
 	 * 参数：file=文件

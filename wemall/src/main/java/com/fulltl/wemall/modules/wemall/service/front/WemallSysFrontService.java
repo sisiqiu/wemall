@@ -24,6 +24,7 @@ import com.fulltl.wemall.common.utils.FileUtils;
 import com.fulltl.wemall.modules.cms.entity.Category;
 import com.fulltl.wemall.modules.cms.entity.Link;
 import com.fulltl.wemall.modules.cms.service.ArticleService;
+import com.fulltl.wemall.modules.cms.service.CategoryService;
 import com.fulltl.wemall.modules.cms.service.LinkService;
 import com.fulltl.wemall.modules.pay.util.DataStorageUtil;
 import com.fulltl.wemall.modules.sys.entity.Dict;
@@ -49,6 +50,8 @@ public class WemallSysFrontService extends BaseService {
 	private SystemService systemService;
 	@Autowired
 	private LinkService linkService;
+	@Autowired
+	private CategoryService categoryService;
 	@Autowired
 	private ArticleService articleService;
 	@Autowired
@@ -301,6 +304,26 @@ public class WemallSysFrontService extends BaseService {
         retMap.put("ret", "0");
         retMap.put("retMsg", "获取成功！");
         retMap.put("data", hisGlobalConfig);
+		return retMap;
+	}
+
+	/**
+	 * 获取公司宣传文章类别列表
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	public Map<String, Object> getIntroduceData(HttpServletRequest request, HttpServletResponse response) {
+		Map<String ,Object> retMap = Maps.newHashMap();
+		List<Category> categoryList = categoryService.findByParentId("17", "1");
+		List<Map<String, Object>> categoryMapList = Lists.newArrayList();
+		for(Category entity : categoryList) {
+			categoryMapList.add(entity.getSmallEntityMap());
+		}
+		retMap.put("ret", "0");
+        retMap.put("retMsg", "获取成功！");
+        retMap.put("count", categoryMapList.size());
+        retMap.put("list", categoryMapList);
 		return retMap;
 	}
 
