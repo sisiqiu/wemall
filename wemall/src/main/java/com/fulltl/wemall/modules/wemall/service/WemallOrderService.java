@@ -177,7 +177,7 @@ public class WemallOrderService extends CrudService<WemallOrderDao, WemallOrder>
 		dao.updateTotalRefundFee(wemallOrder);
 		
 		//若是全额退款，更新用户的累计订单数及累计消费额（撤回）
-		if(wemallOrder.getPayment().toString().equals(wemallOrder.getTotalRefundFee())
+		if(wemallOrder.getPayment().equals(wemallOrder.getTotalRefundFee())
 			// && !OrderStatus.alreadyCancelled_alreadyPaid.getValue().equals(wemallOrder.getStatus())
 				) {
 			User user = UserUtils.get(wemallOrder.getUser().getId());

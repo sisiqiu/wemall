@@ -60,6 +60,7 @@
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
+				ORDER BY a.create_date desc
 			</otherwise>
 		</choose>
 	</select>

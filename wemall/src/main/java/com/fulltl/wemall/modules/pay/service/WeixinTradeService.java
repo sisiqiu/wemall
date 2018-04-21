@@ -72,10 +72,12 @@ public class WeixinTradeService extends BaseService {
 	@Transactional(readOnly = false)
 	public String handleNotify(HttpServletRequest request) {
 		Map<String, String> weixinParamsMap = Maps.newHashMap();
+		logger.info("handleNotify");
 		try {
 			weixinParamsMap = XMLUtils.parseXml(request);
+			logger.info("handleNotify : map---" + weixinParamsMap);
 		} catch (Exception e) {
-			logger.error("请求微信统一下单接口，返回数据解析出错。",e);
+			logger.info("请求微信统一下单接口，返回数据解析出错。",e);
         	return "fail";
 		}
 		boolean signVerified = checkSignature(weixinParamsMap);//微信验参，验签名
@@ -84,7 +86,10 @@ public class WeixinTradeService extends BaseService {
 			WeixinTradeAllEntity weixinTradeAllEntity = BeanToMapUtils.toBean(WeixinTradeAllEntity.class, weixinParamsMap);
 			
 			Map<String, Object> retMap = checkResultSuccess(weixinTradeAllEntity);
-			if(!"0".equals(retMap.get("ret"))) return "fail";
+			if(!"0".equals(retMap.get("ret"))) {
+				logger.info("checkResultSuccess fail : retMap---" + retMap);
+				return "fail";
+			}
 			
 			//验证微信通知有效性的方法。并填充传入的订单对象。
 			WemallOrder wemallOrder = checkNotifyVerified(weixinTradeAllEntity);
@@ -112,6 +117,7 @@ public class WeixinTradeService extends BaseService {
 				List<WemallOrderItem> wemallOrderItemList = wemallOrderItemService.findList(query);
 				wemallItemService.reduceStorage(wemallOrderItemList);*/
 			} else {
+				logger.info("return_code fail : return_code=" + return_code);
 				//没有trade_state字段，或其他trade_state字段值时
 				//退款状态
 				String refund_status = weixinTradeAllEntity.getRefund_status();
@@ -132,6 +138,7 @@ public class WeixinTradeService extends BaseService {
 			
 			return "success";
 		}else {//验证失败
+			logger.info("signVerified fail : map---" + weixinParamsMap);
 			return "fail";
 			//调试用，写文本函数记录程序运行情况是否正常
 			//String sWord = weixinSignature.getSignCheckContentV1(params);
@@ -497,13 +504,22 @@ public class WeixinTradeService extends BaseService {
 		//根据订单号查询订单，若没有，忽略通知
 		String out_trade_no = weixinTradeAllEntity.getOut_trade_no(); //商户订单号
 		WemallOrder wemallOrder = wemallOrderService.get(IdGen.getOrderNoByPlatformOrderNo(out_trade_no));
-		if(wemallOrder == null) return null;
+		if(wemallOrder == null) {
+			logger.error("checkResultSuccess fail : wemallOrder=null");
+			return null;
+		}
 		//若查到的订单对象中实际付款金额与total_fee不等，忽略通知
 		String total_amount = weixinTradeAllEntity.getTotal_fee();
 		//if(!total_amount.toString().equals(slSysOrder.getActualPayment())) return null;
-		if(!total_amount.equals(wemallOrder.getOrderPrice().toString())) return null;
+		if(!total_amount.equals(wemallOrder.getOrderPrice().toString())) {
+			logger.error("checkResultSuccess fail : OrderPrice not equals");
+			return null;
+		}
 		//验证appid是否为该商户本身。
-		if(!WeixinTradeConfig.appid.equals(weixinTradeAllEntity.getAppid())) return null;
+		if(!WeixinTradeConfig.appid.equals(weixinTradeAllEntity.getAppid())) {
+			logger.error("checkResultSuccess fail : appid not equals");
+			return null;
+		}
 		//校验通知中的seller_id（或者seller_email) 是否为out_trade_no这笔单据的对应的操作方（有的时候，一个商户可能有多个seller_id/seller_email
 		
 		return wemallOrder;

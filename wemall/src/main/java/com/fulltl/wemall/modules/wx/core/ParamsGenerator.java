@@ -34,7 +34,8 @@ public class ParamsGenerator {
 	 * @return
 	 */
 	public static Map<String,String> generateParamsForUnifiedOrder(WemallOrder wemallOrder, String openId, HttpServletRequest request) {
-		String basePath = BaseService.getBasePath(request);
+		//String basePath = BaseService.getBasePath(request);
+		String basePath = Global.getConfig("weixin.appUrl");
 		Map<String, String> paramsMap = generateCommonParams();
 		
 		paramsMap.put("body", wemallOrder.getTitle());
@@ -50,6 +51,7 @@ public class ParamsGenerator {
 			logger.error("订单过期时间设定格式错误!", e);
 		}
 		//订单失效时间，格式为yyyyMMddHHmmss
+		logger.info("notify_url===" + basePath + WeixinTradeConfig.notify_url);
 		paramsMap.put("notify_url", basePath + WeixinTradeConfig.notify_url);//接收微信支付异步通知回调地址
 		paramsMap.put("trade_type", WeixinTradeConfig.trade_type);//交易类型,支付类型
 		paramsMap.put("openid", openId);//交易类型,支付类型

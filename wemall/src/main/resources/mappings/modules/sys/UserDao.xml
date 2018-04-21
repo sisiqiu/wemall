@@ -492,16 +492,16 @@
 			<if test="realName != null">
 				realName = #{realName}, 
 		    </if>
-		    <if test="curBountyNum != null and curBountyNum != ''">
+		    <if test="curBountyNum != null">
 				cur_bounty_num = #{curBountyNum},
 		    </if>
-		    <if test="totalBountyNum != null and totalBountyNum != ''">
+		    <if test="totalBountyNum != null">
 				total_bounty_num = #{totalBountyNum},
 		    </if>
-		    <if test="curScoreNum != null and curScoreNum != ''">
+		    <if test="curScoreNum != null">
 				cur_score_num = #{curScoreNum},
 		    </if>
-		    <if test="totalScoreNum != null and totalScoreNum != ''">
+		    <if test="totalScoreNum != null">
 				total_score_num = #{totalScoreNum},
 		    </if>
 		    <if test="vipCardIds != null and vipCardIds != ''">

@@ -64,6 +64,7 @@ public class WemallBountyInfoService extends CrudService<WemallBountyInfoDao, We
 		//更新用户的当前奖励金数及累计奖励金数
 		User user = UserUtils.get(userId);
 		user.setCurBountyNum(user.getCurBountyNum()+score);
+		logger.info("updateUserBounty: " + score + "----------" + user.getCurBountyNum());
 		if(!bountyFromType.equals(BountyFromType.rollback) && score > 0) {
 			user.setTotalBountyNum(user.getTotalBountyNum() + score);
 		}

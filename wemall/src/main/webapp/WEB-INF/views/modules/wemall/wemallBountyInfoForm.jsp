@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/views/include/taglib.jsp"%>
 <html>
 <head>
-	<title>奖励金明细信息管理</title>
+	<title>余额明细信息管理</title>
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
@@ -27,8 +27,8 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li><a href="${ctx}/wemall/wemallBountyInfo/">奖励金明细信息列表</a></li>
-		<li class="active"><a href="${ctx}/wemall/wemallBountyInfo/form?id=${wemallBountyInfo.id}">奖励金明细信息<shiro:hasPermission name="wemall:wemallBountyInfo:edit">${not empty wemallBountyInfo.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="wemall:wemallBountyInfo:edit">查看</shiro:lacksPermission></a></li>
+		<li><a href="${ctx}/wemall/wemallBountyInfo/">余额明细信息列表</a></li>
+		<li class="active"><a href="${ctx}/wemall/wemallBountyInfo/form?id=${wemallBountyInfo.id}">余额明细信息<shiro:hasPermission name="wemall:wemallBountyInfo:edit">${not empty wemallBountyInfo.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="wemall:wemallBountyInfo:edit">查看</shiro:lacksPermission></a></li>
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="wemallBountyInfo" action="${ctx}/wemall/wemallBountyInfo/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>

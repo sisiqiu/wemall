@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/views/include/taglib.jsp"%>
 <html>
 <head>
-	<title>奖励金明细信息管理</title>
+	<title>余额明细信息管理</title>
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
@@ -18,8 +18,8 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li class="active"><a href="${ctx}/wemall/wemallBountyInfo/">奖励金明细信息列表</a></li>
-		<shiro:hasPermission name="wemall:wemallBountyInfo:edit"><li><a href="${ctx}/wemall/wemallBountyInfo/form">奖励金明细信息添加</a></li></shiro:hasPermission>
+		<li class="active"><a href="${ctx}/wemall/wemallBountyInfo/">余额明细信息列表</a></li>
+		<shiro:hasPermission name="wemall:wemallBountyInfo:edit"><li><a href="${ctx}/wemall/wemallBountyInfo/form">余额明细信息添加</a></li></shiro:hasPermission>
 	</ul>
 	<form:form id="searchForm" modelAttribute="wemallBountyInfo" action="${ctx}/wemall/wemallBountyInfo/" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
@@ -99,7 +99,7 @@
 				</td>
 				<shiro:hasPermission name="wemall:wemallBountyInfo:edit"><td>
     				<a href="${ctx}/wemall/wemallBountyInfo/form?id=${wemallBountyInfo.id}">修改</a>
-					<a href="${ctx}/wemall/wemallBountyInfo/delete?id=${wemallBountyInfo.id}" onclick="return confirmx('确认要删除该奖励金明细信息吗？', this.href)">删除</a>
+					<a href="${ctx}/wemall/wemallBountyInfo/delete?id=${wemallBountyInfo.id}" onclick="return confirmx('确认要删除该余额明细信息吗？', this.href)">删除</a>
 				</td></shiro:hasPermission>
 			</tr>
 		</c:forEach>
